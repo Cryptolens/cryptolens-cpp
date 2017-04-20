@@ -1,0 +1,17 @@
+﻿  stdafx.cpp
+  SKM.cpp
+  SignatureVerifier_OpenSSL.cpp
+c:\users\artem los\documents\github\skm_prototype_backup\real\signatureverifier_openssl.cpp(88): fatal error C1010: unexpected end of file while looking for precompiled header. Did you forget to add '#include "stdafx.h"' to your source?
+  RequestHandler_curl.cpp
+c:\users\artem los\documents\github\skm_prototype_backup\real\requesthandler_curl.cpp(53): fatal error C1010: unexpected end of file while looking for precompiled header. Did you forget to add '#include "stdafx.h"' to your source?
+  LicenseKeyChecker.cpp
+c:\users\artem los\documents\github\skm_prototype_backup\real\licensekeychecker.cpp(137): fatal error C1010: unexpected end of file while looking for precompiled header. Did you forget to add '#include "stdafx.h"' to your source?
+  LicenseKey.cpp
+c:\users\artem los\documents\github\skm_prototype_backup\real\licensekey.cpp(302): fatal error C1010: unexpected end of file while looking for precompiled header. Did you forget to add '#include "stdafx.h"' to your source?
+  example2.cpp
+c:\users\artem los\documents\github\skm_prototype_backup\real\examples\example2.cpp(31): fatal error C1010: unexpected end of file while looking for precompiled header. Did you forget to add '#include "stdafx.h"' to your source?
+  example1.cpp
+c:\users\artem los\documents\github\skm_prototype_backup\real\examples\example1.cpp(43): fatal error C1010: unexpected end of file while looking for precompiled header. Did you forget to add '#include "stdafx.h"' to your source?
+  base64.cpp
+c:\users\artem los\documents\github\skm_prototype_backup\real\base64.cpp(336): fatal error C1010: unexpected end of file while looking for precompiled header. Did you forget to add '#include "stdafx.h"' to your source?
+  Generating Code...
