@@ -24,40 +24,40 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\RequestHandler_curl.hpp">
+    <ClInclude Include="ActivationData.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\ActivationData.hpp">
+    <ClInclude Include="base64.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\base64.hpp">
+    <ClInclude Include="basic_SKM.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\basic_SKM.hpp">
+    <ClInclude Include="Customer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\Customer.hpp">
+    <ClInclude Include="DataObject.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\DataObject.hpp">
+    <ClInclude Include="json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\LicenseKey.hpp">
+    <ClInclude Include="LicenseKey.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\LicenseKeyChecker.hpp">
+    <ClInclude Include="LicenseKeyChecker.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\optional.hpp">
+    <ClInclude Include="optional.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\SignatureVerifier_OpenSSL.hpp">
+    <ClInclude Include="RawLicenseKey.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\json.hpp">
+    <ClInclude Include="RequestHandler_curl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\skm_prototype_backup\real\RawLicenseKey.hpp">
+    <ClInclude Include="SignatureVerifier_OpenSSL.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -68,25 +68,19 @@
     <ClCompile Include="SKM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\skm_prototype_backup\real\base64.cpp">
+    <ClCompile Include="base64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\skm_prototype_backup\real\LicenseKey.cpp">
+    <ClCompile Include="LicenseKey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\skm_prototype_backup\real\LicenseKeyChecker.cpp">
+    <ClCompile Include="LicenseKeyChecker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\skm_prototype_backup\real\RequestHandler_curl.cpp">
+    <ClCompile Include="RequestHandler_curl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\skm_prototype_backup\real\SignatureVerifier_OpenSSL.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\skm_prototype_backup\real\examples\example1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\skm_prototype_backup\real\examples\example2.cpp">
+    <ClCompile Include="SignatureVerifier_OpenSSL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
