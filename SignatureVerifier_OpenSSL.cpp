@@ -13,20 +13,34 @@ namespace serialkeymanager_com {
 int
 verify(RSA * rsa, std::string const& message, std::string const& sig)
 {
-  // TODO: Check for failures
+  int r;
+
   EVP_MD_CTX * ctx = EVP_MD_CTX_create();
+  if (ctx == NULL) { return 0; }
+
   EVP_PKEY * pkey = EVP_PKEY_new();
+  if (pkey == NULL) { return 0; }
 
-  EVP_PKEY_set1_RSA(pkey, rsa);
+  r = EVP_PKEY_set1_RSA(pkey, rsa);
+  if (r != 1) { return 0; }
 
-  EVP_DigestVerifyInit(ctx, NULL, EVP_sha256(), NULL, pkey);
-  EVP_DigestVerifyUpdate(ctx, (unsigned char*)message.c_str(), message.size());
-  int res = EVP_DigestVerifyFinal(ctx, (unsigned char*)sig.c_str(), sig.size());
 
+
+  r = EVP_DigestVerifyInit(ctx, NULL, EVP_sha256(), NULL, pkey);
+  if (r != 1) { return 0; }
+
+  r = EVP_DigestVerifyUpdate(ctx, (unsigned char*)message.c_str(), message.size());
+  if (r != 1) { return 0; }
+
+  r = EVP_DigestVerifyFinal(ctx, (unsigned char*)sig.c_str(), sig.size());
+
+  // Void return type
   EVP_PKEY_free(pkey);
+
+  // Void return type
   EVP_MD_CTX_destroy(ctx);
 
-  return res;
+  return r;
 }
 
 SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL()
