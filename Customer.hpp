@@ -2,6 +2,7 @@
 
 namespace serialkeymanager_com {
 
+// This immutable class represents a customer
 class Customer {
 private:
   int id_;
@@ -26,10 +27,19 @@ public:
     // TODO: Check length requirements
   }
 
+  // Returns the customer id
   int                get_id() const { return id_; }
+
+  // Returns the customer name
   std::string const& get_name() const { return name_; }
+
+  // Returns the customer's email
   std::string const& get_email() const { return email_; }
+
+  // Returns the customer's company name
   std::string const& get_company_name() const { return company_name_; }
+
+  // Returns when the customer's account was created
   std::string const& get_created() const { return created_; }
 };
 

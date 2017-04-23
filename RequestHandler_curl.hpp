@@ -6,6 +6,8 @@
 
 namespace serialkeymanager_com {
 
+// A request handler for making requests to the SKM Web API built
+// around the curl library.
 class RequestHandler_curl
 {
 public:

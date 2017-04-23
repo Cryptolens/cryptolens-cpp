@@ -2,6 +2,8 @@
 
 namespace serialkeymanager_com {
 
+// An immutable class representing an activated machine
+// for a given serial key
 class ActivationData {
 private:
   std::string mid_;
@@ -18,8 +20,13 @@ public:
   , time_(std::move(time))
   { }
 
+  // Returns the machine id
   std::string const& get_mid() const { return mid_; }
+
+  // Returns the IP when the machine was activated the first time
   std::string const& get_ip() const { return ip_; }
+
+  // Returns the time the machine was activated the first time
   std::string const& get_time() const { return time_; }
 };
 

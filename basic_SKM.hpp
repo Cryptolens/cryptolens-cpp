@@ -16,6 +16,12 @@ namespace serialkeymanager_com {
 using json = nlohmann::json;
 using json_exception = nlohmann::detail::exception;
 
+// Helper class to work with the FieldsToReturn parameter when
+// making a Activate request to the Web API.
+//
+// This class is not terribly important and the FieldsToReturn
+// parameter should usually be set server side by setting
+// a Feature Lock for the license key
 struct FieldsToReturn {
   static const int ID = 1 << 1;
   static const int KEY = 1 << 2;
@@ -64,6 +70,8 @@ struct FieldsToReturn {
   }
 };
 
+// Function for handling a response to an Activate request from
+// the SKM Web API
 template<typename SignatureVerifier>
 optional<RawLicenseKey>
 handle_activate
@@ -81,7 +89,8 @@ handle_activate
   return RawLicenseKey::make(signature_verifier, j["licenseKey"], j["signature"]);
 }
 
-// TODO: Do we need to template this? Since we currently dont check signature anyway...
+// Function for handling a response to an Deactivate request from
+// the SKM Web API
 template<typename SignatureVerifier>
 bool
 handle_deactivate
@@ -99,12 +108,31 @@ handle_deactivate
   return j["Result"] == 0;
 }
 
+// This class makes it possible to interact with the SKM Web API. Among the
+// various methods available in the Web API the only ones currently supported
+// in the C++ API are Activate and Deactivate.
+//
+// This class uses two policy classes, SignatureVerifier and RequestHandler,
+// which are responsible for handling verification of signatures and making
+// requests to the Web API, respectivly.
 template<typename RequestHandler, typename SignatureVerifier>
 class basic_SKM
 {
 public:
   basic_SKM() { }
 
+  // Make an Activate request to the SKM Web API
+  //
+  // Arguments:
+  //   token - acces token to use
+  //   product_id - the product id
+  //   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
+  //   machine_code - the machine code, i.e. a string that identifies a device
+  //                  for activation.
+  //
+  // Returns:
+  //   An optional with a RawLicenseKey representing if the request was
+  //   successful or not.
   optional<RawLicenseKey>
   activate
     ( std::string token
@@ -131,6 +159,17 @@ public:
     return handle_activate(this->signature_verifier, response);
   }
 
+  // Make an Deactivate request to the SKM Web API
+  //
+  // Arguments:
+  //   token - acces token to use
+  //   product_id - the product id
+  //   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
+  //   machine_code - the machine code, i.e. a string that identifies a device
+  //                  for activation.
+  //
+  // Returns:
+  //   A boolean representing if the request was successful or not.
   bool
   deactivate
     ( std::string token
