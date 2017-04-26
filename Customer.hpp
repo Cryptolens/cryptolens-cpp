@@ -9,14 +9,14 @@ private:
   std::string name_;
   std::string email_;
   std::string company_name_;
-  std::string created_;
+  std::uint64_t created_;
 public:
   Customer
     ( int id
     , std::string name
     , std::string email
     , std::string company_name
-    , std::string created
+    , std::uint64_t created
     )
   : id_(id)
   , name_(std::move(name))
@@ -40,7 +40,7 @@ public:
   std::string const& get_company_name() const { return company_name_; }
 
   // Returns when the customer's account was created
-  std::string const& get_created() const { return created_; }
+  std::uint64_t get_created() const { return created_; }
 };
 
 } // namespace serialkeymanager_com

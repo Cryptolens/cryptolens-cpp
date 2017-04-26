@@ -21,12 +21,12 @@ LicenseKey::make(std::string const& license_key)
 
   bool mandatory_missing =
       !( j["ProductId"].is_number_integer()
-      && j["Created"].is_string()
-      && j["Expires"].is_string()
+      && j["Created"].is_number_unsigned()
+      && j["Expires"].is_number_unsigned()
       && j["Period"].is_number_integer()
       && j["Block"].is_boolean()
       && j["TrialActivation"].is_boolean()
-      && j["SignDate"].is_string()
+      && j["SignDate"].is_number_unsigned()
       && j["F1"].is_boolean()
       && j["F2"].is_boolean()
       && j["F3"].is_boolean()
@@ -84,7 +84,7 @@ LicenseKey::make(std::string const& license_key)
       && j["Customer"]["Name"].is_string()
       && j["Customer"]["Email"].is_string()
       && j["Customer"]["CompanyName"].is_string()
-      && j["Customer"]["Created"].is_string();
+      && j["Customer"]["Created"].is_number_unsigned();
 
     if (valid) {
       Customer x( j["Customer"]["Id"]
@@ -101,7 +101,7 @@ LicenseKey::make(std::string const& license_key)
     bool valid = true;
     std::vector<ActivationData> x;
     for (auto a : j["ActivatedMachines"]) {
-      if (a["Mid"].is_string() && a["IP"].is_string() && a["Time"].is_string()) {
+      if (a["Mid"].is_string() && a["IP"].is_string() && a["Time"].is_number_unsigned()) {
         //x.push_back(ActivationData(a["Mid"], a["IP"], a["Time"]));
         x.emplace_back(a["Mid"], a["IP"], a["Time"]);
       } else {
@@ -160,13 +160,13 @@ int LicenseKey::get_product_id() const
   return product_id;
 }
 
-std::string const&
+std::uint64_t
 LicenseKey::get_created() const
 {
   return created;
 }
 
-std::string const&
+std::uint64_t
 LicenseKey::get_expires() const
 {
   return expires;
@@ -190,7 +190,7 @@ LicenseKey::get_trial_activation() const
   return trial_activation;
 }
 
-std::string const&
+std::uint64_t
 LicenseKey::get_sign_date() const
 {
   return sign_date;
