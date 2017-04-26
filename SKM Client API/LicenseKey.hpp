@@ -28,21 +28,21 @@ class LicenseKey {
 private:
   LicenseKey() { };
 
-  int         product_id;
-  std::string created;
-  std::string expires;
-  int         period;
-  bool        block;
-  bool        trial_activation;
-  std::string sign_date;
-  bool        f1;
-  bool        f2;
-  bool        f3;
-  bool        f4;
-  bool        f5;
-  bool        f6;
-  bool        f7;
-  bool        f8;
+  int           product_id;
+  std::uint64_t created;
+  std::uint64_t expires;
+  int           period;
+  bool          block;
+  bool          trial_activation;
+  std::uint64_t sign_date;
+  bool          f1;
+  bool          f2;
+  bool          f3;
+  bool          f4;
+  bool          f5;
+  bool          f6;
+  bool          f7;
+  bool          f8;
 
   optional<int>                         id;
   optional<std::string>                 key;
@@ -64,10 +64,10 @@ public:
   int                get_product_id() const;
 
   // Returns the date and time the license key was created
-  std::string const& get_created() const;
+  std::uint64_t get_created() const;
 
   // Returns the date and time the license key expires
-  std::string const& get_expires() const;
+  std::uint64_t get_expires() const;
 
   // Returns the duration of current license cycle eg. 30 days
   int                get_period() const;
@@ -79,7 +79,7 @@ public:
   bool               get_trial_activation() const;
 
   // Returns the date the license key was created by the Web API
-  std::string const& get_sign_date() const;
+  std::uint64_t get_sign_date() const;
 
   // Returns if the license key has feature 1
   bool               get_f1() const;

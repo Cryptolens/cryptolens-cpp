@@ -8,16 +8,16 @@ class ActivationData {
 private:
   std::string mid_;
   std::string ip_;
-  std::string time_;
+  std::uint64_t time_;
 public:
   ActivationData
-    (std::string mid
+    ( std::string mid
     , std::string ip
-    , std::string time
+    , std::uint64_t time
     )
   : mid_(std::move(mid))
   , ip_(std::move(ip))
-  , time_(std::move(time))
+  , time_(time)
   { }
 
   // Returns the machine id
@@ -27,7 +27,7 @@ public:
   std::string const& get_ip() const { return ip_; }
 
   // Returns the time the machine was activated the first time
-  std::string const& get_time() const { return time_; }
+  std::uint64_t get_time() const { return time_; }
 };
 
 } // namespace serialkeymanager_com

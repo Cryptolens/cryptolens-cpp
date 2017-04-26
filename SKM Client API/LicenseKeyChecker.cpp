@@ -97,14 +97,22 @@ LicenseKeyChecker::has_not_feature(int feature) {
 }
 
 LicenseKeyChecker&
-LicenseKeyChecker::has_expired(/* TODO: How to deal with dates in C++? */)
+LicenseKeyChecker::has_expired(std::uint64_t now)
 {
+  if (now < key_->get_expires()) {
+    status_ = false;
+  }
+
   return *this;
 }
 
 LicenseKeyChecker&
-LicenseKeyChecker::has_not_expired(/* TODO: How to deal with dates in C++? */)
+LicenseKeyChecker::has_not_expired(std::uint64_t now)
 {
+  if (key_->get_expires() < now) {
+    status_ = false;
+  }
+
   return *this;
 }
 
