@@ -86,6 +86,10 @@ handle_activate
     return nullopt;
   }
 
+  if (!j["licenseKey"].is_string() || !j["signature"].is_string()) {
+    return nullopt;
+  }
+
   return RawLicenseKey::make(signature_verifier, j["licenseKey"], j["signature"]);
 }
 
@@ -102,6 +106,10 @@ handle_deactivate
   try {
   j = json::parse(response);
   } catch (json_exception & e) {
+    return false;
+  }
+
+  if (!j["Result"].is_number_integer()) {
     return false;
   }
 
