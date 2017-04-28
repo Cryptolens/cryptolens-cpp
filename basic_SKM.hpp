@@ -156,9 +156,9 @@ public:
     args["Key"] = key;
     args["Sign"] = "true";
     args["MachineCode"] = machine_code;
-    args["FieldsToReturn"] = fields_to_return;
+    args["FieldsToReturn"] = std::to_string(fields_to_return);
     args["SignMethod"] = "1";
-    args["v"] = 1;
+    args["v"] = "1";
 
     std::string url = request_handler.build_url("Activate", args);
 
@@ -191,7 +191,7 @@ public:
     args["ProductId"] = product_id;
     args["Key"] = key;
     args["MachineCode"] = machine_code;
-    args["v"] = 1;
+    args["v"] = "1";
 
     std::string url = request_handler.build_url("Deactivate", args);
 

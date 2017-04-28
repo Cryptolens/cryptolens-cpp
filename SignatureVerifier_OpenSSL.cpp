@@ -15,6 +15,8 @@ verify(RSA * rsa, std::string const& message, std::string const& sig)
 {
   int r;
 
+  if (rsa == NULL) { return 0; }
+
   EVP_MD_CTX * ctx = EVP_MD_CTX_create();
   if (ctx == NULL) { return 0; }
 
@@ -45,20 +47,32 @@ verify(RSA * rsa, std::string const& message, std::string const& sig)
 
 SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL()
 {
-  // TODO: Check for failures
+  // This should be redesigned. We dont want to throw exceptions
+  // from the constructor, so for now if initialization fails we
+  // just make sure the class never accepts a signature
+
   this->rsa = RSA_new();
+  //if (this->rsa == NULL) { }
+
   this->rsa->n = BN_new();
+  if (this->rsa->n == NULL) { RSA_free(this->rsa); }
+
   this->rsa->e = BN_new();
+  if (this->rsa->e == NULL) { RSA_free(this->rsa); }
 }
 
 SignatureVerifier_OpenSSL::~SignatureVerifier_OpenSSL()
 {
-  RSA_free(this->rsa);
+  if (this->rsa != NULL) {
+    RSA_free(this->rsa);
+  }
 }
 
 void
 SignatureVerifier_OpenSSL::set_modulus_base64(std::string const& modulus_base64)
 {
+  if (this->rsa == NULL) { return; }
+
   optional<std::string> modulus = b64_decode(modulus_base64);
 
   if (!modulus) {
@@ -72,6 +86,8 @@ SignatureVerifier_OpenSSL::set_modulus_base64(std::string const& modulus_base64)
 void
 SignatureVerifier_OpenSSL::set_exponent_base64(std::string const& exponent_base64)
 {
+  if (this->rsa == NULL) { return; }
+
   optional<std::string> exponent = b64_decode(exponent_base64);
 
   if (!exponent) {
@@ -89,6 +105,8 @@ SignatureVerifier_OpenSSL::verify_message
   )
 const
 {
+  if (this->rsa == NULL) { return false; }
+
   optional<std::string> sig = b64_decode(signature_base64);
 
   if (!sig || verify(this->rsa, message, *sig) != 1) {
