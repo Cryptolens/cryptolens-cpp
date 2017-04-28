@@ -135,9 +135,15 @@ LicenseKeyChecker::is_not_blocked()
 LicenseKeyChecker&
 LicenseKeyChecker::is_on_right_machine(std::string const& machine_code)
 {
-  // TODO: Fix is_on_right_machine
-  //if (key_->get_machine_code() != machine_code) { status_ = false; }
+  if (key_->get_activated_machines()) {
+    for (auto const& m : *(key_->get_activated_machines())) {
+      if (m.get_mid() == machine_code) {
+        return *this;
+      }
+    }
+  }
 
+  status_ = false;
   return *this;
 }
 

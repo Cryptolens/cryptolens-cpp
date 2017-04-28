@@ -22,7 +22,7 @@ public:
   , name_(std::move(name))
   , email_(std::move(email))
   , company_name_(std::move(company_name))
-  , created_(std::move(created))
+  , created_(created)
   {
     // TODO: Check length requirements
   }

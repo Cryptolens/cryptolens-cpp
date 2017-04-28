@@ -41,17 +41,19 @@
  */
 
 #include <sys/types.h>
-//#include <sys/socket.h>
-//#include <netinet/in.h>
-//#include <arpa/inet.h>
-//#include <arpa/nameser.h>
+#if 0
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <arpa/nameser.h>
 
-//#include <ctype.h>
-//#include <resolv.h>
-//#include <stdio.h>
+#include <ctype.h>
+#include <resolv.h>
+#include <stdio.h>
 
-//#include <stdlib.h>
-//#include <string.h>
+#include <stdlib.h>
+#include <string.h>
+#endif
 
 #include <cctype>
 #include <cstring>
