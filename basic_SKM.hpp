@@ -5,7 +5,7 @@
 
 #include "optional.hpp"
 
-#include "json.hpp"
+#include "ArduinoJson.hpp"
 
 #include "RawLicenseKey.hpp"
 #include "LicenseKey.hpp"
@@ -13,8 +13,7 @@
 
 namespace serialkeymanager_com {
 
-using json = nlohmann::json;
-using json_exception = nlohmann::detail::exception;
+using namespace ArduinoJson;
 
 // Helper class to work with the FieldsToReturn parameter when
 // making a Activate request to the Web API.
@@ -79,18 +78,20 @@ handle_activate
   , std::string const& response
   )
 {
-  json j;
-  try {
-    j = json::parse(response);
-  } catch (json_exception & e) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject & j = jsonBuffer.parseObject(response);
+
+  if (!j.success()) { return nullopt; }
+
+  if (!j["licenseKey"].is<char const*>() || !j["signature"].is<char const*>()) {
     return nullopt;
   }
 
-  if (!j["licenseKey"].is_string() || !j["signature"].is_string()) {
-    return nullopt;
-  }
-
-  return RawLicenseKey::make(signature_verifier, j["licenseKey"], j["signature"]);
+  return RawLicenseKey::make(
+             signature_verifier
+           , j["licenseKey"]
+           , j["signature"]
+	   );
 }
 
 // Function for handling a response to an Deactivate request from
@@ -102,18 +103,16 @@ handle_deactivate
   , std::string const& response
   )
 {
-  json j;
-  try {
-  j = json::parse(response);
-  } catch (json_exception & e) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject & j = jsonBuffer.parseObject(response);
+
+  if (!j.success()) { return false; }
+
+  if (!j["Result"].is<int>()) {
     return false;
   }
 
-  if (!j["Result"].is_number_integer()) {
-    return false;
-  }
-
-  return j["Result"] == 0;
+  return j["Result"].as<int>() == 0;
 }
 
 // This class makes it possible to interact with the SKM Web API. Among the
