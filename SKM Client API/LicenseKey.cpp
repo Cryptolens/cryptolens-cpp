@@ -1,62 +1,59 @@
-#include "json.hpp"
+#include "ArduinoJson.hpp"
 
 #include "basic_SKM.hpp"
 #include "LicenseKey.hpp"
 
 namespace serialkeymanager_com {
 
-using json = nlohmann::json;
-using json_exception = nlohmann::detail::exception;
+using namespace ArduinoJson;
 
 optional<LicenseKey>
 LicenseKey::make(std::string const& license_key)
 {
-  json j;
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject & j = jsonBuffer.parseObject(license_key);
 
-  try {
-    j = json::parse(license_key);
-  } catch (json_exception & e) {
-    return nullopt;
-  }
+  if (!j.success()) { return nullopt; }
 
   bool mandatory_missing =
-      !( j["ProductId"].is_number_integer()
-      && j["Created"].is_number_unsigned()
-      && j["Expires"].is_number_unsigned()
-      && j["Period"].is_number_integer()
-      && j["Block"].is_boolean()
-      && j["TrialActivation"].is_boolean()
-      && j["SignDate"].is_number_unsigned()
-      && j["F1"].is_boolean()
-      && j["F2"].is_boolean()
-      && j["F3"].is_boolean()
-      && j["F4"].is_boolean()
-      && j["F5"].is_boolean()
-      && j["F6"].is_boolean()
-      && j["F7"].is_boolean()
-      && j["F8"].is_boolean()
+      !( j["ProductId"].is<unsigned long>()
+      && j["Created"].is<unsigned long>()
+      && j["Expires"].is<unsigned long>()
+      && j["Period"].is<unsigned long>()
+      && j["Block"].is<bool>()
+      && j["TrialActivation"].is<bool>()
+      && j["SignDate"].is<unsigned long>()
+      && j["F1"].is<bool>()
+      && j["F2"].is<bool>()
+      && j["F3"].is<bool>()
+      && j["F4"].is<bool>()
+      && j["F5"].is<bool>()
+      && j["F6"].is<bool>()
+      && j["F7"].is<bool>()
+      && j["F8"].is<bool>()
       );
   
   if (mandatory_missing) { return nullopt; }
 
   LicenseKey key;
 
-  key.product_id       = j["ProductId"];
-  key.created          = j["Created"];
-  key.expires          = j["Expires"];
-  key.period           = j["Period"];
-  key.block            = j["Block"];
-  key.trial_activation = j["TrialActivation"];
-  key.sign_date        = j["SignDate"];
-  key.f1               = j["F1"];
-  key.f2               = j["F2"];
-  key.f3               = j["F3"];
-  key.f4               = j["F4"];
-  key.f5               = j["F5"];
-  key.f6               = j["F6"];
-  key.f7               = j["F7"];
-  key.f8               = j["F8"];
+  key.product_id       = j["ProductId"].as<unsigned long>();
+  key.created          = j["Created"].as<unsigned long>();
+  key.expires          = j["Expires"].as<unsigned long>();
+  key.period           = j["Period"].as<unsigned long>();
+  key.block            = j["Block"].as<bool>();
+  key.trial_activation = j["TrialActivation"].as<bool>();
+  key.sign_date        = j["SignDate"].as<unsigned long>();
+  key.f1               = j["F1"].as<bool>();
+  key.f2               = j["F2"].as<bool>();
+  key.f3               = j["F3"].as<bool>();
+  key.f4               = j["F4"].as<bool>();
+  key.f5               = j["F5"].as<bool>();
+  key.f6               = j["F6"].as<bool>();
+  key.f7               = j["F7"].as<bool>();
+  key.f8               = j["F8"].as<bool>();
 
+#if 0
   if(j["ID"].is_number_integer()) {
    int x = j["ID"];
    key.id = x;
@@ -146,6 +143,7 @@ LicenseKey::make(std::string const& license_key)
       key.data_objects = std::move(x);
     }
   }
+#endif
 
   return make_optional(key);
 }
