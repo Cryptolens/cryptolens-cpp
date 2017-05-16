@@ -53,54 +53,62 @@ LicenseKey::make(std::string const& license_key)
   key.f7               = j["F7"].as<bool>();
   key.f8               = j["F8"].as<bool>();
 
-#if 0
-  if(j["ID"].is_number_integer()) {
-   int x = j["ID"];
-   key.id = x;
+  if (j["ID"].is<unsigned long>()) {
+    key.id = j["ID"].as<unsigned long>();
   }
 
-  if(j["Key"].is_string()) {
-    std::string x = j["Key"];
+  if (j["Key"].is<const char*>() && j["Key"].as<const char*>() != NULL) {
+    std::string x(j["Key"].as<const char*>());
     key.key = std::move(x);
   }
 
-  if(j["Notes"].is_string()) {
-    std::string x = j["Notes"];
+  if (j["Notes"].is<const char*>() && j["Notes"].as<const char*>() != NULL) {
+    std::string x(j["Notes"].as<const char*>());
     key.notes = std::move(x);
   }
 
-
-  if(j["GlobalId"].is_number_integer()) {
-    int x = j["GlobalId"];
-    key.global_id = x;
+  if (j["GlobalId"].is<unsigned long>()) {
+    key.global_id = j["GlobalId"].as<unsigned long>();
   }
 
-  if(j["Customer"].is_object()) {
+  if (j["Customer"].is<const JsonObject&>()) {
+    JsonObject const& customer = j["Customer"].as<const JsonObject&>();
+
     bool valid =
-         j["Customer"]["Id"].is_number_integer()
-      && j["Customer"]["Name"].is_string()
-      && j["Customer"]["Email"].is_string()
-      && j["Customer"]["CompanyName"].is_string()
-      && j["Customer"]["Created"].is_number_unsigned();
+         customer["Id"].is<unsigned long>()
+      && customer["Name"].is<const char*>() && j["Name"].as<const char*>() != NULL
+      && customer["Email"].is<const char*>() && j["Email"].as<const char*>() != NULL
+      && customer["CompanyName"].is<const char*>() && j["CompanyName"].as<const char*>() != NULL
+      && customer["Created"].is<unsigned long>();
 
     if (valid) {
-      Customer x( j["Customer"]["Id"]
-                , j["Customer"]["Name"]
-                , j["Customer"]["Email"]
-                , j["Customer"]["CompanyName"]
-                , j["Customer"]["Created"]
-                );
-      key.customer = x;
+      Customer x( customer["Id"].as<unsigned long>()
+                , customer["Name"].as<const char*>()
+                , customer["Email"].as<const char*>()
+                , customer["CompanyName"].as<const char*>()
+                , customer["Created"].as<unsigned long>()
+		);
+      key.customer = std::move(x);
     }
   }
 
-  if(j["ActivatedMachines"].is_array()) {
+  if (j["ActivatedMachines"].is<const JsonArray&>()) {
     bool valid = true;
-    std::vector<ActivationData> x;
-    for (auto a : j["ActivatedMachines"]) {
-      if (a["Mid"].is_string() && a["IP"].is_string() && a["Time"].is_number_unsigned()) {
-        //x.push_back(ActivationData(a["Mid"], a["IP"], a["Time"]));
-        x.emplace_back(a["Mid"], a["IP"], a["Time"]);
+    std::vector<ActivationData> v;
+    JsonArray const& array = j["ActivatedMachines"].as<const JsonArray&>();
+    for (auto const& x : array) {
+      if (!x.is<const JsonObject&>()) {
+        valid = false;
+	break;
+      }
+
+      JsonObject const& machine = x.as<const JsonObject&>();
+
+      if (machine["Mid"].is<const char*>() && machine["Mid"].as<const char*>() != NULL &&
+          machine["IP"].is<const char*>() && machine["IP"].as<const char*>() != NULL &&
+          machine["Time"].is<unsigned long>()) {
+        //x.push_back(ActivationData(machine["Mid"], machine["IP"], machine["Time"]));
+        v.emplace_back(machine["Mid"], machine["IP"], machine["Time"]);
       } else {
         valid = false;
         break;
@@ -108,31 +116,42 @@ LicenseKey::make(std::string const& license_key)
     }
 
     if (valid) {
-      key.activated_machines = std::move(x);
+      key.activated_machines = std::move(v);
     }
   }
 
-  if(j["MaxNoOfMachines"].is_number_integer()) {
-    int x = j["MaxNoOfMachines"];
-    key.maxnoofmachines = x;
+  if (j["MaxNoOfMachines"].is<unsigned long>()) {
+    key.maxnoofmachines = j["MaxNoOfMachines"].as<unsigned long>();
   }
 
-  if(j["AllowedMachines"].is_string()) {
-    std::string x = j["AllowedMachines"];
+  if (j["AllowedMachines"].is<const char*>() && j["AllowedMachines"].as<const char*>() != NULL) {
+    std::string x = j["AllowedMachines"].as<const char*>();
     key.allowed_machines = std::move(x);
   }
 
-  if(j["DataObjects"].is_array()) {
+  if (j["DataObjects"].is<const JsonArray&>()) {
     bool valid = true;
-    std::vector<DataObject> x;
-    for (auto o : j["DataObjects"]) {
-      if (  o["Id"].is_number_integer()
-         && o["Name"].is_string()
-         && o["StringValue"].is_string()
-         && o["IntValue"].is_number_integer()
+    std::vector<DataObject> v;
+    JsonArray const& array = j["DataObjects"].as<const JsonArray&>();
+    for (auto const& x : array) {
+      if (!x.is<const JsonObject&>()) {
+        valid = false;
+        break;
+      }
+
+      JsonObject const& dataobject = x.as<const JsonObject&>();
+
+      if (  dataobject["Id"].is<unsigned long>()
+         && dataobject["Name"].is<const char*>() && dataobject["Name"].as<const char*>() != NULL
+         && dataobject["StringValue"].is<const char*>() && dataobject["StringValue"].as<const char*>() != NULL
+         && dataobject["IntValue"].is<unsigned long>()
          )
       {
-        x.emplace_back(o["Id"], o["Name"], o["StringValue"], o["IntValue"]);
+        v.emplace_back( dataobject["Id"].as<unsigned long>()
+                      , dataobject["Name"].as<const char*>()
+                      , dataobject["StringValue"].as<const char*>()
+                      , dataobject["IntValue"].as<unsigned long>()
+                      );
       } else {
         valid = false;
         break;
@@ -140,10 +159,9 @@ LicenseKey::make(std::string const& license_key)
     }
 
     if (valid) {
-      key.data_objects = std::move(x);
+      key.data_objects = std::move(v);
     }
   }
-#endif
 
   return make_optional(key);
 }
