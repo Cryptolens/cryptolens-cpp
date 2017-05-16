@@ -83,14 +83,18 @@ handle_activate
 
   if (!j.success()) { return nullopt; }
 
-  if (!j["licenseKey"].is<char const*>() || !j["signature"].is<char const*>()) {
+  if (!j["licenseKey"].is<char const*>() || j["licenseKey"].as<char const*>() == NULL) {
+    return nullopt;
+  }
+
+  if (!j["signature"].is<char const*>() || j["signature"].as<char const*>() == NULL) {
     return nullopt;
   }
 
   return RawLicenseKey::make(
              signature_verifier
-           , j["licenseKey"]
-           , j["signature"]
+           , j["licenseKey"].as<char const*>()
+           , j["signature"].as<char const*>()
 	   );
 }
 
