@@ -9,15 +9,6 @@ namespace serialkeymanager_com {
 size_t
 handle_response(char * ptr, size_t size, size_t nmemb, void *userdata)
 {
-#if 0
-  std::cout << "size: " << size << std::endl;
-  std::cout << "nmemb: " << nmemb << std::endl;
-  std::cout << std::endl;
-  // TODO: I guess size*nmemb may overflow? Or why this way of reporting?
-  //       Idk, we need to return the number of actually taken care of,
-  //       according to https://curl.haxx.se/libcurl/c/CURLOPT_WRITEFUNCTION.html
-  //       so overflow doesn't make any sense?
-#endif
   std::string current{ptr, size*nmemb};
 
   std::string *response = (std::string *)userdata;
@@ -32,13 +23,19 @@ RequestHandler_curl::RequestHandler_curl()
 }
 
 std::string
-RequestHandler_curl::make_request( std::string const& url)
+RequestHandler_curl::make_request(std::string const& url)
 {
   std::string response;
 
   curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
   curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, handle_response);
   curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, (void *)&response);
+
+  // FIXME: Temporary addition since we are doing cryptographic check
+  //        in the library aswell.
+  curl_easy_setopt(this->curl, CURLOPT_SSL_VERIFYPEER, 0);
+  curl_easy_setopt(this->curl, CURLOPT_SSL_VERIFYHOST, 0);
+
   curl_easy_perform(this->curl);
 
   return response;
