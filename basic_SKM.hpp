@@ -114,7 +114,8 @@ handle_activate
 {
   try {
     return make_optional(
-	     handle_activate_exn( signature_verifier
+	     handle_activate_exn( experimental_v1()
+		                , signature_verifier
 		                , response)
 	   );
   } catch (ActivateError const& e) {
