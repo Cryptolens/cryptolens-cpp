@@ -38,7 +38,8 @@ T inf() {
 }
 
 #else
-
+#include <cmath>
+/*
 #include <math.h>
 
 // GCC warning: "conversion to 'float' from 'double' may alter its value"
@@ -57,20 +58,21 @@ T inf() {
 // https://bblanchon.github.io/ArduinoJson//issues/284
 #if !defined(isnan) || !defined(isinf)
 namespace std {}
-#endif
+#endif*/
 
 namespace ArduinoJson {
 namespace Polyfills {
 
 template <typename T>
 bool isNaN(T x) {
+/*
 // Workaround for libs that #undef isnan
 // https://bblanchon.github.io/ArduinoJson//issues/284
 #ifndef isnan
   using namespace std;
 #endif
-
-  return isnan(x);
+*/
+  return std::isnan(x);
 }
 
 #if defined(_GLIBCXX_HAVE_ISNANL) && _GLIBCXX_HAVE_ISNANL
@@ -89,13 +91,14 @@ inline bool isNaN<float>(float x) {
 
 template <typename T>
 bool isInfinity(T x) {
+/*
 // Workaround for libs that #undef isinf
 // https://bblanchon.github.io/ArduinoJson//issues/284
 #ifndef isinf
   using namespace std;
 #endif
-
-  return isinf(x);
+*/
+  return std::isinf(x);
 }
 
 #if defined(_GLIBCXX_HAVE_ISINFL) && _GLIBCXX_HAVE_ISINFL
