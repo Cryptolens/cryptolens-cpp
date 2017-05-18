@@ -18,8 +18,6 @@ namespace serialkeymanager_com {
 
 using namespace ArduinoJson;
 
-class ActivateError;
-
 // Helper class to work with the FieldsToReturn parameter when
 // making a Activate request to the Web API.
 //
@@ -71,6 +69,88 @@ struct FieldsToReturn {
 
   static bool expect_dataobjects(int n) {
     return n == 0 || (n & DATAOBJECTS);
+  }
+};
+
+class ActivateError : public std::exception {
+private:
+  int reason;
+
+public:
+  static const int UNKNOWN_SERVER_REPLY      = 0;
+  static const int INVALID_ACCESS_TOKEN      = 1;
+  static const int ACCESS_DENIED             = 2;
+  static const int INCORRECT_INPUT_PARAMETER = 3;
+  static const int PRODUCT_NOT_FOUND         = 4;
+  static const int KEY_NOT_FOUND             = 5;
+  static const int KEY_BLOCKED               = 6;
+  static const int DEVICE_LIMIT_REACHED      = 7;
+
+  ActivateError(const char *server_response)
+  {
+    reason = UNKNOWN_SERVER_REPLY;
+    if (server_response == NULL) { return; }
+
+    if (0 == std::strcmp(server_response, "Unable to authenticate.")) {
+      reason = INVALID_ACCESS_TOKEN;
+    }
+
+    if (0 == std::strcmp(server_response, "Access denied.")) {
+      reason = ACCESS_DENIED;
+    }
+
+    if (0 == std::strcmp(server_response, "The input parameters were incorrect.")) {
+      reason = INCORRECT_INPUT_PARAMETER;
+    }
+
+    if (0 == std::strcmp(server_response, "Could not find the product.")) {
+      reason = PRODUCT_NOT_FOUND;
+    }
+
+    if (0 == std::strcmp(server_response, "Could not find the key.")) {
+      reason = KEY_NOT_FOUND;
+    }
+
+    if (0 == std::strcmp(server_response, "The key is blocked and cannot be accessed.")) {
+      reason = KEY_BLOCKED;
+    }
+
+    if (0 == std::strcmp(server_response, "Cannot activate the new device as the limit has been reached.")) {
+      reason = DEVICE_LIMIT_REACHED;
+    }
+  }
+
+  int get_reason() { return reason; }
+
+  virtual const char * what() const noexcept {
+    switch (reason) {
+    case INVALID_ACCESS_TOKEN:
+    return "Invalid access token.";
+
+    case UNKNOWN_SERVER_REPLY:
+    return "Recieved unknown reply from the server.";
+
+    case ACCESS_DENIED:
+    return "Access denied.";
+
+    case INCORRECT_INPUT_PARAMETER:
+    return "The input parameters were incorrect.";
+
+    case PRODUCT_NOT_FOUND:
+    return "Could not find the product." ;
+
+    case KEY_NOT_FOUND:
+    return "Could not find the key.";
+
+    case KEY_BLOCKED:
+    return "The key is blocked and cannot be accessed.";
+
+    case DEVICE_LIMIT_REACHED:
+    return "Cannot activate the new device as the limit has been reached.";
+
+    default:
+    return "Unknown error.";
+    }
   }
 };
 
@@ -303,88 +383,6 @@ public:
 
   SignatureVerifier signature_verifier;
   RequestHandler request_handler;
-};
-
-class ActivateError : public std::exception {
-private:
-  int reason;
-
-public:
-  static const int UNKNOWN_SERVER_REPLY      = 0;
-  static const int INVALID_ACCESS_TOKEN      = 1;
-  static const int ACCESS_DENIED             = 2;
-  static const int INCORRECT_INPUT_PARAMETER = 3;
-  static const int PRODUCT_NOT_FOUND         = 4;
-  static const int KEY_NOT_FOUND             = 5;
-  static const int KEY_BLOCKED               = 6;
-  static const int DEVICE_LIMIT_REACHED      = 7;
-
-  ActivateError(const char *server_response)
-  {
-    reason = UNKNOWN_SERVER_REPLY;
-    if (server_response == NULL) { return; }
-
-    if (0 == std::strcmp(server_response, "Unable to authenticate.")) {
-      reason = INVALID_ACCESS_TOKEN;
-    }
-
-    if (0 == std::strcmp(server_response, "Access denied.")) {
-      reason = ACCESS_DENIED;
-    }
-
-    if (0 == std::strcmp(server_response, "The input parameters were incorrect.")) {
-      reason = INCORRECT_INPUT_PARAMETER;
-    }
-
-    if (0 == std::strcmp(server_response, "Could not find the product.")) {
-      reason = PRODUCT_NOT_FOUND;
-    }
-
-    if (0 == std::strcmp(server_response, "Could not find the key.")) {
-      reason = KEY_NOT_FOUND;
-    }
-
-    if (0 == std::strcmp(server_response, "The key is blocked and cannot be accessed.")) {
-      reason = KEY_BLOCKED;
-    }
-
-    if (0 == std::strcmp(server_response, "Cannot activate the new device as the limit has been reached.")) {
-      reason = DEVICE_LIMIT_REACHED;
-    }
-  }
-
-  int get_reason() { return reason; }
-
-  const char * what() {
-    switch (reason) {
-    case INVALID_ACCESS_TOKEN:
-    return "Invalid access token.";
-
-    case UNKNOWN_SERVER_REPLY:
-    return "Recieved unknown reply from the server.";
-
-    case ACCESS_DENIED:
-    return "Access denied.";
-
-    case INCORRECT_INPUT_PARAMETER:
-    return "The input parameters were incorrect.";
-
-    case PRODUCT_NOT_FOUND:
-    return "Could not find the product." ;
-
-    case KEY_NOT_FOUND:
-    return "Could not find the key.";
-
-    case KEY_BLOCKED:
-    return "The key is blocked and cannot be accessed.";
-
-    case DEVICE_LIMIT_REACHED:
-    return "Cannot activate the new device as the limit has been reached.";
-
-    default:
-    return "Unknown error.";
-    }
-  }
 };
 
 } // namespace serialkeymanager_com
