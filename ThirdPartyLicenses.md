@@ -1,7 +1,4 @@
-
-~~~~~~~~~~~~~~~~~~~~
-THID PARTY LICENSES
-~~~~~~~~~~~~~~~~~~~~
+# THIRD PARTY LICENSES
 
 Table of Contents
 -----------------------
@@ -12,7 +9,7 @@ Table of Contents
 5. Base 64
 
 
-1. Curl and libcurl
+## 1. Curl and libcurl
 
 COPYRIGHT AND PERMISSION NOTICE
 
@@ -27,7 +24,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 Except as contained in this notice, the name of a copyright holder shall not be used in advertising or otherwise to promote the sale, use or other dealings in this Software without prior written authorization of the copyright holder.
 
 
-2. Optional lite
+## 2. Optional lite
 
 MIT License
 
@@ -51,7 +48,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-3. Open SSL
+## 3. Open SSL
 
   LICENSE ISSUES
   ==============
@@ -175,7 +172,7 @@ copied and put under another distribution licence
 [including the GNU Public Licence.]
 
 
-4. Arduino Json
+## 4. Arduino Json
 
 The MIT License (MIT)
 ---------------------
@@ -188,8 +185,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-5. Base 64
+## 5. Base 64
 
 Copyright (c) 1996 by Internet Software Consortium.
 
