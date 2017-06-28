@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace serialkeymanager_com {
 
 // An immutable class representing an SKM Data Object
