@@ -6,6 +6,7 @@
 #include "ActivationData.hpp"
 #include "Customer.hpp"
 #include "DataObject.hpp"
+#include "RawLicenseKey.hpp"
 #include "optional.hpp"
 
 namespace serialkeymanager_com {
@@ -54,8 +55,20 @@ private:
   optional<std::string>                 allowed_machines;
   optional<std::vector<DataObject>>     data_objects;
 public:
+  // Attempt to construct a LicenseKey from a RawLicenseKey
+  static optional<LicenseKey> make(RawLicenseKey const& raw_license_key);
+
+  // Attempt to construct a LicenseKey from an optional containing a RawLicenseKey
+  static optional<LicenseKey> make(optional<RawLicenseKey> const& raw_license_key);
+
   // Attempt to construct a LicenseKey from a json string
-  static optional<LicenseKey> make(std::string const& license_key);
+  //
+  // This is unsafe in the sense that by passing in the json string
+  // directly there is no check of the cryptographic signature. The
+  // signature verification is instead performed during construction of
+  // a RawLicenseKey object. A LicenseKey object can then be constructed
+  // from the RawLicenseKey using the static factory.
+  static optional<LicenseKey> make_unsafe(std::string const& license_key);
 
   // Return a LicenseKeyChecker working on this LicenseKey object
   LicenseKeyChecker check() const;
