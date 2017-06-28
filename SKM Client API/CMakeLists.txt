@@ -8,10 +8,10 @@ add_subdirectory (googletest/googletest)
 
 add_library(skm STATIC ActivateError.cpp DataObject.cpp LicenseKey.cpp LicenseKeyChecker.cpp RequestHandler_curl.cpp RequestHandler_static.cpp SignatureVerifier_OpenSSL.cpp base64.cpp)
 
-add_executable(example1 example1.cpp)
+add_executable(example1 examples/example1.cpp)
 target_link_libraries(example1 skm curl crypto ssl)
 
-add_executable(example2 example1.cpp)
+add_executable(example2 examples/example2.cpp)
 target_link_libraries(example2 skm curl crypto ssl)
 
 add_executable(tests tests.cpp)
