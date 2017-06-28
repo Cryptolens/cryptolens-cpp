@@ -14,12 +14,23 @@ public:
   RequestHandler_curl();
   ~RequestHandler_curl();
 
+  template<typename Map>
   std::string
-  make_request(std::string const& url);
+  make_request(char const* method, Map const& map)
+  {
+    std::string url = build_url_(method, map);
+    return make_request_(url);
+  }
+
+private:
+  CURL *curl;
+
+  std::string
+  make_request_(std::string const& url);
 
   template<typename Map>
   std::string
-  build_url(char const* method, Map const& map)
+  build_url_(char const* method, Map const& map)
   {
     char* res;
     std::string s{"https://serialkeymanager.com/api/key/"};
@@ -50,9 +61,6 @@ public:
 
     return s;
   }
-
-private:
-  CURL *curl;
 };
 
 } // namespace serialkeymanager_com

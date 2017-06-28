@@ -21,7 +21,7 @@ RequestHandler_curl::RequestHandler_curl()
 }
 
 std::string
-RequestHandler_curl::make_request(std::string const& url)
+RequestHandler_curl::make_request_(std::string const& url)
 {
   std::string response;
 

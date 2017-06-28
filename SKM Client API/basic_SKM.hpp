@@ -43,9 +43,7 @@ make_activate_request
   args["SignMethod"] = "1";
   args["v"] = "1";
 
-  std::string url = request_handler.build_url("Activate", args);
-
-  return request_handler.make_request(url);
+  return request_handler.make_request("Activate", args);
 }
 
 // Function for handling a response to an Activate request from
@@ -239,9 +237,7 @@ public:
     args["MachineCode"] = machine_code;
     args["v"] = "1";
 
-    std::string url = request_handler.build_url("Deactivate", args);
-
-    std::string response = request_handler.make_request(url);
+    std::string response = request_handler.make_request("Deactivate", args);
 
     return handle_deactivate(this->signature_verifier, response);
   }
