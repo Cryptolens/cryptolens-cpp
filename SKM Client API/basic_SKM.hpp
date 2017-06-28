@@ -19,60 +19,6 @@ namespace serialkeymanager_com {
 
 using namespace ArduinoJson;
 
-// Helper class to work with the FieldsToReturn parameter when
-// making a Activate request to the Web API.
-//
-// This class is not terribly important and the FieldsToReturn
-// parameter should usually be set server side by setting
-// a Feature Lock for the license key
-struct FieldsToReturn {
-  static const int ID = 1 << 1;
-  static const int KEY = 1 << 2;
-  static const int NOTES = 1 << 3;
-  static const int GLOBALID = 1 << 4;
-  static const int CUSTOMER = 1 << 5;
-  static const int ACTIVATEDMACHINES = 1 << 6;
-  static const int MAXNOOFMACHINES = 1 << 8;
-  static const int ALLOWEDMACHINES = 1 << 7;
-  static const int DATAOBJECTS = 1 << 9;
-
-  static bool expect_id(int n) {
-    return n == 0 || (n & ID);
-  }
-
-  static bool expect_key(int n) {
-    return n == 0 || (n & KEY);
-  }
-
-  static bool expect_notes(int n) {
-    return n == 0 || (n & NOTES);
-  }
-
-  static bool expect_global_id(int n) {
-    return n == 0 || (n & GLOBALID);
-  }
-
-  static bool expect_customer(int n) {
-    return n == 0 || (n & CUSTOMER);
-  }
-
-  static bool expect_activated_machines(int n) {
-    return n == 0 || (n & ACTIVATEDMACHINES);
-  }
-
-  static bool expect_maxnoofmachines(int n) {
-    return n == 0 || (n & MAXNOOFMACHINES);
-  }
-
-  static bool expect_allowed_machines(int n) {
-    return n == 0 || (n & ALLOWEDMACHINES);
-  }
-
-  static bool expect_dataobjects(int n) {
-    return n == 0 || (n & DATAOBJECTS);
-  }
-};
-
 template<typename RequestHandler>
 std::string
 make_activate_request
