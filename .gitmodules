@@ -1,0 +1,3 @@
+[submodule "SKM Client API/googletest"]
+	path = SKM Client API/googletest
+	url = https://github.com/google/googletest.git
