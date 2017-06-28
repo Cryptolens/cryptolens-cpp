@@ -1,5 +1,3 @@
-#include <functional>
-
 #include <curl/curl.h>
 
 #include "RequestHandler_curl.hpp"
