@@ -11,7 +11,7 @@
 namespace serialkeymanager_com {
 
 int
-verify(RSA * rsa, std::string const& message, std::string const& sig)
+verify(Error & e, RSA * rsa, std::string const& message, std::string const& sig)
 {
   int r;
 
@@ -69,7 +69,7 @@ SignatureVerifier_OpenSSL::~SignatureVerifier_OpenSSL()
 }
 
 void
-SignatureVerifier_OpenSSL::set_modulus_base64(std::string const& modulus_base64)
+SignatureVerifier_OpenSSL::set_modulus_base64(Error & e, std::string const& modulus_base64)
 {
   if (this->rsa == NULL) { return; }
 
@@ -84,7 +84,7 @@ SignatureVerifier_OpenSSL::set_modulus_base64(std::string const& modulus_base64)
 }
 
 void
-SignatureVerifier_OpenSSL::set_exponent_base64(std::string const& exponent_base64)
+SignatureVerifier_OpenSSL::set_exponent_base64(Error & e, std::string const& exponent_base64)
 {
   if (this->rsa == NULL) { return; }
 
@@ -100,7 +100,8 @@ SignatureVerifier_OpenSSL::set_exponent_base64(std::string const& exponent_base6
 
 bool
 SignatureVerifier_OpenSSL::verify_message
-  ( std::string const& message
+  ( Error & e
+  , std::string const& message
   , std::string const& signature_base64
   )
 const
@@ -109,7 +110,7 @@ const
 
   optional<std::string> sig = b64_decode(signature_base64);
 
-  if (!sig || verify(this->rsa, message, *sig) != 1) {
+  if (!sig || verify(e, this->rsa, message, *sig) != 1) {
     return false;
   } else {
     return true;

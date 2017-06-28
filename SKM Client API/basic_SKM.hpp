@@ -10,6 +10,7 @@
 #include "ArduinoJson.hpp"
 
 #include "ActivateError.hpp"
+#include "Error.hpp"
 #include "RawLicenseKey.hpp"
 #include "LicenseKey.hpp"
 #include "LicenseKeyChecker.hpp"
@@ -19,57 +20,12 @@ namespace serialkeymanager_com {
 
 using namespace ArduinoJson;
 
-template<typename RequestHandler>
-std::string
-make_activate_request
-  ( RequestHandler & request_handler
-  , std::string const& token
-  , std::string const& product_id
-  , std::string const& key
-  , std::string const& machine_code
-  , int fields_to_return = 0
-  )
-{
-  std::unordered_map<std::string,std::string> args;
-  args["token"] = token;
-  args["ProductId"] = product_id;
-  args["Key"] = key;
-  args["Sign"] = "true";
-  args["MachineCode"] = machine_code;
-  // Fix since to_string is not available everywhere
-  //args["FieldsToReturn"] = std::to_string(fields_to_return);
-  std::ostringstream stm; stm << fields_to_return;
-  args["FieldsToReturn"] = stm.str();
-  args["SignMethod"] = "1";
-  args["v"] = "1";
-
-  return request_handler.make_request("Activate", args);
-}
-
 // Function for handling a response to an Activate request from
 // the SKM Web API
 template<typename SignatureVerifier>
 optional<RawLicenseKey>
 handle_activate
-  ( SignatureVerifier const& signature_verifier
-  , std::string const& response
-  )
-{
-  try {
-    return make_optional(
-	     handle_activate_exn( experimental_v1()
-		                , signature_verifier
-		                , response)
-	   );
-  } catch (ActivateError const& e) {
-    return nullopt;
-  }
-}
-
-template<typename SignatureVerifier>
-RawLicenseKey
-handle_activate_exn
-  ( experimental_v1 experimental
+  ( Error & e
   , SignatureVerifier const& signature_verifier
   , std::string const& response
   )
@@ -96,7 +52,8 @@ handle_activate_exn
   }
 
   optional<RawLicenseKey> raw = RawLicenseKey::make(
-             signature_verifier
+             e
+           , signature_verifier
            , j["licenseKey"].as<char const*>()
            , j["signature"].as<char const*>()
 	   );
@@ -106,27 +63,35 @@ handle_activate_exn
   } else {
     throw ActivateError::from_server_response(NULL);
   }
+
+/*
+  try {
+    return make_optional(
+	     handle_activate_exn( experimental_v1()
+		                , signature_verifier
+		                , response)
+	   );
+  } catch (ActivateError const& e) {
+    return nullopt;
+  }
+*/
 }
 
-// Function for handling a response to an Deactivate request from
-// the SKM Web API
 template<typename SignatureVerifier>
-bool
-handle_deactivate
-  ( SignatureVerifier const& signature_verifier
+RawLicenseKey
+handle_activate_exn
+  ( experimental_v1 experimental
+  , SignatureVerifier const& signature_verifier
   , std::string const& response
   )
 {
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject & j = jsonBuffer.parseObject(response);
+  Error e;
+  optional<RawLicenseKey> raw_license_key =
+    handle_activate(e, signature_verifier, response);
 
-  if (!j.success()) { return false; }
+  if (!e) { return *raw_license_key; }
 
-  if (!j["result"].is<int>()) {
-    return false;
-  }
-
-  return j["result"].as<int>() == 0;
+  throw ActivateError::from_server_response(NULL);
 }
 
 // This class makes it possible to interact with the SKM Web API. Among the
@@ -156,24 +121,30 @@ public:
   //   successful or not.
   optional<RawLicenseKey>
   activate
-    ( std::string token
+    ( Error & e
+    , std::string token
     , std::string product_id
     , std::string key
     , std::string machine_code
     , int fields_to_return = 0
     )
   {
-    std::string response =
-      make_activate_request
-        ( this->request_handler
-        , token
-        , product_id
-        , key
-        , machine_code
-        , fields_to_return
-      );
+    std::unordered_map<std::string,std::string> args;
+    args["token"] = token;
+    args["ProductId"] = product_id;
+    args["Key"] = key;
+    args["Sign"] = "true";
+    args["MachineCode"] = machine_code;
+    // Fix since to_string is not available everywhere
+    //args["FieldsToReturn"] = std::to_string(fields_to_return);
+    std::ostringstream stm; stm << fields_to_return;
+    args["FieldsToReturn"] = stm.str();
+    args["SignMethod"] = "1";
+    args["v"] = "1";
 
-    return handle_activate(this->signature_verifier, response);
+    std::string response = request_handler.make_request(e, "Activate", args);
+
+    return handle_activate(e, this->signature_verifier, response);
   }
 
   // Make an Activate request to the SKM Web API
@@ -198,50 +169,15 @@ public:
     , int fields_to_return = 0
     )
   {
-    std::string response =
-      make_activate_request
-        ( this->request_handler
-        , token
-        , product_id
-        , key
-        , machine_code
-        , fields_to_return
-      );
+    Error e;
+    optional<RawLicenseKey> raw_license_key =
+      activate( e, std::move(token), std::move(product_id), std::move(key)
+              , std::move(machine_code), fields_to_return);
 
-    return handle_activate_exn(experimental, this->signature_verifier, response);
+    if (!e) { return *raw_license_key; }
+    throw ActivateError::from_server_response(NULL);
   }
 
-  // Make an Deactivate request to the SKM Web API
-  //
-  // Arguments:
-  //   token - acces token to use
-  //   product_id - the product id
-  //   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
-  //   machine_code - the machine code, i.e. a string that identifies a device
-  //                  for activation.
-  //
-  // Returns:
-  //   A boolean representing if the request was successful or not.
-  bool
-  deactivate
-    ( std::string token
-    , std::string product_id
-    , std::string key
-    , std::string machine_code
-    )
-  {
-    std::unordered_map<std::string,std::string> args;
-    args["token"] = token;
-    args["ProductId"] = product_id;
-    args["Key"] = key;
-    args["MachineCode"] = machine_code;
-    args["v"] = "1";
-
-    std::string response = request_handler.make_request("Deactivate", args);
-
-    return handle_deactivate(this->signature_verifier, response);
-  }
- 
   SignatureVerifier signature_verifier;
   RequestHandler request_handler;
 };
