@@ -90,9 +90,9 @@ LicenseKey::make_unsafe(std::string const& license_key)
 
     bool valid =
          customer["Id"].is<unsigned long>()
-      && customer["Name"].is<const char*>() && j["Name"].as<const char*>() != NULL
-      && customer["Email"].is<const char*>() && j["Email"].as<const char*>() != NULL
-      && customer["CompanyName"].is<const char*>() && j["CompanyName"].as<const char*>() != NULL
+      && customer["Name"].is<const char*>() && customer["Name"].as<const char*>() != NULL
+      && customer["Email"].is<const char*>() && customer["Email"].as<const char*>() != NULL
+      && customer["CompanyName"].is<const char*>() && customer["CompanyName"].as<const char*>() != NULL
       && customer["Created"].is<unsigned long>();
 
     if (valid) {
