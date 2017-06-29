@@ -34,29 +34,35 @@ private:
   std::string
   build_url_(Error & e, char const* method, Map const& map)
   {
+    if (e) { return ""; }
+    if (!this->curl) { e.set(Error::BUILD_URL_CURL_NULL); return ""; }
+
     char* res;
     std::string s{"https://serialkeymanager.com/api/key/"};
 
     res = curl_easy_escape(curl, method, 0);
+    if (!res) { e.set(Error::BUILD_URL_ESCAPE); return ""; }
     s += res;
     curl_free(res);
 
     bool first = true;
     char separator = '?';
-    for (auto& e : map) {
+    for (auto& x : map) {
       s += separator;
       if (first) {
         first = false;
         separator = '&';
       }
 
-      res = curl_easy_escape(curl, e.first.c_str(), 0);
+      res = curl_easy_escape(curl, x.first.c_str(), 0);
+      if (!res) { e.set(Error::BUILD_URL_ESCAPE); return ""; }
       s += res;
       curl_free(res);
 
       s += '=';
 
-      res = curl_easy_escape(curl, e.second.c_str(), 0);
+      res = curl_easy_escape(curl, x.second.c_str(), 0);
+      if (!res) { e.set(Error::BUILD_URL_ESCAPE); return ""; }
       s += res;
       curl_free(res);
     }

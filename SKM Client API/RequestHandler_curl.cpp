@@ -23,25 +23,37 @@ RequestHandler_curl::RequestHandler_curl()
 std::string
 RequestHandler_curl::make_request_(Error & e, std::string const& url)
 {
-  std::string response;
+  if (e) { return ""; }
+  if (!this->curl) { e.set(Error::MAKE_REQUEST_CURL_NULL); return ""; }
 
-  curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
-  curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, handle_response);
-  curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, (void *)&response);
+  std::string response;
+  CURLcode cc;
+
+  cc = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
+  if (cc != CURLE_OK) { e.set(Error::MAKE_REQUEST_SETOPT); return ""; }
+  cc = curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, handle_response);
+  if (cc != CURLE_OK) { e.set(Error::MAKE_REQUEST_SETOPT); return ""; }
+  cc = curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, (void *)&response);
+  if (cc != CURLE_OK) { e.set(Error::MAKE_REQUEST_SETOPT); return ""; }
 
   // FIXME: Temporary addition since we are doing cryptographic check
   //        in the library aswell.
-  curl_easy_setopt(this->curl, CURLOPT_SSL_VERIFYPEER, 0);
-  curl_easy_setopt(this->curl, CURLOPT_SSL_VERIFYHOST, 0);
+  cc = curl_easy_setopt(this->curl, CURLOPT_SSL_VERIFYPEER, 0);
+  if (cc != CURLE_OK) { e.set(Error::MAKE_REQUEST_SETOPT); return ""; }
+  cc = curl_easy_setopt(this->curl, CURLOPT_SSL_VERIFYHOST, 0);
+  if (cc != CURLE_OK) { e.set(Error::MAKE_REQUEST_SETOPT); return ""; }
 
-  curl_easy_perform(this->curl);
+  cc = curl_easy_perform(this->curl);
+  if (cc != CURLE_OK) { e.set(Error::MAKE_REQUEST_SETOPT); return ""; }
 
   return response;
 }
 
 RequestHandler_curl::~RequestHandler_curl()
 {
-  curl_easy_cleanup(this->curl);
+  if (this->curl) {
+    curl_easy_cleanup(this->curl);
+  }
 }
 
 } // namespace serialkeymanager_com

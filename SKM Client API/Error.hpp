@@ -20,6 +20,8 @@ public:
 
   size_t get_reason() const noexcept { return reason_; }
 
+  void reset() { reason_ = NO_ERROR; }
+
   void set(size_t reason) { reason_ = reason; }
 
   static size_t constexpr MAKE_REQUEST_CURL_NULL = 1;
@@ -41,7 +43,13 @@ public:
   static size_t constexpr BUILD_URL_CURL_NULL = 17;
   static size_t constexpr BUILD_URL_ESCAPE = 18;
   static size_t constexpr RAWLICENSEKEY_MAKE_B64DECODE = 19;
-
+  static size_t constexpr HANDLE_ACTIVATE_JSON_PARSE_FAILED = 20;
+  static size_t constexpr HANDLE_ACTIVATE_FAIL_MESSAGE_MISSING = 21;
+  static size_t constexpr HANDLE_ACTIVATE_FIXME = 200000;
+  static size_t constexpr HANDLE_ACTIVATE_LICENSE_MISSING = 22;
+  static size_t constexpr HANDLE_ACTIVATE_SIGNATURE_MISSING = 23;
+  static size_t constexpr RAWLICENSEKEY_MAKE_B64_DECODE_FAILED = 24;
+//  static size_t constexpr 
 };
 
 } // namespace serialkeymanager_com

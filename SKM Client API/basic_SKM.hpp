@@ -33,36 +33,34 @@ handle_activate
   DynamicJsonBuffer jsonBuffer;
   JsonObject & j = jsonBuffer.parseObject(response);
 
-  if (!j.success()) { throw ActivateError::from_server_response(NULL); }
+  if (!j.success()) { e.set(Error::HANDLE_ACTIVATE_JSON_PARSE_FAILED); return nullopt; }
 
   if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
     if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
-      throw ActivateError::from_server_response(NULL);
+      e.set(Error::HANDLE_ACTIVATE_FAIL_MESSAGE_MISSING);
+      return nullopt;
     }
 
-    throw ActivateError::from_server_response(j["message"].as<char const*>());
+    e.set(Error::HANDLE_ACTIVATE_FIXME);
+    return nullopt;
   }
 
   if (!j["licenseKey"].is<char const*>() || j["licenseKey"].as<char const*>() == NULL) {
-    throw ActivateError::from_server_response(NULL);
+    e.set(Error::HANDLE_ACTIVATE_LICENSE_MISSING);
+    return nullopt;
   }
 
   if (!j["signature"].is<char const*>() || j["signature"].as<char const*>() == NULL) {
-    throw ActivateError::from_server_response(NULL);
+    e.set(Error::HANDLE_ACTIVATE_SIGNATURE_MISSING);
+    return nullopt;
   }
 
-  optional<RawLicenseKey> raw = RawLicenseKey::make(
-             e
+  return RawLicenseKey::make
+           ( e
            , signature_verifier
            , j["licenseKey"].as<char const*>()
            , j["signature"].as<char const*>()
 	   );
-
-  if (raw) {
-    return *raw;
-  } else {
-    throw ActivateError::from_server_response(NULL);
-  }
 
 /*
   try {
@@ -89,7 +87,7 @@ handle_activate_exn
   optional<RawLicenseKey> raw_license_key =
     handle_activate(e, signature_verifier, response);
 
-  if (!e) { return *raw_license_key; }
+  if (raw_license_key && !e) { return *raw_license_key; }
 
   throw ActivateError::from_server_response(NULL);
 }

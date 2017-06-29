@@ -32,7 +32,7 @@ int main()
   }
 
   // Create the license key
-  skm::optional<skm::LicenseKey> license_key = skm::LicenseKey::make(rawLicenseKey);
+  skm::optional<skm::LicenseKey> license_key = skm::LicenseKey::make(e, rawLicenseKey);
 
   if (!license_key) {
     std::cout << "Failed to construct license key!" << std::endl;

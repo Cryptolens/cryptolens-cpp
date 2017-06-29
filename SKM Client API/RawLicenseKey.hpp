@@ -50,6 +50,7 @@ public:
     optional<std::string> decoded = b64_decode(base64_license);
 
     if (!decoded) {
+      e.set(Error::RAWLICENSEKEY_MAKE_B64_DECODE_FAILED);
       return nullopt;
     }
 

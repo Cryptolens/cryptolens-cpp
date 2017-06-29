@@ -8,21 +8,21 @@ namespace serialkeymanager_com {
 using namespace ArduinoJson;
 
 optional<LicenseKey>
-LicenseKey::make(RawLicenseKey const& raw_license_key)
+LicenseKey::make(Error & e, RawLicenseKey const& raw_license_key)
 {
-  return LicenseKey::make_unsafe(raw_license_key.get_license());
+  return LicenseKey::make_unsafe(e, raw_license_key.get_license());
 }
 
 optional<LicenseKey>
-LicenseKey::make(optional<RawLicenseKey> const& raw_license_key)
+LicenseKey::make(Error & e, optional<RawLicenseKey> const& raw_license_key)
 {
   if (!raw_license_key) { return nullopt; }
 
-  return LicenseKey::make(*raw_license_key);
+  return LicenseKey::make(e, *raw_license_key);
 }
 
 optional<LicenseKey>
-LicenseKey::make_unsafe(std::string const& license_key)
+LicenseKey::make_unsafe(Error & e, std::string const& license_key)
 {
   DynamicJsonBuffer jsonBuffer;
   JsonObject & j = jsonBuffer.parseObject(license_key);
