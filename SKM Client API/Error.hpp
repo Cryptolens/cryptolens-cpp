@@ -49,6 +49,8 @@ public:
   static size_t constexpr HANDLE_ACTIVATE_LICENSE_MISSING = 22;
   static size_t constexpr HANDLE_ACTIVATE_SIGNATURE_MISSING = 23;
   static size_t constexpr RAWLICENSEKEY_MAKE_B64_DECODE_FAILED = 24;
+  static size_t constexpr LICENSEKEY_MAKE_JSON_PARSE_FAILED = 25;
+  static size_t constexpr LICENSEKEY_MAKE_MANDATORY_MISSING = 26;
 //  static size_t constexpr 
 };
 
