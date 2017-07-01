@@ -18,11 +18,7 @@ public:
 
   template<typename Map>
   std::string
-  make_request(Error & e, char const* method, Map const& map)
-  {
-    std::string url = build_url_(e, method, map);
-    return make_request_(e, url);
-  }
+  make_request(Error & e, char const* method, Map const& map);
 
 private:
   CURL *curl;
@@ -32,43 +28,55 @@ private:
 
   template<typename Map>
   std::string
-  build_url_(Error & e, char const* method, Map const& map)
-  {
-    if (e) { return ""; }
-    if (!this->curl) { e.set(Error::BUILD_URL_CURL_NULL); return ""; }
+  build_url_(Error & e, char const* method, Map const& map);
+};
 
-    char* res;
-    std::string s{"https://serialkeymanager.com/api/key/"};
+template<typename Map>
+std::string
+RequestHandler_curl::make_request(Error & e, char const* method, Map const& map)
+{
+  std::string url = build_url_(e, method, map);
+  return make_request_(e, url);
+}
 
-    res = curl_easy_escape(curl, method, 0);
+template<typename Map>
+std::string
+RequestHandler_curl::build_url_(Error & e, char const* method, Map const& map)
+{
+  if (e) { return ""; }
+  if (!this->curl) { e.set(Error::BUILD_URL_CURL_NULL); return ""; }
+
+  char* res;
+  std::string s{"https://serialkeymanager.com/api/key/"};
+
+  res = curl_easy_escape(curl, method, 0);
+  if (!res) { e.set(Error::BUILD_URL_ESCAPE); return ""; }
+  s += res;
+  curl_free(res);
+
+  bool first = true;
+  char separator = '?';
+  for (auto& x : map) {
+    s += separator;
+    if (first) {
+      first = false;
+      separator = '&';
+    }
+
+    res = curl_easy_escape(curl, x.first.c_str(), 0);
     if (!res) { e.set(Error::BUILD_URL_ESCAPE); return ""; }
     s += res;
     curl_free(res);
 
-    bool first = true;
-    char separator = '?';
-    for (auto& x : map) {
-      s += separator;
-      if (first) {
-        first = false;
-        separator = '&';
-      }
+    s += '=';
 
-      res = curl_easy_escape(curl, x.first.c_str(), 0);
-      if (!res) { e.set(Error::BUILD_URL_ESCAPE); return ""; }
-      s += res;
-      curl_free(res);
-
-      s += '=';
-
-      res = curl_easy_escape(curl, x.second.c_str(), 0);
-      if (!res) { e.set(Error::BUILD_URL_ESCAPE); return ""; }
-      s += res;
-      curl_free(res);
-    }
-
-    return s;
+    res = curl_easy_escape(curl, x.second.c_str(), 0);
+    if (!res) { e.set(Error::BUILD_URL_ESCAPE); return ""; }
+    s += res;
+    curl_free(res);
   }
-};
+
+  return s;
+}
 
 } // namespace serialkeymanager_com

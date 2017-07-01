@@ -125,25 +125,7 @@ public:
     , std::string key
     , std::string machine_code
     , int fields_to_return = 0
-    )
-  {
-    std::unordered_map<std::string,std::string> args;
-    args["token"] = token;
-    args["ProductId"] = product_id;
-    args["Key"] = key;
-    args["Sign"] = "true";
-    args["MachineCode"] = machine_code;
-    // Fix since to_string is not available everywhere
-    //args["FieldsToReturn"] = std::to_string(fields_to_return);
-    std::ostringstream stm; stm << fields_to_return;
-    args["FieldsToReturn"] = stm.str();
-    args["SignMethod"] = "1";
-    args["v"] = "1";
-
-    std::string response = request_handler.make_request(e, "Activate", args);
-
-    return handle_activate(e, this->signature_verifier, response);
-  }
+    );
 
   // Make an Activate request to the SKM Web API
   //
@@ -165,19 +147,59 @@ public:
     , std::string key
     , std::string machine_code
     , int fields_to_return = 0
-    )
-  {
-    Error e;
-    optional<RawLicenseKey> raw_license_key =
-      activate( e, std::move(token), std::move(product_id), std::move(key)
-              , std::move(machine_code), fields_to_return);
-
-    if (!e) { return *raw_license_key; }
-    throw ActivateError::from_server_response(NULL);
-  }
+    );
 
   SignatureVerifier signature_verifier;
   RequestHandler request_handler;
 };
+
+template<typename RequestHandler, typename SignatureVerifier>
+optional<RawLicenseKey>
+basic_SKM<RequestHandler, SignatureVerifier>::activate
+  ( Error & e
+  , std::string token
+  , std::string product_id
+  , std::string key
+  , std::string machine_code
+  , int fields_to_return
+  )
+{
+  std::unordered_map<std::string,std::string> args;
+  args["token"] = token;
+  args["ProductId"] = product_id;
+  args["Key"] = key;
+  args["Sign"] = "true";
+  args["MachineCode"] = machine_code;
+  // Fix since to_string is not available everywhere
+  //args["FieldsToReturn"] = std::to_string(fields_to_return);
+  std::ostringstream stm; stm << fields_to_return;
+  args["FieldsToReturn"] = stm.str();
+  args["SignMethod"] = "1";
+  args["v"] = "1";
+
+  std::string response = request_handler.make_request(e, "Activate", args);
+
+  return handle_activate(e, this->signature_verifier, response);
+}
+
+template<typename RequestHandler, typename SignatureVerifier>
+RawLicenseKey
+basic_SKM<RequestHandler, SignatureVerifier>::activate_exn
+  ( experimental_v1 experimental
+  , std::string token
+  , std::string product_id
+  , std::string key
+  , std::string machine_code
+  , int fields_to_return
+  )
+{
+  Error e;
+  optional<RawLicenseKey> raw_license_key =
+    activate( e, std::move(token), std::move(product_id), std::move(key)
+            , std::move(machine_code), fields_to_return);
+
+  if (!e) { return *raw_license_key; }
+  throw ActivateError::from_server_response(NULL);
+}
 
 } // namespace serialkeymanager_com
