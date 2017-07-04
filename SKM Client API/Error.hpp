@@ -25,7 +25,14 @@ int constexpr SIGNATURE_VERIFIER_SET_MODULUS_BASE64 = 4;
 // Errors for the Main subsystem
 namespace Main {
 
-int constexpr asdf = 0;
+constexpr int UNKNOWN_SERVER_REPLY      = 1;
+constexpr int INVALID_ACCESS_TOKEN      = 2;
+constexpr int ACCESS_DENIED             = 3;
+constexpr int INCORRECT_INPUT_PARAMETER = 4;
+constexpr int PRODUCT_NOT_FOUND         = 5;
+constexpr int KEY_NOT_FOUND             = 6;
+constexpr int KEY_BLOCKED               = 7;
+constexpr int DEVICE_LIMIT_REACHED      = 8;
 
 } // namespace Main
 
@@ -35,12 +42,6 @@ class Error {
  *   - 
  */
 private:
-  // Should add one more, we want support for tracking which method call
-  // by the user triggered the error, and then locating the error.
-  // For location we need basically to track three things, first
-  // which function/method caused the error, then some location inside
-  // that function/method and finally possibility to carry forward errors
-  // from other libraries.
   int    call_;
   int    subsystem_;
   int    reason_;
@@ -63,6 +64,7 @@ public:
   void set(int subsystem, int reason, size_t extra) { subsystem_ = subsystem; reason_ = reason; extra_ = extra; }
   void set_call(int call) { call_ = call; }
 
+#if 0
   static int constexpr MAKE_REQUEST_CURL_NULL = 1;
   static int constexpr MAKE_REQUEST_SETOPT = 2;
   static int constexpr MAKE_REQUEST_PERFORM = 3;
@@ -91,6 +93,7 @@ public:
   static int constexpr LICENSEKEY_MAKE_JSON_PARSE_FAILED = 25;
   static int constexpr LICENSEKEY_MAKE_MANDATORY_MISSING = 26;
 //  static size_t constexpr 
+#endif
 };
 
 } // namespace serialkeymanager_com

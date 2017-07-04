@@ -208,6 +208,9 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_exn
 
 namespace internal {
 
+int
+activate_parse_server_error_message(char const* server_response);
+
 template<typename SignatureVerifier>
 optional<RawLicenseKey>
 handle_activate
@@ -223,22 +226,22 @@ handle_activate
 
   if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
     if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
-      e.set(Subsystem::Json);
+      e.set(Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
       return nullopt;
     }
 
-    // TODO: Add parsing of server response here
-    e.set(Subsystem::Json);
+    int reason = activate_parse_server_error_message(j["message"].as<char const*>());
+    e.set(Subsystem::Main, reason);
     return nullopt;
   }
 
   if (!j["licenseKey"].is<char const*>() || j["licenseKey"].as<char const*>() == NULL) {
-    e.set(Subsystem::Json);
+    e.set(Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
     return nullopt;
   }
 
   if (!j["signature"].is<char const*>() || j["signature"].as<char const*>() == NULL) {
-    e.set(Subsystem::Json);
+    e.set(Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
     return nullopt;
   }
 
