@@ -7,12 +7,20 @@ namespace serialkeymanager_com {
 
 using namespace ArduinoJson;
 
+
+
+/**
+ * Attempt to construct a LicenseKey from a RawLicenseKey
+ */
 optional<LicenseKey>
 LicenseKey::make(Error & e, RawLicenseKey const& raw_license_key)
 {
   return LicenseKey::make_unsafe(e, raw_license_key.get_license());
 }
 
+/**
+ * Attempt to construct a LicenseKey from an optional containing a RawLicenseKey
+ */
 optional<LicenseKey>
 LicenseKey::make(Error & e, optional<RawLicenseKey> const& raw_license_key)
 {
@@ -21,6 +29,15 @@ LicenseKey::make(Error & e, optional<RawLicenseKey> const& raw_license_key)
   return LicenseKey::make(e, *raw_license_key);
 }
 
+/**
+ * Attempt to construct a LicenseKey from a json string
+ *
+ * This is unsafe in the sense that by passing in the json string
+ * directly there is no check of the cryptographic signature. The
+ * signature verification is instead performed during construction of
+ * a RawLicenseKey object. A LicenseKey object can then be constructed
+ * from the RawLicenseKey using the static factory.
+ */
 optional<LicenseKey>
 LicenseKey::make_unsafe(Error & e, std::string const& license_key)
 {
@@ -182,148 +199,226 @@ LicenseKey::make_unsafe(Error & e, std::string const& license_key)
   return make_optional(key);
 }
 
+/**
+ * Return a LicenseKeyChecker working on this LicenseKey object
+ */
 LicenseKeyChecker
 LicenseKey::check() const {
   return LicenseKeyChecker(this);
 }
 
+/**
+ * Returns the product Id of he license key
+ */
 int LicenseKey::get_product_id() const
 {
   return product_id;
 }
 
+/**
+ * Returns the date and time the license key was created
+ */
 std::uint64_t
 LicenseKey::get_created() const
 {
   return created;
 }
 
+/**
+ * Returns the date and time the license key expires
+ */
 std::uint64_t
 LicenseKey::get_expires() const
 {
   return expires;
 }
 
+/**
+ * Returns the duration of current license cycle eg. 30 days
+ */
 int
 LicenseKey::get_period() const
 {
   return period;
 }
 
+/**
+ * 
+ */
 bool
 LicenseKey::get_block() const
 {
   return block;
 }
 
+/**
+ * Returns if trial activation is enabled
+ */
 bool
 LicenseKey::get_trial_activation() const
 {
   return trial_activation;
 }
 
+/**
+ * Returns the date the license key was created by the Web API
+ */
 std::uint64_t
 LicenseKey::get_sign_date() const
 {
   return sign_date;
 }
 
+/**
+ * Returns if the license key has feature 1
+ */
 bool
 LicenseKey::get_f1() const
 {
   return f1;
 }
 
+/**
+ * Returns if the license key has feature 2
+ */
 bool
 LicenseKey::get_f2() const
 {
   return f2;
 }
 
+/**
+ * Returns if the license key has feature 3
+ */
 bool
 LicenseKey::get_f3() const
 {
   return f3;
 }
 
+/**
+ * Returns if the license key has feature 4
+ */
 bool
 LicenseKey::get_f4() const
 {
   return f4;
 }
 
+/**
+ * Returns if the license key has feature 5
+ */
 bool
 LicenseKey::get_f5() const
 {
   return f5;
 }
 
+/**
+ * Returns if the license key has feature 6
+ */
 bool
 LicenseKey::get_f6() const
 {
   return f6;
 }
 
+/**
+ * Returns if the license key has feature 7
+ */
 bool
 LicenseKey::get_f7() const
 {
   return f7;
 }
 
+/**
+ * Returns if the license key has feature 8
+ */
 bool
 LicenseKey::get_f8() const
 {
   return f8;
 }
 
+/**
+ * Returns the Id of the license key
+ */
 optional<int> const&
 LicenseKey::get_id() const
 {
   return id;
 }
 
+/**
+ * Return the license key string, eg. ABCDE-EFGHI-JKLMO-PQRST
+ */
 optional<std::string> const&
 LicenseKey::get_key() const
 {
   return key;
 }
 
+/**
+ * Returns the notes field of the license key
+ */
 optional<std::string> const&
 LicenseKey::get_notes() const
 {
   return notes;
 }
 
+/**
+ * Returns a unique global identifier for the license key
+ */
 optional<int> const&
 LicenseKey::get_global_id() const
 {
   return global_id;
 }
 
+/**
+ * Returns the customer object assigned to the license key
+ */
 optional<Customer> const&
 LicenseKey::get_customer() const
 {
   return customer;
 }
 
+/**
+ * Returns the list of activated machines
+ */
 optional<std::vector<ActivationData>> const&
 LicenseKey::get_activated_machines() const
 {
   return activated_machines;
 }
 
+/**
+ * Returns the maximum number of machines/devices that may activate this
+ * license key.
+ */
 optional<int> const&
 LicenseKey::get_maxnoofmachines() const
 {
   return maxnoofmachines;
 }
 
+/**
+ * Returns the machine codes of those devices that will be prioritized
+ * during activation. Even if the limit is achieved, these will still be
+ * activated.
+ */
 optional<std::string> const&
 LicenseKey::get_allowed_machines() const
 {
   return allowed_machines;
 }
 
+/**
+ * Returns the data objects associated with the license key.
+ */
 optional<std::vector<DataObject>> const&
 LicenseKey::get_data_objects() const
 {

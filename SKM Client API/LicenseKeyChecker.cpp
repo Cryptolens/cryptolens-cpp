@@ -2,14 +2,36 @@
 
 namespace serialkeymanager_com {
 
+/**
+ * Construct a LicenseKeyChecker from a LicenseKey object. This can also be
+ * accomplished by calling the check() method on the LicenseKey object
+ * instead. That is
+ *
+ *     license_key.check()
+ *
+ * instead of
+ *
+ *     LicenseKeyChecker(license_key)
+ */
 LicenseKeyChecker::LicenseKeyChecker(LicenseKey const* license_key)
 : status_(true), key_(license_key)
 { }
 
+/**
+ * Explicit conversion to bool allowing the LicenseKeyChecker
+ * object to be used in e.g. control flow statements:
+ *
+ *     if (license_key.check().has_feature(4)) {
+ *       DO_SOMETHING
+ *     }
+ */
 LicenseKeyChecker::operator bool() const {
   return status_;
 }
 
+/**
+ * Check that the underlying LicenseKey object has a certain feature.
+ */
 LicenseKeyChecker&
 LicenseKeyChecker::has_feature(int feature) {
   switch (feature) {
@@ -53,6 +75,10 @@ LicenseKeyChecker::has_feature(int feature) {
   return *this;
 }
 
+/**
+ * Check that the underlying LicenseKey object does not have a
+ * certain feature.
+ */
 LicenseKeyChecker&
 LicenseKeyChecker::has_not_feature(int feature) {
   switch (feature) {
@@ -96,6 +122,11 @@ LicenseKeyChecker::has_not_feature(int feature) {
   return *this;
 }
 
+/**
+ * Check that the underlying LicenseKey object has expired.
+ *
+ * time is given as a unix time stamp measured in seconds.
+ */
 LicenseKeyChecker&
 LicenseKeyChecker::has_expired(std::uint64_t now)
 {
@@ -106,6 +137,11 @@ LicenseKeyChecker::has_expired(std::uint64_t now)
   return *this;
 }
 
+/**
+ * Check that the underlying LicenseKey object has not expired.
+ *
+ * time is given as a unix time stamp measured in seconds.
+ */
 LicenseKeyChecker&
 LicenseKeyChecker::has_not_expired(std::uint64_t now)
 {
@@ -116,6 +152,9 @@ LicenseKeyChecker::has_not_expired(std::uint64_t now)
   return *this;
 }
 
+/**
+ * Check that the underlying LicenseKey object is blocked.
+ */
 LicenseKeyChecker&
 LicenseKeyChecker::is_blocked()
 {
@@ -124,6 +163,9 @@ LicenseKeyChecker::is_blocked()
   return *this;
 }
 
+/**
+ * Check that the underlying LicenseKey object is not blocked.
+ */
 LicenseKeyChecker&
 LicenseKeyChecker::is_not_blocked()
 {
@@ -132,6 +174,10 @@ LicenseKeyChecker::is_not_blocked()
   return *this;
 }
 
+/**
+ * Check that machine_code is among the allowed machines for the
+ * underlying LicenseKey object.
+ */
 LicenseKeyChecker&
 LicenseKeyChecker::is_on_right_machine(std::string const& machine_code)
 {

@@ -13,18 +13,19 @@ namespace serialkeymanager_com {
 
 class LicenseKeyChecker;
 
-// This immutable class represents a license key.
-//
-// The class is constructed using the static factory make().
-//
-// The check() method can be used to create a LicenseKeyChecker,
-// which can be used to check properties of a license key in a
-// convenient fashion. I.e.
-//
-//   if (key.check().has_feature(1).has_not_feature(2)) {
-//     DO_SOMETHING();
-//   }
-//
+/**
+ * This immutable class represents a license key.
+ *
+ * The class is constructed using the static factory make().
+ *
+ * The check() method can be used to create a LicenseKeyChecker,
+ * which can be used to check properties of a license key in a
+ * convenient fashion. I.e.
+ *
+ *   if (key.check().has_feature(1).has_not_feature(2)) {
+ *     DO_SOMETHING();
+ *   }
+ */
 class LicenseKey {
 private:
   LicenseKey() { };

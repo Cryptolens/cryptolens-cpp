@@ -8,14 +8,16 @@
 
 namespace serialkeymanager_com {
 
-// This class represents a raw reply from the SKM Web API with
-// a license key.
-//
-// This file cannot be queried directly, instead a LicenseKey
-// object must be created using something like:
-//
-//   LicenseKey key = LicenseKey::make(raw.get_license())
-//
+/**
+ * This class represents a raw reply from the SKM Web API with
+ * a license key.
+ *
+ * This file cannot be queried directly, instead a LicenseKey
+ * object must be created using something like:
+ *
+ *   LicenseKey key = LicenseKey::make(raw.get_license())
+ *
+ */
 class RawLicenseKey {
   RawLicenseKey
     ( std::string base64_license
