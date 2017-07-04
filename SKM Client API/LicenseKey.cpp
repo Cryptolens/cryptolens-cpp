@@ -29,7 +29,7 @@ LicenseKey::make_unsafe(Error & e, std::string const& license_key)
   DynamicJsonBuffer jsonBuffer;
   JsonObject & j = jsonBuffer.parseObject(license_key);
 
-  if (!j.success()) { e.set(Error::LICENSEKEY_MAKE_JSON_PARSE_FAILED); return nullopt; }
+  if (!j.success()) { e.set(Subsystem::Json); return nullopt; }
 
   bool mandatory_missing =
       !( j["ProductId"].is<unsigned long>()
@@ -49,7 +49,7 @@ LicenseKey::make_unsafe(Error & e, std::string const& license_key)
       && j["F8"].is<bool>()
       );
   
-  if (mandatory_missing) { e.set(Error::LICENSEKEY_MAKE_MANDATORY_MISSING); return nullopt; }
+  if (mandatory_missing) { e.set(Subsystem::Json); return nullopt; }
 
   LicenseKey key;
 

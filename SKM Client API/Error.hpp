@@ -6,8 +6,10 @@ namespace Subsystem {
 
 int constexpr Ok = 0;
 int constexpr Main = 1;
-int constexpr RequestHandler = 2;
-int constexpr SignatureVerifier = 3;
+int constexpr Json = 2;
+int constexpr Base64 = 3;
+int constexpr RequestHandler = 4;
+int constexpr SignatureVerifier = 5;
 
 } // namespace Subsystem
 

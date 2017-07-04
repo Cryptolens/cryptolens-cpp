@@ -219,25 +219,26 @@ handle_activate
   DynamicJsonBuffer jsonBuffer;
   JsonObject & j = jsonBuffer.parseObject(response);
 
-  if (!j.success()) { e.set(Error::HANDLE_ACTIVATE_JSON_PARSE_FAILED); return nullopt; }
+  if (!j.success()) { e.set(Subsystem::Json); return nullopt; }
 
   if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
     if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
-      e.set(Error::HANDLE_ACTIVATE_FAIL_MESSAGE_MISSING);
+      e.set(Subsystem::Json);
       return nullopt;
     }
 
-    e.set(Error::HANDLE_ACTIVATE_FIXME);
+    // TODO: Add parsing of server response here
+    e.set(Subsystem::Json);
     return nullopt;
   }
 
   if (!j["licenseKey"].is<char const*>() || j["licenseKey"].as<char const*>() == NULL) {
-    e.set(Error::HANDLE_ACTIVATE_LICENSE_MISSING);
+    e.set(Subsystem::Json);
     return nullopt;
   }
 
   if (!j["signature"].is<char const*>() || j["signature"].as<char const*>() == NULL) {
-    e.set(Error::HANDLE_ACTIVATE_SIGNATURE_MISSING);
+    e.set(Subsystem::Json);
     return nullopt;
   }
 
