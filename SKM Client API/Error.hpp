@@ -2,6 +2,31 @@
 
 namespace serialkeymanager_com {
 
+namespace Subsystem {
+
+int constexpr Ok = 0;
+int constexpr Main = 1;
+int constexpr RequestHandler = 2;
+int constexpr SignatureVerifier = 3;
+
+} // namespace Subsystem
+
+namespace Call {
+
+int constexpr BASIC_SKM_ACTIVATE = 1;
+int constexpr BASIC_SKM_HANDLE_ACTIVATE = 2;
+int constexpr SIGNATURE_VERIFIER_SET_EXPONENT_BASE64 = 3;
+int constexpr SIGNATURE_VERIFIER_SET_MODULUS_BASE64 = 4;
+
+} // namespace Call
+
+// Errors for the Main subsystem
+namespace Main {
+
+int constexpr asdf = 0;
+
+} // namespace Main
+
 class Error {
 /*
  * Breaking changes:
@@ -15,27 +40,26 @@ private:
   // that function/method and finally possibility to carry forward errors
   // from other libraries.
   int    call_;
-  int    source_;
+  int    subsystem_;
   int    reason_;
   size_t extra_;
 public:
-  Error(): call_(0), source_(NO_ERROR), reason_(0), extra_(0) { }
+  Error(): call_(0), subsystem_(Subsystem::Ok), reason_(0), extra_(0) { }
   Error(Error const& e) = delete;
   Error & operator=(Error const& e) = delete;
 
-  static constexpr int NO_ERROR = 0;
+  explicit operator bool() const { return subsystem_ != Subsystem::Ok; }
 
-  explicit operator bool() const { return source_ != NO_ERROR; }
-
-  int get_source() const noexcept { return source_; }
+  int get_subsystem() const noexcept { return subsystem_; }
   int get_reason() const noexcept { return reason_; }
   size_t get_extra() const noexcept { return extra_; }
 
-  void reset() { source_ = NO_ERROR; reason_ = 0; extra_ = 0; }
+  void reset() { subsystem_ = Subsystem::Ok; reason_ = 0; extra_ = 0; }
 
-  void set(int source) { source_ = source; }
-  void set(int source, int reason) { source_ = source; reason_ = reason; }
-  void set(int source, int reason, size_t extra) { source_ = source; reason_ = reason; extra_ = extra; }
+  void set(int subsystem) { subsystem_ = subsystem; }
+  void set(int subsystem, int reason) { subsystem_ = subsystem; reason_ = reason; }
+  void set(int subsystem, int reason, size_t extra) { subsystem_ = subsystem; reason_ = reason; extra_ = extra; }
+  void set_call(int call) { call_ = call; }
 
   static int constexpr MAKE_REQUEST_CURL_NULL = 1;
   static int constexpr MAKE_REQUEST_SETOPT = 2;

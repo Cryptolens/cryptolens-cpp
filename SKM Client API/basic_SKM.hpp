@@ -20,8 +20,18 @@ namespace serialkeymanager_com {
 
 using namespace ArduinoJson;
 
-// Function for handling a response to an Activate request from
-// the SKM Web API
+namespace internal {
+
+template<typename SignatureVerifier>
+optional<RawLicenseKey>
+handle_activate
+  ( Error & e
+  , SignatureVerifier const& signature_verifier
+  , std::string const& response
+  );
+
+} // namespace internal
+
 template<typename SignatureVerifier>
 optional<RawLicenseKey>
 handle_activate
@@ -30,49 +40,9 @@ handle_activate
   , std::string const& response
   )
 {
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject & j = jsonBuffer.parseObject(response);
-
-  if (!j.success()) { e.set(Error::HANDLE_ACTIVATE_JSON_PARSE_FAILED); return nullopt; }
-
-  if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
-    if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
-      e.set(Error::HANDLE_ACTIVATE_FAIL_MESSAGE_MISSING);
-      return nullopt;
-    }
-
-    e.set(Error::HANDLE_ACTIVATE_FIXME);
-    return nullopt;
-  }
-
-  if (!j["licenseKey"].is<char const*>() || j["licenseKey"].as<char const*>() == NULL) {
-    e.set(Error::HANDLE_ACTIVATE_LICENSE_MISSING);
-    return nullopt;
-  }
-
-  if (!j["signature"].is<char const*>() || j["signature"].as<char const*>() == NULL) {
-    e.set(Error::HANDLE_ACTIVATE_SIGNATURE_MISSING);
-    return nullopt;
-  }
-
-  return RawLicenseKey::make
-           ( e
-           , signature_verifier
-           , j["licenseKey"].as<char const*>()
-           , j["signature"].as<char const*>()
-	   );
-
-/*
-  try {
-    return make_optional(
-	     handle_activate_exn( experimental_v1()
-		                , signature_verifier
-		                , response)
-	   );
-  } catch (ActivateError const& e) {
-    return nullopt;
-  }
-*/
+  auto x = internal::handle_activate(e, signature_verifier, response);
+  if (e) { e.set_call(Call::BASIC_SKM_HANDLE_ACTIVATE); }
+  return x;
 }
 
 template<typename SignatureVerifier>
@@ -91,6 +61,7 @@ handle_activate_exn
 
   throw ActivateError::from_server_response(NULL);
 }
+
 
 // This class makes it possible to interact with the SKM Web API. Among the
 // various methods available in the Web API the only ones currently supported
@@ -151,11 +122,44 @@ public:
 
   SignatureVerifier signature_verifier;
   RequestHandler request_handler;
+
+private:
+  optional<RawLicenseKey>
+  activate_
+    ( Error & e
+    , std::string token
+    , std::string product_id
+    , std::string key
+    , std::string machine_code
+    , int fields_to_return = 0
+    );
 };
 
 template<typename RequestHandler, typename SignatureVerifier>
 optional<RawLicenseKey>
 basic_SKM<RequestHandler, SignatureVerifier>::activate
+  ( Error & e
+  , std::string token
+  , std::string product_id
+  , std::string key
+  , std::string machine_code
+  , int fields_to_return
+  )
+{
+  auto x = this->activate_( e 
+                          , std::move(token)
+                          , std::move(product_id)
+                          , std::move(key)
+                          , std::move(machine_code)
+                          , fields_to_return
+                          );
+  if (e) { e.set_call(Call::BASIC_SKM_ACTIVATE); }
+  return x;
+}
+
+template<typename RequestHandler, typename SignatureVerifier>
+optional<RawLicenseKey>
+basic_SKM<RequestHandler, SignatureVerifier>::activate_
   ( Error & e
   , std::string token
   , std::string product_id
@@ -201,5 +205,62 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_exn
   if (!e) { return *raw_license_key; }
   throw ActivateError::from_server_response(NULL);
 }
+
+namespace internal {
+
+template<typename SignatureVerifier>
+optional<RawLicenseKey>
+handle_activate
+  ( Error & e
+  , SignatureVerifier const& signature_verifier
+  , std::string const& response
+  )
+{
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject & j = jsonBuffer.parseObject(response);
+
+  if (!j.success()) { e.set(Error::HANDLE_ACTIVATE_JSON_PARSE_FAILED); return nullopt; }
+
+  if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
+    if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
+      e.set(Error::HANDLE_ACTIVATE_FAIL_MESSAGE_MISSING);
+      return nullopt;
+    }
+
+    e.set(Error::HANDLE_ACTIVATE_FIXME);
+    return nullopt;
+  }
+
+  if (!j["licenseKey"].is<char const*>() || j["licenseKey"].as<char const*>() == NULL) {
+    e.set(Error::HANDLE_ACTIVATE_LICENSE_MISSING);
+    return nullopt;
+  }
+
+  if (!j["signature"].is<char const*>() || j["signature"].as<char const*>() == NULL) {
+    e.set(Error::HANDLE_ACTIVATE_SIGNATURE_MISSING);
+    return nullopt;
+  }
+
+  return RawLicenseKey::make
+           ( e
+           , signature_verifier
+           , j["licenseKey"].as<char const*>()
+           , j["signature"].as<char const*>()
+	   );
+
+/*
+  try {
+    return make_optional(
+	     handle_activate_exn( experimental_v1()
+		                , signature_verifier
+		                , response)
+	   );
+  } catch (ActivateError const& e) {
+    return nullopt;
+  }
+*/
+}
+
+} // namespace internal
 
 } // namespace serialkeymanager_com

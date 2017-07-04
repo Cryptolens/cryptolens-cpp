@@ -27,6 +27,9 @@ public:
 
 private:
   RSA * rsa;
+
+  void set_modulus_base64_(Error & e, std::string const& modulus_base64);
+  void set_exponent_base64_(Error & e, std::string const& exponent_base64);
 };
 
 } // namespace serialkeymanager_com

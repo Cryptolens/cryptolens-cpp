@@ -44,13 +44,13 @@ std::string
 RequestHandler_curl::build_url_(Error & e, char const* method, Map const& map)
 {
   if (e) { return ""; }
-  if (!this->curl) { e.set(Error::BUILD_URL_CURL_NULL); return ""; }
+  if (!this->curl) { e.set(Subsystem::RequestHandler); return ""; }
 
   char* res;
   std::string s{"https://serialkeymanager.com/api/key/"};
 
   res = curl_easy_escape(curl, method, 0);
-  if (!res) { e.set(Error::BUILD_URL_ESCAPE); return ""; }
+  if (!res) { e.set(Subsystem::RequestHandler); return ""; }
   s += res;
   curl_free(res);
 
@@ -64,14 +64,14 @@ RequestHandler_curl::build_url_(Error & e, char const* method, Map const& map)
     }
 
     res = curl_easy_escape(curl, x.first.c_str(), 0);
-    if (!res) { e.set(Error::BUILD_URL_ESCAPE); return ""; }
+    if (!res) { e.set(Subsystem::RequestHandler); return ""; }
     s += res;
     curl_free(res);
 
     s += '=';
 
     res = curl_easy_escape(curl, x.second.c_str(), 0);
-    if (!res) { e.set(Error::BUILD_URL_ESCAPE); return ""; }
+    if (!res) { e.set(Subsystem::RequestHandler); return ""; }
     s += res;
     curl_free(res);
   }
