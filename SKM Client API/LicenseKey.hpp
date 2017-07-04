@@ -56,98 +56,36 @@ private:
   optional<std::string>                 allowed_machines;
   optional<std::vector<DataObject>>     data_objects;
 public:
-  // Attempt to construct a LicenseKey from a RawLicenseKey
   static optional<LicenseKey> make(Error & e, RawLicenseKey const& raw_license_key);
-
-  // Attempt to construct a LicenseKey from an optional containing a RawLicenseKey
   static optional<LicenseKey> make(Error & e, optional<RawLicenseKey> const& raw_license_key);
-
-  // Attempt to construct a LicenseKey from a json string
-  //
-  // This is unsafe in the sense that by passing in the json string
-  // directly there is no check of the cryptographic signature. The
-  // signature verification is instead performed during construction of
-  // a RawLicenseKey object. A LicenseKey object can then be constructed
-  // from the RawLicenseKey using the static factory.
   static optional<LicenseKey> make_unsafe(Error & e, std::string const& license_key);
 
-  // Return a LicenseKeyChecker working on this LicenseKey object
   LicenseKeyChecker check() const;
 
-  // Returns the product Id of he license key
-  int                get_product_id() const;
-
-  // Returns the date and time the license key was created
+  int           get_product_id() const;
   std::uint64_t get_created() const;
-
-  // Returns the date and time the license key expires
   std::uint64_t get_expires() const;
-
-  // Returns the duration of current license cycle eg. 30 days
-  int                get_period() const;
-
-  // 
-  bool               get_block() const;
-
-  // Returns if trial activation is enabled
-  bool               get_trial_activation() const;
-
-  // Returns the date the license key was created by the Web API
+  int           get_period() const;
+  bool          get_block() const;
+  bool          get_trial_activation() const;
   std::uint64_t get_sign_date() const;
+  bool          get_f1() const;
+  bool          get_f2() const;
+  bool          get_f3() const;
+  bool          get_f4() const;
+  bool          get_f5() const;
+  bool          get_f6() const;
+  bool          get_f7() const;
+  bool          get_f8() const;
 
-  // Returns if the license key has feature 1
-  bool               get_f1() const;
-
-  // Returns if the license key has feature 2
-  bool               get_f2() const;
-
-  // Returns if the license key has feature 3
-  bool               get_f3() const;
-
-  // Returns if the license key has feature 4
-  bool               get_f4() const;
-
-  // Returns if the license key has feature 5
-  bool               get_f5() const;
-
-  // Returns if the license key has feature 6
-  bool               get_f6() const;
-
-  // Returns if the license key has feature 7
-  bool               get_f7() const;
-
-  // Returns if the license key has feature 8
-  bool               get_f8() const;
-
-
-  // Returns the Id of the license key
   optional<int>                         const& get_id() const;
-
-  // Return the license key string, eg. ABCDE-EFGHI-JKLMO-PQRST
   optional<std::string>                 const& get_key() const;
-
-  // Returns the notes field of the license key
   optional<std::string>                 const& get_notes() const;
-
-  // Returns a unique global identifier for the license key
   optional<int>                         const& get_global_id() const;
-
-  // Returns the customer object assigned to the license key
   optional<Customer>                    const& get_customer() const;
-
-  // Returns the list of activated machines
   optional<std::vector<ActivationData>> const& get_activated_machines() const;
-
-  // Returns the maximum number of machines/devices that may activate this
-  // license key.
   optional<int>                         const& get_maxnoofmachines() const;
-
-  // Returns the machine codes of those devices that will be prioritized
-  // during activation. Even if the limit is achieved, these will still be
-  // activated.
   optional<std::string>                 const& get_allowed_machines() const;
-
-  // Returns the data objects associated with the license key.
   optional<std::vector<DataObject>>     const& get_data_objects() const;
 };
 

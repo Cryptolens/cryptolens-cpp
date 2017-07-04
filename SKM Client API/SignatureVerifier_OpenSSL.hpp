@@ -8,7 +8,14 @@
 
 namespace serialkeymanager_com {
 
-// A signature verifier built around the OpenSSL library.
+/**
+ * A signature verifier used by the library for checking the cryptographic
+ * signatures return by the Serialkeymanager.com Web API. This signature
+ * verifier can be used with the OpenSSL or LibreSSL libraries.
+ *
+ * The signatures are used to make sure the replies from the
+ * Serialkeymanager.com Web API have not been modified.
+ */
 class SignatureVerifier_OpenSSL
 {
 public:

@@ -21,8 +21,12 @@ int constexpr PERFORM = 8;
 
 }
 
-// A request handler for making requests to the SKM Web API built
-// around the curl library.
+/**
+ * A request handler that is responsible for making the HTTPS requests
+ * to the Serialkeymanager.com Web API. This request handler is build
+ * around the Curl library, which is responsible for making the
+ * actual HTTPS request.
+ */
 class RequestHandler_curl
 {
 public:
@@ -44,6 +48,9 @@ private:
   build_url_(Error & e, char const* method, Map const& map);
 };
 
+/**
+ * This method is used internally in the library and need not be called by the user.
+ */
 template<typename Map>
 std::string
 RequestHandler_curl::make_request(Error & e, char const* method, Map const& map)
