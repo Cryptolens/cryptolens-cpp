@@ -8,6 +8,19 @@
 
 namespace serialkeymanager_com {
 
+namespace rhcerr {
+
+int constexpr CURL_NULL = 1;
+int constexpr ESCAPE = 2;
+int constexpr SETOPT_URL = 3;
+int constexpr SETOPT_WRITEFUNCTION = 4;
+int constexpr SETOPT_WRITEDATA = 5;
+int constexpr SETOPT_VERIFYPEER = 6;
+int constexpr SETOPT_VERIFYHOST = 7;
+int constexpr PERFORM = 8;
+
+}
+
 // A request handler for making requests to the SKM Web API built
 // around the curl library.
 class RequestHandler_curl
@@ -44,13 +57,13 @@ std::string
 RequestHandler_curl::build_url_(Error & e, char const* method, Map const& map)
 {
   if (e) { return ""; }
-  if (!this->curl) { e.set(Subsystem::RequestHandler); return ""; }
+  if (!this->curl) { e.set(Subsystem::RequestHandler, rhcerr::CURL_NULL); return ""; }
 
   char* res;
   std::string s{"https://serialkeymanager.com/api/key/"};
 
   res = curl_easy_escape(curl, method, 0);
-  if (!res) { e.set(Subsystem::RequestHandler); return ""; }
+  if (!res) { e.set(Subsystem::RequestHandler, rhcerr::ESCAPE); return ""; }
   s += res;
   curl_free(res);
 
@@ -64,14 +77,14 @@ RequestHandler_curl::build_url_(Error & e, char const* method, Map const& map)
     }
 
     res = curl_easy_escape(curl, x.first.c_str(), 0);
-    if (!res) { e.set(Subsystem::RequestHandler); return ""; }
+    if (!res) { e.set(Subsystem::RequestHandler, rhcerr::ESCAPE); return ""; }
     s += res;
     curl_free(res);
 
     s += '=';
 
     res = curl_easy_escape(curl, x.second.c_str(), 0);
-    if (!res) { e.set(Subsystem::RequestHandler); return ""; }
+    if (!res) { e.set(Subsystem::RequestHandler, rhcerr::ESCAPE); return ""; }
     s += res;
     curl_free(res);
   }
