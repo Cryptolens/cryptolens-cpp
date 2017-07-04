@@ -86,7 +86,7 @@ SignatureVerifier_OpenSSL::set_modulus_base64_(Error & e, std::string const& mod
   if (this->rsa == NULL) { e.set(Subsystem::SignatureVerifier, 1); return; }
 
   optional<std::string> modulus = b64_decode(modulus_base64);
-  if (!modulus) { e.set(Subsystem::SignatureVerifier, 1); return; }
+  if (!modulus) { e.set(Subsystem::Base64, 1); return; }
 
   // FIXME: non-void return type
   BN_bin2bn((unsigned char*)modulus->c_str(),  modulus->size(),  this->rsa->n);
@@ -99,7 +99,7 @@ SignatureVerifier_OpenSSL::set_exponent_base64_(Error & e, std::string const& ex
   if (this->rsa == NULL) { e.set(Subsystem::SignatureVerifier, 1); return; }
 
   optional<std::string> exponent = b64_decode(exponent_base64);
-  if (!exponent) { e.set(Subsystem::SignatureVerifier, 1); return; }
+  if (!exponent) { e.set(Subsystem::Base64, 1); return; }
 
   // FIXME: non-void return type
   BN_bin2bn((unsigned char*)exponent->c_str(), exponent->size(), this->rsa->e);
@@ -117,7 +117,7 @@ const
   if (this->rsa == NULL) { e.set(Subsystem::SignatureVerifier, 1); return false; }
 
   optional<std::string> sig = b64_decode(signature_base64);
-  if (!sig) { e.set(Subsystem::SignatureVerifier, 1); return false; }
+  if (!sig) { e.set(Subsystem::Base64, 1); return false; }
 
   verify(e, this->rsa, message, *sig);
   if (e) { return false; }
