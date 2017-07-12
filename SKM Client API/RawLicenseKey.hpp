@@ -15,7 +15,7 @@ namespace serialkeymanager_com {
  * This file cannot be queried directly, instead a LicenseKey
  * object must be created, e.g:
  *
- *   LicenseKey key = LicenseKey::make(raw_license_key)
+ *     LicenseKey key = LicenseKey::make(raw_license_key)
  *
  */
 class RawLicenseKey {

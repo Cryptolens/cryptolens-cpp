@@ -25,6 +25,8 @@ public:
   , int_value_(int_value)
   {
     // TODO: Check requirements on max length of name and string_value
+    //       (Not really neccessary when we are just parsing requests from
+    //        the server, though)
   }
 
   // Returns the Id of the data object

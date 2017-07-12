@@ -22,9 +22,9 @@ class LicenseKeyChecker;
  * which can be used to check properties of a license key in a
  * convenient fashion. I.e.
  *
- *   if (key.check().has_feature(1).has_not_feature(2)) {
- *     DO_SOMETHING();
- *   }
+ *     if (key.check().has_feature(1).has_not_feature(2)) {
+ *       DO_SOMETHING();
+ *     }
  */
 class LicenseKey {
 private:

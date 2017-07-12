@@ -26,6 +26,9 @@ int constexpr PERFORM = 8;
  * to the Serialkeymanager.com Web API. This request handler is build
  * around the Curl library, which is responsible for making the
  * actual HTTPS request.
+ *
+ * No particular initialization is needed in order to use this
+ * RequestHandler.
  */
 class RequestHandler_curl
 {
