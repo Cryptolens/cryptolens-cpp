@@ -70,7 +70,9 @@ handle_activate_exn
  *
  * This class uses two policy classes, SignatureVerifier and RequestHandler,
  * which are responsible for handling verification of signatures and making
- * requests to the Web API, respectivly.
+ * requests to the Web API, respectivly. Consult the documentation for the
+ * chosen policy classes since in some cases special initialization may be
+ * neccessary.
  */
 template<typename RequestHandler, typename SignatureVerifier>
 class basic_SKM

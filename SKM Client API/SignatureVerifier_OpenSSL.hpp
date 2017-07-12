@@ -15,7 +15,7 @@ namespace serialkeymanager_com {
  * verifier can be used with the OpenSSL or LibreSSL libraries.
  *
  * In order for this signature verifier to work the modulus and exponent
- * must be set using the set_modulus_base64() and set_exponent_modulus64()
+ * must be set using the set_modulus_base64() and set_exponent_base64()
  * methods.
  */
 class SignatureVerifier_OpenSSL

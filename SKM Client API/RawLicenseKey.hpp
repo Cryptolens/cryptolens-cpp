@@ -12,7 +12,7 @@ namespace serialkeymanager_com {
  * This class represents a raw reply from the SKM Web API with
  * a license key.
  *
- * This file cannot be queried directly, instead a LicenseKey
+ * This object cannot be queried directly, instead a LicenseKey
  * object must be created, e.g:
  *
  *     LicenseKey key = LicenseKey::make(raw_license_key)

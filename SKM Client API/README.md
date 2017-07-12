@@ -24,8 +24,8 @@ Basic usage:
 
     SKM skm_handle;
     skm::Error e;
-    skm_handle.signature_verifier.set_modulus_base64("ABCDEFGHI1234");
-    skm_handle.signature_verifier.set_exponent_base64("ABCD");
+    skm_handle.signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
+    skm_handle.signature_verifier.set_exponent_base64(e, "ABCD");
     optional<RawLicenseKey> raw_license_key = skm_handle.activate(e, "AAAA-BBBB-...", ...);
     optional<LicenseKey> license_key= skm::LicenseKey::make(e, raw_license_key);
     if (e) { handle_error(e); }
