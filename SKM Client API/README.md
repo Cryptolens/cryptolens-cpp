@@ -6,21 +6,23 @@ web API.
 
 The C++ API currently supports a subset of the methods available via the web API, more
 precisely, activation and deactivation of license keys are currently supported.
-The C++ library is currently under development, if you have any other needs, dont hesitate
+The C++ library is currently under development, if you have any other needs, don't hesitate
 to contact us.
 
 Example usage
 =============
 
 The library is built to be flexible in the way the communication with the serialkeymanager.com
-web API is performed. The examples below instantiate a handle class which is responsible
-for making the HTTPS requests. This handle is parameterized by several policy classes which
-can be used to customize how, among other things, communication is performed. In case this
-is too heavy weight it is also possible to sidestep this entierly and manually make the HTTPS
-request and simply provide the response as a string, this is illustrated in the section
-''Manual HTTPS requests''.
+web API is performed. The examples below instantiate a handle class of type SKM which deals
+with communation with the web API. This handle class is in fact parameterized by several policy
+classes to which, among other things, communication with the web API is delegated, see the section
+''Handle class'' for mor information.  In case this seem too heavy weight it is also possible to
+sidestep this entierly and manually make the HTTPS request and simply provide the response as a
+string, this is illustrated in the section ''Manual HTTPS requests''.
 
 Basic usage:
+
+    namespace skm = serialkeymanager_com;
 
     SKM skm_handle;
     skm::Error e;
@@ -54,7 +56,7 @@ Offline activation example:
     if (e) { handle_error(e); }
     file << raw_license_key->get_license() << "-" << raw_license_key->get_signature() << std::endl;
 
-and then when offline the activation can be verified via:
+and then when offline the license key can be verified via:
 
     skm::Error e;
     std::string s << file;
