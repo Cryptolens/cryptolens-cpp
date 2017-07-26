@@ -20,8 +20,6 @@ if (${SKM_USE_CURL})
   set (LIBS ${LIBS} curl ssl crypto)
 endif ()
 
-message (${LIBS})
-
 add_library (skm STATIC ${SRC})
 target_link_libraries(skm ${LIBS})
 target_include_directories (skm PUBLIC "${skm_SOURCE_DIR}/include")
