@@ -24,6 +24,7 @@ add_library (skm STATIC ${SRC})
 target_link_libraries(skm ${LIBS})
 target_include_directories (skm PUBLIC "${skm_SOURCE_DIR}/include")
 set_property(TARGET skm PROPERTY CXX_STANDARD 11)
+set_property(TARGET skm PROPERTY CXX_STANDARD_REQURED ON)
 
 if (${SKM_BUILD_TESTS})
   add_subdirectory (tests)
