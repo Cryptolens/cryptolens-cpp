@@ -4,7 +4,22 @@
 
 #include <curl/curl.h>
 
+#include "Error.hpp"
+
 namespace serialkeymanager_com {
+
+namespace rhcerr {
+
+int constexpr CURL_NULL = 1;
+int constexpr ESCAPE = 2;
+int constexpr SETOPT_URL = 3;
+int constexpr SETOPT_WRITEFUNCTION = 4;
+int constexpr SETOPT_WRITEDATA = 5;
+int constexpr SETOPT_VERIFYPEER = 6;
+int constexpr SETOPT_VERIFYHOST = 7;
+int constexpr PERFORM = 8;
+
+}
 
 // A request handler for making requests to the SKM Web API built
 // around the curl library.
@@ -16,35 +31,39 @@ public:
 
   template<typename Map>
   std::string
-  make_request(char const* method, Map const& map);
+  make_request(Error & e, char const* method, Map const& map);
 
 private:
   CURL *curl;
 
   std::string
-  make_request_(std::string const& url);
+  make_request_(Error & e, std::string const& url);
 
   template<typename Map>
   std::string
-  build_url_(char const* method, Map const& map);
+  build_url_(Error & e, char const* method, Map const& map);
 };
 
 template<typename Map>
 std::string
-RequestHandler_curl::make_request(char const* method, Map const& map)
+RequestHandler_curl::make_request(Error & e, char const* method, Map const& map)
 {
-  std::string url = build_url_(method, map);
-  return make_request_(url);
+  std::string url = build_url_(e, method, map);
+  return make_request_(e, url);
 }
 
 template<typename Map>
 std::string
-RequestHandler_curl::build_url_(char const* method, Map const& map)
+RequestHandler_curl::build_url_(Error & e, char const* method, Map const& map)
 {
+  if (e) { return ""; }
+  if (!this->curl) { e.set(Subsystem::RequestHandler, rhcerr::CURL_NULL); return ""; }
+
   char* res;
   std::string s{"https://serialkeymanager.com/api/key/"};
 
   res = curl_easy_escape(curl, method, 0);
+  if (!res) { e.set(Subsystem::RequestHandler, rhcerr::ESCAPE); return ""; }
   s += res;
   curl_free(res);
 
@@ -58,12 +77,14 @@ RequestHandler_curl::build_url_(char const* method, Map const& map)
     }
 
     res = curl_easy_escape(curl, x.first.c_str(), 0);
+    if (!res) { e.set(Subsystem::RequestHandler, rhcerr::ESCAPE); return ""; }
     s += res;
     curl_free(res);
 
     s += '=';
 
     res = curl_easy_escape(curl, x.second.c_str(), 0);
+    if (!res) { e.set(Subsystem::RequestHandler, rhcerr::ESCAPE); return ""; }
     s += res;
     curl_free(res);
   }

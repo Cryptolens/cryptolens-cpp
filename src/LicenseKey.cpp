@@ -8,26 +8,28 @@ namespace serialkeymanager_com {
 using namespace ArduinoJson;
 
 optional<LicenseKey>
-LicenseKey::make(RawLicenseKey const& raw_license_key)
+LicenseKey::make(Error & e, RawLicenseKey const& raw_license_key)
 {
-  return LicenseKey::make_unsafe(raw_license_key.get_license());
+  return LicenseKey::make_unsafe(e, raw_license_key.get_license());
 }
 
 optional<LicenseKey>
-LicenseKey::make(optional<RawLicenseKey> const& raw_license_key)
+LicenseKey::make(Error & e, optional<RawLicenseKey> const& raw_license_key)
 {
   if (!raw_license_key) { return nullopt; }
 
-  return LicenseKey::make(*raw_license_key);
+  return LicenseKey::make(e, *raw_license_key);
 }
 
 optional<LicenseKey>
-LicenseKey::make_unsafe(std::string const& license_key)
+LicenseKey::make_unsafe(Error & e, std::string const& license_key)
 {
+  if (e) { return nullopt; }
+
   DynamicJsonBuffer jsonBuffer;
   JsonObject & j = jsonBuffer.parseObject(license_key);
 
-  if (!j.success()) { return nullopt; }
+  if (!j.success()) { e.set(Subsystem::Json); return nullopt; }
 
   bool mandatory_missing =
       !( j["ProductId"].is<unsigned long>()
@@ -47,7 +49,7 @@ LicenseKey::make_unsafe(std::string const& license_key)
       && j["F8"].is<bool>()
       );
   
-  if (mandatory_missing) { return nullopt; }
+  if (mandatory_missing) { e.set(Subsystem::Json); return nullopt; }
 
   LicenseKey key;
 
