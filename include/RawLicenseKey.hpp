@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Error.hpp"
 #include "base64.hpp"
 #include "optional.hpp"
 
@@ -40,7 +41,8 @@ public:
   static
   optional<RawLicenseKey>
   make
-    ( SignatureVerifier const& verifier
+    ( Error & e
+    , SignatureVerifier const& verifier
     , std::string base64_license
     , std::string signature
     )
@@ -48,10 +50,11 @@ public:
     optional<std::string> decoded = b64_decode(base64_license);
 
     if (!decoded) {
+      e.set(Subsystem::Base64);
       return nullopt;
     }
 
-    if (verifier.verify_message(*decoded, signature)) {
+    if (verifier.verify_message(e, *decoded, signature)) {
       return make_optional(
         RawLicenseKey
           ( std::move(base64_license)

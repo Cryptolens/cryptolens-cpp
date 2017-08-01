@@ -56,7 +56,9 @@ private:
   optional<std::vector<DataObject>>     data_objects;
 public:
   // Attempt to construct a LicenseKey from a RawLicenseKey
-  static optional<LicenseKey> make(RawLicenseKey const& raw_license_key);
+  static optional<LicenseKey> make(Error & e, RawLicenseKey const& raw_license_key);
+  static optional<LicenseKey> make(Error & e, optional<RawLicenseKey> const& raw_license_key);
+  static optional<LicenseKey> make_unsafe(Error & e, std::string const& license_key);
 
   // Attempt to construct a LicenseKey from an optional containing a RawLicenseKey
   static optional<LicenseKey> make(optional<RawLicenseKey> const& raw_license_key);

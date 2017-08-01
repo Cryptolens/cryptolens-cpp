@@ -10,55 +10,64 @@
 
 namespace serialkeymanager_com {
 
-int
-verify(RSA * rsa, std::string const& message, std::string const& sig)
+namespace {
+
+constexpr int RSA_NULL = 1;
+constexpr int CTX_CREATE_FAILED = 2;
+constexpr int PKEY_NEW_FAILED = 3;
+constexpr int PKEY_SET1_RSA_FAILED = 4;
+constexpr int DIGEST_VERIFY_INIT_FAILED = 5;
+constexpr int DIGEST_VERIFY_UPDATE_FAILED = 6;
+constexpr int DIGEST_VERIFY_FINAL_FAILED = 7;
+
+}
+
+void
+verify(Error & e, RSA * rsa, std::string const& message, std::string const& sig)
 {
+  if (e) { return; }
+
   int r;
 
-  if (rsa == NULL) { return 0; }
+  if (rsa == NULL) { e.set(Subsystem::SignatureVerifier, RSA_NULL); return; }
 
   EVP_MD_CTX * ctx = EVP_MD_CTX_create();
-  if (ctx == NULL) { return 0; }
+  if (ctx == NULL) { e.set(Subsystem::SignatureVerifier, CTX_CREATE_FAILED); return; }
 
   EVP_PKEY * pkey = EVP_PKEY_new();
-  if (pkey == NULL) { return 0; }
+  if (pkey == NULL) { e.set(Subsystem::SignatureVerifier, PKEY_NEW_FAILED); return; }
 
   r = EVP_PKEY_set1_RSA(pkey, rsa);
-  if (r != 1) { return 0; }
+  if (r != 1) { e.set(Subsystem::SignatureVerifier, PKEY_SET1_RSA_FAILED); return; }
 
 
 
   r = EVP_DigestVerifyInit(ctx, NULL, EVP_sha256(), NULL, pkey);
-  if (r != 1) { return 0; }
+  if (r != 1) { e.set(Subsystem::SignatureVerifier, DIGEST_VERIFY_INIT_FAILED); return; }
 
   r = EVP_DigestVerifyUpdate(ctx, (unsigned char*)message.c_str(), message.size());
-  if (r != 1) { return 0; }
+  if (r != 1) { e.set(Subsystem::SignatureVerifier, DIGEST_VERIFY_UPDATE_FAILED); return; }
 
   r = EVP_DigestVerifyFinal(ctx, (unsigned char*)sig.c_str(), sig.size());
+  if (r != 1) { e.set(Subsystem::SignatureVerifier, DIGEST_VERIFY_FINAL_FAILED); return; }
 
   // Void return type
   EVP_PKEY_free(pkey);
 
   // Void return type
   EVP_MD_CTX_destroy(ctx);
-
-  return r;
 }
 
 SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL()
 {
-  // This should be redesigned. We dont want to throw exceptions
-  // from the constructor, so for now if initialization fails we
-  // just make sure the class never accepts a signature
-
   this->rsa = RSA_new();
-  //if (this->rsa == NULL) { }
+  if (this->rsa != NULL) {
+    this->rsa->n = BN_new();
+    if (this->rsa->n == NULL) { RSA_free(this->rsa); }
 
-  this->rsa->n = BN_new();
-  if (this->rsa->n == NULL) { RSA_free(this->rsa); }
-
-  this->rsa->e = BN_new();
-  if (this->rsa->e == NULL) { RSA_free(this->rsa); }
+    this->rsa->e = BN_new();
+    if (this->rsa->e == NULL) { RSA_free(this->rsa); }
+  }
 }
 
 SignatureVerifier_OpenSSL::~SignatureVerifier_OpenSSL()
@@ -69,51 +78,64 @@ SignatureVerifier_OpenSSL::~SignatureVerifier_OpenSSL()
 }
 
 void
-SignatureVerifier_OpenSSL::set_modulus_base64(std::string const& modulus_base64)
+SignatureVerifier_OpenSSL::set_modulus_base64(Error & e, std::string const& modulus_base64)
 {
-  if (this->rsa == NULL) { return; }
+  this->set_modulus_base64_(e, modulus_base64);
+  if (e) { e.set_call(Call::SIGNATURE_VERIFIER_SET_MODULUS_BASE64); }
+}
+
+
+void
+SignatureVerifier_OpenSSL::set_exponent_base64(Error & e, std::string const& exponent_base64)
+{
+  this->set_exponent_base64_(e, exponent_base64);
+  if (e) { e.set_call(Call::SIGNATURE_VERIFIER_SET_EXPONENT_BASE64); }
+}
+
+void
+SignatureVerifier_OpenSSL::set_modulus_base64_(Error & e, std::string const& modulus_base64)
+{
+  if (e) { return; }
+  if (this->rsa == NULL) { e.set(Subsystem::SignatureVerifier, RSA_NULL); return; }
 
   optional<std::string> modulus = b64_decode(modulus_base64);
+  if (!modulus) { e.set(Subsystem::Base64); return; }
 
-  if (!modulus) {
-    // TODO: This just silently failes
-    return;
-  }
-
+  // FIXME: non-void return type
   BN_bin2bn((unsigned char*)modulus->c_str(),  modulus->size(),  this->rsa->n);
 }
 
 void
-SignatureVerifier_OpenSSL::set_exponent_base64(std::string const& exponent_base64)
+SignatureVerifier_OpenSSL::set_exponent_base64_(Error & e, std::string const& exponent_base64)
 {
-  if (this->rsa == NULL) { return; }
+  if (e) { return; }
+  if (this->rsa == NULL) { e.set(Subsystem::SignatureVerifier, RSA_NULL); return; }
 
   optional<std::string> exponent = b64_decode(exponent_base64);
+  if (!exponent) { e.set(Subsystem::Base64); return; }
 
-  if (!exponent) {
-    // TODO: This just silently failes
-    return;
-  }
-
+  // FIXME: non-void return type
   BN_bin2bn((unsigned char*)exponent->c_str(), exponent->size(), this->rsa->e);
 }
 
 bool
 SignatureVerifier_OpenSSL::verify_message
-  ( std::string const& message
+  ( Error & e
+  , std::string const& message
   , std::string const& signature_base64
   )
 const
 {
-  if (this->rsa == NULL) { return false; }
+  if (e) { return false; }
+  if (this->rsa == NULL) { e.set(Subsystem::SignatureVerifier, RSA_NULL); return false; }
 
   optional<std::string> sig = b64_decode(signature_base64);
+  if (!sig) { e.set(Subsystem::Base64); return false; }
 
-  if (!sig || verify(this->rsa, message, *sig) != 1) {
-    return false;
-  } else {
-    return true;
-  }
+  verify(e, this->rsa, message, *sig);
+  if (e) { return false; }
+
+  return true;
 }
 
 } // namespace serialkeymanager_com
