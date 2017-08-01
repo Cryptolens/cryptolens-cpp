@@ -21,7 +21,7 @@ RequestHandler_curl::RequestHandler_curl()
 }
 
 std::string
-RequestHandler_curl::make_request(std::string const& url)
+RequestHandler_curl::make_request_(std::string const& url)
 {
   std::string response;
 
@@ -41,7 +41,9 @@ RequestHandler_curl::make_request(std::string const& url)
 
 RequestHandler_curl::~RequestHandler_curl()
 {
-  curl_easy_cleanup(this->curl);
+  if (this->curl) {
+    curl_easy_cleanup(this->curl);
+  }
 }
 
 } // namespace serialkeymanager_com
