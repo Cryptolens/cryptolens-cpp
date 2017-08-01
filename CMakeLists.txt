@@ -1,21 +1,19 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0.2)
 project (skm)
 
 set (SKM_BUILD_TESTS OFF CACHE BOOL "build tests?")
-set (SKM_USE_OPENSSL OFF CACHE BOOL "is OpenSSL or equivalent available?")
-set (SKM_USE_CURL    OFF CACHE BOOL "is libcurl available?")
 
 set (SRC  "src/ActivateError.cpp" "src/DataObject.cpp" "src/LicenseKey.cpp" "src/LicenseKeyChecker.cpp" "src/base64.cpp" "src/basic_SKM.cpp")
 set (LIBS "")
 
-if (${SKM_USE_OPENSSL})
-  find_package(OpenSSL)
+find_package(OpenSSL)
+if (${OpenSSL_FOUND})
   set (SRC  ${SRC} "src/SignatureVerifier_OpenSSL.cpp")
   set (LIBS ${LIBS} crypto)
 endif ()
 
-if (${SKM_USE_CURL})
-  find_package(CURL)
+find_package(CURL)
+if (${CURL_FOUND})
   set (SRC ${SRC} "src/RequestHandler_curl.cpp")
   set (LIBS ${LIBS} curl ssl crypto)
 endif ()
