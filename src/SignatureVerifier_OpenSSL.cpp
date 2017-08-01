@@ -77,6 +77,18 @@ SignatureVerifier_OpenSSL::~SignatureVerifier_OpenSSL()
   }
 }
 
+/**
+ * Sets the modulus of the public key used by the Serialkeymanager.com Web API for signing
+ * the responses.
+ *
+ * This value is unique for each account and can be found on serialkeymanager.com at the
+ * "Account Settings" found in the personal menu ("Hello, <account name>!" in the upper
+ * right corner). The public key is listed in XML format as something similar to
+ *
+ *     <RSAKeyValue><Modulus>AbC=</Modulus><Exponent>deFG</Exponent></RSAKeyValue>
+ *
+ * and in this case the string "AbC=" should be passed to this method.
+ */
 void
 SignatureVerifier_OpenSSL::set_modulus_base64(Error & e, std::string const& modulus_base64)
 {
@@ -84,7 +96,18 @@ SignatureVerifier_OpenSSL::set_modulus_base64(Error & e, std::string const& modu
   if (e) { e.set_call(Call::SIGNATURE_VERIFIER_SET_MODULUS_BASE64); }
 }
 
-
+/**
+ * Sets the exponent of the public key used by the Serialkeymanager.com Web API for signing
+ * the responses.
+ *
+ * This value is unique for each account and can be found on serialkeymanager.com at the
+ * "Account Settings" found in the personal menu ("Hello, <account name>!" in the upper
+ * right corner). The public key is listed in XML format as something similar to
+ *
+ *     <RSAKeyValue><Modulus>AbC=</Modulus><Exponent>deFG</Exponent></RSAKeyValue>
+ *
+ * and in this case the string "deFG" should be passed to this method.
+ */
 void
 SignatureVerifier_OpenSSL::set_exponent_base64(Error & e, std::string const& exponent_base64)
 {
@@ -118,6 +141,9 @@ SignatureVerifier_OpenSSL::set_exponent_base64_(Error & e, std::string const& ex
   BN_bin2bn((unsigned char*)exponent->c_str(), exponent->size(), this->rsa->e);
 }
 
+/**
+ * This function is used internally by the library and need not be called.
+ */
 bool
 SignatureVerifier_OpenSSL::verify_message
   ( Error & e

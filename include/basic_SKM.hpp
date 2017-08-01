@@ -32,8 +32,6 @@ handle_activate
 
 } // namespace internal
 
-// Function for handling a response to an Activate request from
-// the SKM Web API
 template<typename SignatureVerifier>
 optional<RawLicenseKey>
 handle_activate
@@ -64,31 +62,24 @@ handle_activate_exn
   throw ActivateError::from_server_response(NULL);
 }
 
-// This class makes it possible to interact with the SKM Web API. Among the
-// various methods available in the Web API the only ones currently supported
-// in the C++ API are Activate and Deactivate.
-//
-// This class uses two policy classes, SignatureVerifier and RequestHandler,
-// which are responsible for handling verification of signatures and making
-// requests to the Web API, respectivly.
+
+/**
+ * This class makes it possible to interact with the SKM Web API. Among the
+ * various methods available in the Web API the only ones currently supported
+ * in the C++ API are Activate and Deactivate.
+ *
+ * This class uses two policy classes, SignatureVerifier and RequestHandler,
+ * which are responsible for handling verification of signatures and making
+ * requests to the Web API, respectivly. Consult the documentation for the
+ * chosen policy classes since in some cases special initialization may be
+ * neccessary.
+ */
 template<typename RequestHandler, typename SignatureVerifier>
 class basic_SKM
 {
 public:
   basic_SKM() { }
 
-  // Make an Activate request to the SKM Web API
-  //
-  // Arguments:
-  //   token - acces token to use
-  //   product_id - the product id
-  //   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
-  //   machine_code - the machine code, i.e. a string that identifies a device
-  //                  for activation.
-  //
-  // Returns:
-  //   An optional with a RawLicenseKey representing if the request was
-  //   successful or not.
   optional<RawLicenseKey>
   activate
     ( Error & e
@@ -99,18 +90,6 @@ public:
     , int fields_to_return = 0
     );
 
-  // Make an Activate request to the SKM Web API
-  //
-  // Arguments:
-  //   token - acces token to use
-  //   product_id - the product id
-  //   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
-  //   machine_code - the machine code, i.e. a string that identifies a device
-  //                  for activation.
-  //
-  // Returns:
-  //   An optional with a RawLicenseKey, if the request is successful this always
-  //   contains a value. If the request is unsuecessful an ActivateError is thrown.
   RawLicenseKey
   activate_exn
     ( experimental_v1 experimental
@@ -136,6 +115,20 @@ private:
     );
 };
 
+/**
+ * Make an Activate request to the SKM Web API
+ *
+ * Arguments:
+ *   token - acces token to use
+ *   product_id - the product id
+ *   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
+ *   machine_code - the machine code, i.e. a string that identifies a device
+ *                  for activation.
+ *
+ * Returns:
+ *   An optional with a RawLicenseKey representing if the request was
+ *   successful or not.
+ */
 template<typename RequestHandler, typename SignatureVerifier>
 optional<RawLicenseKey>
 basic_SKM<RequestHandler, SignatureVerifier>::activate
@@ -187,6 +180,19 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_
   return handle_activate(e, this->signature_verifier, response);
 }
 
+/**
+ * Make an Activate request to the SKM Web API
+ *
+ * Arguments:
+ *   token - acces token to use
+ *   product_id - the product id
+ *   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
+ *   machine_code - the machine code, i.e. a string that identifies a device
+ *                  for activation.
+ *
+ * Returns:
+ *   A RawLicenseKey. If the request is unsuecessful an ActivateError is thrown.
+ */
 template<typename RequestHandler, typename SignatureVerifier>
 RawLicenseKey
 basic_SKM<RequestHandler, SignatureVerifier>::activate_exn
