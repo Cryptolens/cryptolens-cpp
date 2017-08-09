@@ -1,5 +1,6 @@
 #include "ArduinoJson.hpp"
 
+#include "api.hpp"
 #include "basic_SKM.hpp"
 #include "LicenseKey.hpp"
 
@@ -13,7 +14,7 @@ using namespace ArduinoJson;
  * Attempt to construct a LicenseKey from a RawLicenseKey
  */
 optional<LicenseKey>
-LicenseKey::make(Error & e, RawLicenseKey const& raw_license_key)
+LicenseKey::make(basic_Error & e, RawLicenseKey const& raw_license_key)
 {
   return LicenseKey::make_unsafe(e, raw_license_key.get_license());
 }
@@ -22,7 +23,7 @@ LicenseKey::make(Error & e, RawLicenseKey const& raw_license_key)
  * Attempt to construct a LicenseKey from an optional containing a RawLicenseKey
  */
 optional<LicenseKey>
-LicenseKey::make(Error & e, optional<RawLicenseKey> const& raw_license_key)
+LicenseKey::make(basic_Error & e, optional<RawLicenseKey> const& raw_license_key)
 {
   if (!raw_license_key) { return nullopt; }
 
@@ -39,14 +40,14 @@ LicenseKey::make(Error & e, optional<RawLicenseKey> const& raw_license_key)
  * from the RawLicenseKey using the static factory.
  */
 optional<LicenseKey>
-LicenseKey::make_unsafe(Error & e, std::string const& license_key)
+LicenseKey::make_unsafe(basic_Error & e, std::string const& license_key)
 {
   if (e) { return nullopt; }
 
   DynamicJsonBuffer jsonBuffer;
   JsonObject & j = jsonBuffer.parseObject(license_key);
 
-  if (!j.success()) { e.set(Subsystem::Json); return nullopt; }
+  if (!j.success()) { e.set(api::main(), errors::Subsystem::Json); return nullopt; }
 
   bool mandatory_missing =
       !( j["ProductId"].is<unsigned long>()
@@ -66,7 +67,7 @@ LicenseKey::make_unsafe(Error & e, std::string const& license_key)
       && j["F8"].is<bool>()
       );
 
-  if (mandatory_missing) { e.set(Subsystem::Json); return nullopt; }
+  if (mandatory_missing) { e.set(api::main(), errors::Subsystem::Json); return nullopt; }
 
   LicenseKey key;
 

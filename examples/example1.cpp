@@ -3,6 +3,7 @@
 #include <curl/curl.h>
 
 #include "basic_SKM.hpp"
+#include "Error.hpp"
 #include "RequestHandler_curl.hpp"
 #include "SignatureVerifier_OpenSSL.hpp"
 

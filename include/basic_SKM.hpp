@@ -10,7 +10,7 @@
 #include "ArduinoJson.hpp"
 
 #include "ActivateError.hpp"
-#include "Error.hpp"
+#include "basic_Error.hpp"
 #include "RawLicenseKey.hpp"
 #include "LicenseKey.hpp"
 #include "LicenseKeyChecker.hpp"
@@ -25,7 +25,7 @@ namespace internal {
 template<typename SignatureVerifier>
 optional<RawLicenseKey>
 handle_activate
-  ( Error & e
+  ( basic_Error & e
   , SignatureVerifier const& signature_verifier
   , std::string const& response
   );
@@ -35,13 +35,13 @@ handle_activate
 template<typename SignatureVerifier>
 optional<RawLicenseKey>
 handle_activate
-  ( Error & e
+  ( basic_Error & e
   , SignatureVerifier const& signature_verifier
   , std::string const& response
   )
 {
   auto x = internal::handle_activate(e, signature_verifier, response);
-  if (e) { e.set_call(Call::BASIC_SKM_HANDLE_ACTIVATE); }
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_HANDLE_ACTIVATE); }
   return x;
 }
 
@@ -53,7 +53,7 @@ handle_activate_exn
   , std::string const& response
   )
 {
-  Error e;
+  basic_Error e;
   optional<RawLicenseKey> raw_license_key =
     handle_activate(e, signature_verifier, response);
 
@@ -82,7 +82,7 @@ public:
 
   optional<RawLicenseKey>
   activate
-    ( Error & e
+    ( basic_Error & e
     , std::string token
     , std::string product_id
     , std::string key
@@ -106,7 +106,7 @@ public:
 private:
   optional<RawLicenseKey>
   activate_
-    ( Error & e
+    ( basic_Error & e
     , std::string token
     , std::string product_id
     , std::string key
@@ -132,7 +132,7 @@ private:
 template<typename RequestHandler, typename SignatureVerifier>
 optional<RawLicenseKey>
 basic_SKM<RequestHandler, SignatureVerifier>::activate
-  ( Error & e
+  ( basic_Error & e
   , std::string token
   , std::string product_id
   , std::string key
@@ -147,14 +147,14 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate
                           , std::move(machine_code)
                           , fields_to_return
                           );
-  if (e) { e.set_call(Call::BASIC_SKM_ACTIVATE); }
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE); }
   return x;
 }
 
 template<typename RequestHandler, typename SignatureVerifier>
 optional<RawLicenseKey>
 basic_SKM<RequestHandler, SignatureVerifier>::activate_
-  ( Error & e
+  ( basic_Error & e
   , std::string token
   , std::string product_id
   , std::string key
@@ -204,7 +204,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_exn
   , int fields_to_return
   )
 {
-  Error e;
+  basic_Error e;
   optional<RawLicenseKey> raw_license_key =
     activate( e, std::move(token), std::move(product_id), std::move(key)
             , std::move(machine_code), fields_to_return);
@@ -221,34 +221,38 @@ activate_parse_server_error_message(char const* server_response);
 template<typename SignatureVerifier>
 optional<RawLicenseKey>
 handle_activate
-  ( Error & e
+  ( basic_Error & e
   , SignatureVerifier const& signature_verifier
   , std::string const& response
   )
 {
+  using namespace errors;
+
   DynamicJsonBuffer jsonBuffer;
   JsonObject & j = jsonBuffer.parseObject(response);
 
-  if (!j.success()) { e.set(Subsystem::Json); return nullopt; }
+  api::main api;
+
+  if (!j.success()) { e.set(api, Subsystem::Json); return nullopt; }
 
   if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
     if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
-      e.set(Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
+      e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
       return nullopt;
     }
 
     int reason = activate_parse_server_error_message(j["message"].as<char const*>());
-    e.set(Subsystem::Main, reason);
+    e.set(api, Subsystem::Main, reason);
     return nullopt;
   }
 
   if (!j["licenseKey"].is<char const*>() || j["licenseKey"].as<char const*>() == NULL) {
-    e.set(Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
+    e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
     return nullopt;
   }
 
   if (!j["signature"].is<char const*>() || j["signature"].as<char const*>() == NULL) {
-    e.set(Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
+    e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
     return nullopt;
   }
 
@@ -258,18 +262,6 @@ handle_activate
            , j["licenseKey"].as<char const*>()
            , j["signature"].as<char const*>()
 	   );
-
-/*
-  try {
-    return make_optional(
-	     handle_activate_exn( experimental_v1()
-		                , signature_verifier
-		                , response)
-	   );
-  } catch (ActivateError const& e) {
-    return nullopt;
-  }
-*/
 }
 
 } // namespace internal

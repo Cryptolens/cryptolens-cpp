@@ -4,11 +4,13 @@
 
 #include <curl/curl.h>
 
-#include "Error.hpp"
+#include "basic_Error.hpp"
 
 namespace serialkeymanager_com {
 
-namespace rhcerr {
+namespace errors {
+
+namespace RequestHandler_curl {
 
 int constexpr CURL_NULL = 1;
 int constexpr ESCAPE = 2;
@@ -19,7 +21,9 @@ int constexpr SETOPT_VERIFYPEER = 6;
 int constexpr SETOPT_VERIFYHOST = 7;
 int constexpr PERFORM = 8;
 
-}
+} // namespace RequestHandler_curl
+
+} // namespace errors
 
 /**
  * A request handler that is responsible for making the HTTPS requests
@@ -38,17 +42,17 @@ public:
 
   template<typename Map>
   std::string
-  make_request(Error & e, char const* method, Map const& map);
+  make_request(basic_Error & e, char const* method, Map const& map);
 
 private:
   CURL *curl;
 
   std::string
-  make_request_(Error & e, std::string const& url);
+  make_request_(basic_Error & e, std::string const& url);
 
   template<typename Map>
   std::string
-  build_url_(Error & e, char const* method, Map const& map);
+  build_url_(basic_Error & e, char const* method, Map const& map);
 };
 
 /**
@@ -56,7 +60,7 @@ private:
  */
 template<typename Map>
 std::string
-RequestHandler_curl::make_request(Error & e, char const* method, Map const& map)
+RequestHandler_curl::make_request(basic_Error & e, char const* method, Map const& map)
 {
   std::string url = build_url_(e, method, map);
   return make_request_(e, url);
@@ -64,16 +68,19 @@ RequestHandler_curl::make_request(Error & e, char const* method, Map const& map)
 
 template<typename Map>
 std::string
-RequestHandler_curl::build_url_(Error & e, char const* method, Map const& map)
+RequestHandler_curl::build_url_(basic_Error & e, char const* method, Map const& map)
 {
+  using namespace errors::RequestHandler_curl;
+  api::main api;
+
   if (e) { return ""; }
-  if (!this->curl) { e.set(Subsystem::RequestHandler, rhcerr::CURL_NULL); return ""; }
+  if (!this->curl) { e.set(api, errors::Subsystem::RequestHandler, CURL_NULL); return ""; }
 
   char* res;
   std::string s{"https://serialkeymanager.com/api/key/"};
 
   res = curl_easy_escape(curl, method, 0);
-  if (!res) { e.set(Subsystem::RequestHandler, rhcerr::ESCAPE); return ""; }
+  if (!res) { e.set(api, errors::Subsystem::RequestHandler, ESCAPE); return ""; }
   s += res;
   curl_free(res);
 
@@ -87,14 +94,14 @@ RequestHandler_curl::build_url_(Error & e, char const* method, Map const& map)
     }
 
     res = curl_easy_escape(curl, x.first.c_str(), 0);
-    if (!res) { e.set(Subsystem::RequestHandler, rhcerr::ESCAPE); return ""; }
+    if (!res) { e.set(api, errors::Subsystem::RequestHandler, ESCAPE); return ""; }
     s += res;
     curl_free(res);
 
     s += '=';
 
     res = curl_easy_escape(curl, x.second.c_str(), 0);
-    if (!res) { e.set(Subsystem::RequestHandler, rhcerr::ESCAPE); return ""; }
+    if (!res) { e.set(api, errors::Subsystem::RequestHandler, ESCAPE); return ""; }
     s += res;
     curl_free(res);
   }

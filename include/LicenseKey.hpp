@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "basic_Error.hpp"
 #include "ActivationData.hpp"
 #include "Customer.hpp"
 #include "DataObject.hpp"
@@ -56,9 +57,9 @@ private:
   optional<std::string>                 allowed_machines;
   optional<std::vector<DataObject>>     data_objects;
 public:
-  static optional<LicenseKey> make(Error & e, RawLicenseKey const& raw_license_key);
-  static optional<LicenseKey> make(Error & e, optional<RawLicenseKey> const& raw_license_key);
-  static optional<LicenseKey> make_unsafe(Error & e, std::string const& license_key);
+  static optional<LicenseKey> make(basic_Error & e, RawLicenseKey const& raw_license_key);
+  static optional<LicenseKey> make(basic_Error & e, optional<RawLicenseKey> const& raw_license_key);
+  static optional<LicenseKey> make_unsafe(basic_Error & e, std::string const& license_key);
 
   LicenseKeyChecker check() const;
 

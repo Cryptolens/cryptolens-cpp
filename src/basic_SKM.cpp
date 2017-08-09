@@ -7,6 +7,8 @@ namespace internal {
 int
 activate_parse_server_error_message(char const* server_response)
 {
+  using namespace errors;
+
   if (server_response == NULL) { return Main::UNKNOWN_SERVER_REPLY; }
 
   if (0 == std::strcmp(server_response, "Unable to authenticate.")) {

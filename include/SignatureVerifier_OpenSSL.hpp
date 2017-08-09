@@ -4,7 +4,7 @@
 
 #include <openssl/rsa.h>
 
-#include "Error.hpp"
+#include "basic_Error.hpp"
 
 namespace serialkeymanager_com {
 
@@ -25,16 +25,16 @@ public:
 
   ~SignatureVerifier_OpenSSL();
 
-  void set_modulus_base64(Error & e, std::string const& modulus_base64);
-  void set_exponent_base64(Error & e, std::string const& exponent_base64);
+  void set_modulus_base64(basic_Error & e, std::string const& modulus_base64);
+  void set_exponent_base64(basic_Error & e, std::string const& exponent_base64);
 
-  bool verify_message(Error & e, std::string const& message, std::string const& signature_base64) const;
+  bool verify_message(basic_Error & e, std::string const& message, std::string const& signature_base64) const;
 
 private:
   RSA * rsa;
 
-  void set_modulus_base64_(Error & e, std::string const& modulus_base64);
-  void set_exponent_base64_(Error & e, std::string const& exponent_base64);
+  void set_modulus_base64_(basic_Error & e, std::string const& modulus_base64);
+  void set_exponent_base64_(basic_Error & e, std::string const& exponent_base64);
 };
 
 } // namespace serialkeymanager_com

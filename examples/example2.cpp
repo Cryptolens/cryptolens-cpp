@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "basic_SKM.hpp"
+#include "Error.hpp"
 #include "SignatureVerifier_OpenSSL.hpp"
 
 namespace skm = serialkeymanager_com;

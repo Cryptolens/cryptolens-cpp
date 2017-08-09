@@ -21,32 +21,34 @@ RequestHandler_curl::RequestHandler_curl()
 }
 
 std::string
-RequestHandler_curl::make_request_(Error & e, std::string const& url)
+RequestHandler_curl::make_request_(basic_Error & e, std::string const& url)
 {
-  using namespace rhcerr;
+  using namespace errors;
+  using namespace errors::RequestHandler_curl;
+  api::main api;
 
   if (e) { return ""; }
-  if (!this->curl) { e.set(Subsystem::RequestHandler, CURL_NULL); return ""; }
+  if (!this->curl) { e.set(api, Subsystem::RequestHandler, CURL_NULL); return ""; }
 
   std::string response;
   CURLcode cc;
 
   cc = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
-  if (cc != CURLE_OK) { e.set(Subsystem::RequestHandler, SETOPT_URL, cc); return ""; }
+  if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_URL, cc); return ""; }
   cc = curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, handle_response);
-  if (cc != CURLE_OK) { e.set(Subsystem::RequestHandler, SETOPT_WRITEFUNCTION, cc); return ""; }
+  if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_WRITEFUNCTION, cc); return ""; }
   cc = curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, (void *)&response);
-  if (cc != CURLE_OK) { e.set(Subsystem::RequestHandler, SETOPT_WRITEDATA, cc); return ""; }
+  if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_WRITEDATA, cc); return ""; }
 
   // FIXME: Temporary addition since we are doing cryptographic check
   //        in the library aswell.
   cc = curl_easy_setopt(this->curl, CURLOPT_SSL_VERIFYPEER, 0);
-  if (cc != CURLE_OK) { e.set(Subsystem::RequestHandler, SETOPT_VERIFYPEER, cc); return ""; }
+  if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_VERIFYPEER, cc); return ""; }
   cc = curl_easy_setopt(this->curl, CURLOPT_SSL_VERIFYHOST, 0);
-  if (cc != CURLE_OK) { e.set(Subsystem::RequestHandler, SETOPT_VERIFYHOST, cc); return ""; }
+  if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_VERIFYHOST, cc); return ""; }
 
   cc = curl_easy_perform(this->curl);
-  if (cc != CURLE_OK) { e.set(Subsystem::RequestHandler, PERFORM, cc); return ""; }
+  if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, PERFORM, cc); return ""; }
 
   return response;
 }
