@@ -40,6 +40,8 @@ handle_activate
   , std::string const& response
   )
 {
+  if (e) { return nullopt; }
+
   auto x = internal::handle_activate(e, signature_verifier, response);
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_HANDLE_ACTIVATE); }
   return x;
@@ -226,12 +228,13 @@ handle_activate
   , std::string const& response
   )
 {
+  if (e) { return nullopt; }
+
   using namespace errors;
+  api::main api;
 
   DynamicJsonBuffer jsonBuffer;
   JsonObject & j = jsonBuffer.parseObject(response);
-
-  api::main api;
 
   if (!j.success()) { e.set(api, Subsystem::Json); return nullopt; }
 

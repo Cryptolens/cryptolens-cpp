@@ -39,6 +39,18 @@ int main()
         "289jf2afs3"
       );
 
+  if (e) {
+    if (e.get_subsystem() == skm::errors::Subsystem::Main) {
+      // Handle errors from the SKM API
+    } else if (e.get_subsystem() == skm::errors::Subsystem::RequestHandler && e.get_reason() == skm::errors::RequestHandler_curl::PERFORM) {
+      int curlcode = e.get_extra();
+      std::cout << "Error connecting to the server: curlcode: " << curlcode << std::endl;
+    } else {
+      std::cout << "Unhandled error: " << e.get_subsystem() << " " << e.get_reason() << " " << e.get_extra() << std::endl;
+    }
+    return 1;
+  }
+
   // Check if request was successful and signature is valid
   if (!rawLicenseKey) {
     std::cout << "Failed to construct raw license key!" << std::endl;
