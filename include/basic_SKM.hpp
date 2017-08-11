@@ -142,6 +142,8 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate
   , int fields_to_return
   )
 {
+  if (e) { return nullopt; }
+
   auto x = this->activate_( e
                           , std::move(token)
                           , std::move(product_id)
@@ -164,6 +166,8 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_
   , int fields_to_return
   )
 {
+  if (e) { return nullopt; }
+
   std::unordered_map<std::string,std::string> args;
   args["token"] = token;
   args["ProductId"] = product_id;

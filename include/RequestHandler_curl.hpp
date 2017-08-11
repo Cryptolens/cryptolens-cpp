@@ -62,6 +62,8 @@ template<typename Map>
 std::string
 RequestHandler_curl::make_request(basic_Error & e, char const* method, Map const& map)
 {
+  if (e) { return ""; }
+
   std::string url = build_url_(e, method, map);
   return make_request_(e, url);
 }
@@ -70,10 +72,11 @@ template<typename Map>
 std::string
 RequestHandler_curl::build_url_(basic_Error & e, char const* method, Map const& map)
 {
+  if (e) { return ""; }
+
   using namespace errors::RequestHandler_curl;
   api::main api;
 
-  if (e) { return ""; }
   if (!this->curl) { e.set(api, errors::Subsystem::RequestHandler, CURL_NULL); return ""; }
 
   char* res;

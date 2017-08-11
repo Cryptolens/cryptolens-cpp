@@ -23,11 +23,12 @@ RequestHandler_curl::RequestHandler_curl()
 std::string
 RequestHandler_curl::make_request_(basic_Error & e, std::string const& url)
 {
+  if (e) { return ""; }
+
   using namespace errors;
   using namespace errors::RequestHandler_curl;
   api::main api;
 
-  if (e) { return ""; }
   if (!this->curl) { e.set(api, Subsystem::RequestHandler, CURL_NULL); return ""; }
 
   std::string response;

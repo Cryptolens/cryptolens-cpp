@@ -40,9 +40,11 @@ int main()
       );
 
   if (e) {
-    if (e.get_subsystem() == skm::errors::Subsystem::Main) {
+    using namespace skm::errors;
+
+    if (e.get_subsystem() == Subsystem::Main) {
       // Handle errors from the SKM API
-    } else if (e.get_subsystem() == skm::errors::Subsystem::RequestHandler && e.get_reason() == skm::errors::RequestHandler_curl::PERFORM) {
+    } else if (e.get_subsystem() == Subsystem::RequestHandler && e.get_reason() == RequestHandler_curl::PERFORM) {
       int curlcode = e.get_extra();
       std::cout << "Error connecting to the server: curlcode: " << curlcode << std::endl;
     } else {

@@ -50,6 +50,8 @@ public:
     , std::string signature
     )
   {
+    if (e) { return nullopt; }
+
     optional<std::string> decoded = b64_decode(base64_license);
 
     if (!decoded) {

@@ -16,6 +16,8 @@ using namespace ArduinoJson;
 optional<LicenseKey>
 LicenseKey::make(basic_Error & e, RawLicenseKey const& raw_license_key)
 {
+  if (e) { return nullopt; }
+
   return LicenseKey::make_unsafe(e, raw_license_key.get_license());
 }
 
@@ -25,6 +27,8 @@ LicenseKey::make(basic_Error & e, RawLicenseKey const& raw_license_key)
 optional<LicenseKey>
 LicenseKey::make(basic_Error & e, optional<RawLicenseKey> const& raw_license_key)
 {
+  if (e) { return nullopt; }
+
   if (!raw_license_key) { return nullopt; }
 
   return LicenseKey::make(e, *raw_license_key);
