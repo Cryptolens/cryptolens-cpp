@@ -391,25 +391,29 @@ if( $stdout ) {
     open(CRT,">$crt.~") or die "Couldn't open $crt.~: $!\n";
 }
 print CRT <<EOT;
-##
-## Bundle of CA Root Certificates
-##
-## Certificate data from Mozilla ${datesrc}: ${currentdate} GMT
-##
-## This is a bundle of X.509 certificates of public Certificate Authorities
-## (CA). These were automatically extracted from Mozilla's root certificates
-## file (certdata.txt).  This file can be found in the mozilla source tree:
-## ${url}
-##
-## It contains the certificates in ${format}PEM format and therefore
-## can be directly used with curl / libcurl / php_curl, or with
-## an Apache+mod_ssl webserver for SSL client authentication.
-## Just configure this file as the SSLCACertificateFile.
-##
-## Conversion done with mk-ca-bundle.pl version $version.
-## SHA256: $newhash
-##
+#include <string>
+#include <vector>
 
+/*
+ * Bundle of CA Root Certificates
+ *
+ * Certificate data from Mozilla ${datesrc}: ${currentdate} GMT
+ *
+ * This is a bundle of X.509 certificates of public Certificate Authorities
+ * (CA). These were automatically extracted from Mozilla's root certificates
+ * file (certdata.txt).  This file can be found in the mozilla source tree:
+ * ${url}
+ *
+ * This file is (mostly) automatically generated.
+ *
+ * Conversion done with mk-ca-bundle.pl version $version as available in at
+ * github.com/SerialKeyManager/SKM-Client-API-CPP
+ * SHA256: $newhash
+ */
+
+namespace serialkeymanager_com {
+
+std::vector<std::string> pems {
 EOT
 
 report "Processing  '$txt' ...";
@@ -483,10 +487,14 @@ while (<TXT>) {
     } else {
       my $encoded = MIME::Base64::encode_base64($data, '');
       $encoded =~ s/(.{1,${opt_w}})/$1\n/g;
-      my $pem = "-----BEGIN CERTIFICATE-----\n"
-              . $encoded
-              . "-----END CERTIFICATE-----\n";
-      print CRT "\n$caname\n";
+      my $skm_encoded = $encoded;
+      $skm_encoded =~ s/^/      "/g;
+      $skm_encoded =~ s/\n/\\n"\n      "/g;
+      my $pem = "      \"-----BEGIN CERTIFICATE-----\\n\"\n"
+              . $skm_encoded
+              . "-----END CERTIFICATE-----\\n\"\n";
+      print CRT "\n  , std::string {";
+      print CRT "\n      \"$caname\\n\"\n";
       print CRT @precert if($opt_m);
       my $maxStringLength = length(decode('UTF-8', $caname, Encode::FB_CROAK));
       if ($opt_t) {
@@ -496,9 +504,10 @@ while (<TXT>) {
            print CRT $string . "\n";
         }
       }
-      print CRT ("=" x $maxStringLength . "\n");
+      print CRT ("      \"" . "=" x $maxStringLength . "\\n\"\n");
       if (!$opt_t) {
         print CRT $pem;
+        print CRT "    }\n";
       } else {
         my $pipe = "";
         foreach my $hash (@included_signature_algorithms) {
