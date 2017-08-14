@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdlib.h>
+
 #include "api.hpp"
 
 namespace serialkeymanager_com {

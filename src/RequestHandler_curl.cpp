@@ -99,7 +99,7 @@ sslctx_function_setup_cacerts(CURL *curl, void *sslctx, void *parm)
      *       needed to authenticate serialkeymanager.com, and a failure
      *       adding most certificates is not a fatal error.
      */
-    BIO * bio = BIO_new_mem_buf(pem.c_str(), -1);
+    BIO * bio = BIO_new_mem_buf((void *)pem.c_str(), -1);
     X509 *cert = nullptr;
 
     PEM_read_bio_X509(bio, &cert, 0, NULL);
