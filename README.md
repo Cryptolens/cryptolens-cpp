@@ -1,10 +1,9 @@
 Serialkeymanager C++ Client API
 ===============================
 
-This repository contains the official C++ API for interacting with the Serialkeymanager.com
-web API.
+This repository contains the official C++ API for interacting with the Serial Key Manager Web API (serialkeymanager.com). There's also a [.NET version](https://github.com/SerialKeyManager/SKGL-Extension-for-dot-NET) available.
 
-The C++ API currently supports a subset of the methods available via the web API, more
+The C++ API currently supports a subset of the methods available via the Web API, more
 precisely, activation and deactivation of license keys are currently supported.
 The C++ library is currently under development, if you have any other needs, don't hesitate
 to contact us.
@@ -13,9 +12,9 @@ Example usage
 =============
 
 The library is built to be flexible in the way the communication with the serialkeymanager.com
-web API is performed. The examples below instantiate a handle class of type SKM which deals
-with communation with the web API. This handle class is in fact parameterized by several policy
-classes to which, among other things, communication with the web API is delegated, see the section
+Web API is performed. The examples below instantiate a handle class of type SKM which deals
+with communation with the Web API. This handle class is in fact parameterized by several policy
+classes to which, among other things, communication with the Web API is delegated, see the section
 ''Handle class'' for mor information.  In case this seem too heavy weight it is also possible to
 sidestep this entierly and manually make the HTTPS request and simply provide the response as a
 string, this is illustrated in the section ''Manual HTTPS requests''.
@@ -40,13 +39,13 @@ Basic usage:
     if (license_key->check()-has_feature(1)) { std::cout << "Hello, Mr President!" << std::endl; }
     else                                     { std::cout << "Welcome!" << std::endl; }
 
-As can be seen above two types are used to represent license keys, the RawLicenseKey and
-LicenseKey. All queries regarding properties of a license key need to be performed on the
-LicenseKey object. The purpuse of the RawLicenseKey class is to enable offline activation,
+As can be seen above, two types are used to represent license keys, the `RawLicenseKey` and
+`LicenseKey`. All queries regarding properties of a license key need to be performed on the
+`LicenseKey` object. The purpuse of the `RawLicenseKey` class is to enable offline activation,
 where a previous activation can be saved to disk and then later loaded to check the
 validity of a license key without needing to make any HTTP requests. This is enabled by the
-RawLicenseKey containing a cryptographic signature, which is checked during the construction
-of the RawLicenseKey.
+`RawLicenseKey` containing a cryptographic signature, which is checked during the construction
+of the `RawLicenseKey`.
 
 Offline activation example:
 
@@ -80,17 +79,17 @@ Consider the following code:
     f1(e);
     f2(e);
 
-If an error occurs during the call to f1(), f2() will not be performed. This allows writing
+If an error occurs during the call to `f1()`, `f2()` will not be performed. This allows writing
 several function calls after each other without having to check for errors after
 every single call.
 
 Handle class
 ============
 
-The SKM class above is really an alias for the basic_SKM class, which takes two type parameters
-represnting a class for dealing with HTTP requests and one for checking cryptographic signatures.
-Currently one version of each is provided, the RequestHandler_curl class for making HTTPS requests
-built on top of the Curl library and the SignatureVerifier_OpenSSL for checking cryptographic
+The SKM class above is really an alias for the `basic_SKM` class, which takes two type parameters
+representing a class for dealing with HTTP requests and one for checking cryptographic signatures.
+Currently, one version of each is provided, the `RequestHandler_curl` class for making HTTPS requests
+built on top of the Curl library and the `SignatureVerifier_OpenSSL` for checking cryptographic
 signatures built on top of the OpenSSL/LibreSSL libraries.
 
     using SKM = basic_SKM<RequestHandler_curl, SignatureVerifier_OpenSSL>;
@@ -98,9 +97,9 @@ signatures built on top of the OpenSSL/LibreSSL libraries.
 Manual HTTPS requests
 =====================
 
-In some cases it may be an unneccessary amount of work to implement a RequestHandler, in
+In some cases it may be an unneccessary amount of work to implement a `RequestHandler`, in
 particular it may depend on what part of the code is responsible for initating the call.
-For this reason we also provide a method that parses a string containing the response
+For this reason, we also provide a method that parses a string containing the response
 from the web API and returns the corresponding license key object:
 
     skm::Error e;
