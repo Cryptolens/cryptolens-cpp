@@ -1,4 +1,4 @@
-Serialkeymanager C++ Client API
+Serial Key Manager C++ Client API
 ===============================
 
 This repository contains the official C++ API for interacting with the Serial Key Manager Web API (serialkeymanager.com). There's also a [.NET version](https://github.com/SerialKeyManager/SKGL-Extension-for-dot-NET) available.
@@ -7,6 +7,8 @@ The C++ API currently supports a subset of the methods available via the Web API
 precisely, activation and deactivation of license keys are currently supported.
 The C++ library is currently under development, if you have any other needs, don't hesitate
 to contact us.
+
+You can find the documentation here: https://api.serialkeymanager.com/cpp/
 
 Example usage
 =============
