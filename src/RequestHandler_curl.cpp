@@ -127,7 +127,7 @@ RequestHandler_curl::RequestHandler_curl()
 }
 
 std::string
-RequestHandler_curl::make_request_(basic_Error & e, std::string const& url)
+RequestHandler_curl::make_request_(basic_Error & e, std::string const& url, std::string const& postfields)
 {
   if (e) { return ""; }
 
@@ -146,6 +146,8 @@ RequestHandler_curl::make_request_(basic_Error & e, std::string const& url)
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_WRITEFUNCTION, cc); return ""; }
   cc = curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, (void *)&response);
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_WRITEDATA, cc); return ""; }
+  cc = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, postfields.c_str());
+  if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_POSTFIELDS, cc); return ""; }
 
 #ifdef SKM_CURL_EMBED_CACERTS
   curl_easy_setopt(this->curl, CURLOPT_SSL_CTX_FUNCTION, *sslctx_function_setup_cacerts);

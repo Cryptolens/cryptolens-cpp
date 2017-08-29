@@ -20,6 +20,7 @@ int constexpr SETOPT_WRITEDATA = 5;
 int constexpr SETOPT_VERIFYPEER = 6;
 int constexpr SETOPT_VERIFYHOST = 7;
 int constexpr PERFORM = 8;
+int constexpr SETOPT_POSTFIELDS = 9;
 
 } // namespace RequestHandler_curl
 
@@ -48,11 +49,15 @@ private:
   CURL *curl;
 
   std::string
-  make_request_(basic_Error & e, std::string const& url);
+  make_request_(basic_Error & e, std::string const& url, std::string const& postfields);
 
   template<typename Map>
   std::string
   build_url_(basic_Error & e, char const* method, Map const& map);
+
+  template<typename Map>
+  std::string
+  build_postfields_(basic_Error & e, char const* method, Map const& map);
 };
 
 /**
@@ -65,7 +70,8 @@ RequestHandler_curl::make_request(basic_Error & e, char const* method, Map const
   if (e) { return ""; }
 
   std::string url = build_url_(e, method, map);
-  return make_request_(e, url);
+  std::string postfields = build_postfields_(e, method, map);
+  return make_request_(e, url, postfields);
 }
 
 template<typename Map>
@@ -87,14 +93,28 @@ RequestHandler_curl::build_url_(basic_Error & e, char const* method, Map const& 
   s += res;
   curl_free(res);
 
+  return s;
+}
+
+template<typename Map>
+std::string
+RequestHandler_curl::build_postfields_(basic_Error & e, char const* method, Map const& map)
+{
+  if (e) { return ""; }
+
+  using namespace errors::RequestHandler_curl;
+  api::main api;
+
+  if (!this->curl) { e.set(api, errors::Subsystem::RequestHandler, CURL_NULL); return ""; }
+
+  char* res;
+  std::string s{""};
+
   bool first = true;
-  char separator = '?';
+  char separator = '&';
   for (auto& x : map) {
-    s += separator;
-    if (first) {
-      first = false;
-      separator = '&';
-    }
+    if (first) { first = false; }
+    else       { s += separator; }
 
     res = curl_easy_escape(curl, x.first.c_str(), 0);
     if (!res) { e.set(api, errors::Subsystem::RequestHandler, ESCAPE); return ""; }

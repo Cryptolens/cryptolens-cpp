@@ -44,6 +44,7 @@ int main()
 
     if (e.get_subsystem() == Subsystem::Main) {
       // Handle errors from the SKM API
+      std::cout << "SKM error: " << e.get_reason() << std::endl;
     } else if (e.get_subsystem() == Subsystem::RequestHandler && e.get_reason() == RequestHandler_curl::PERFORM) {
       int curlcode = e.get_extra();
       std::cout << "Error connecting to the server: curlcode: " << curlcode << std::endl;
