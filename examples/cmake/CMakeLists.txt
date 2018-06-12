@@ -8,7 +8,7 @@ project (skm_examples)
 #
 #    add_subdirectory ("SKM-Client-API-CPP")
 
-add_subdirectory (".." "skm-lib")
+add_subdirectory ("../.." "skm-lib")
 
 add_executable(example1 example1.cpp)
 target_link_libraries(example1 skm)
