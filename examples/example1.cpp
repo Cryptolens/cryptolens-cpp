@@ -2,7 +2,7 @@
 
 #include <curl/curl.h>
 
-#include "cryptolens/basic_SKM.hpp"
+#include "cryptolens/core.hpp"
 #include "cryptolens/Error.hpp"
 #include "cryptolens/RequestHandler_curl.hpp"
 #include "cryptolens/SignatureVerifier_OpenSSL.hpp"

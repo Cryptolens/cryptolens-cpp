@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "cryptolens/basic_SKM.hpp"
+#include "cryptolens/core.hpp"
 #include "cryptolens/Error.hpp"
 #include "cryptolens/SignatureVerifier_OpenSSL.hpp"
 
