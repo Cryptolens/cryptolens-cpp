@@ -1,17 +1,17 @@
 #pragma once
 
-#include "LicenseKey.hpp"
+#include "LicenseKeyInformation.hpp"
 
 namespace serialkeymanager_com {
 
-class LicenseKey;
+class LicenseKeyInformation;
 
 class LicenseKeyChecker {
   bool status_;
-  LicenseKey const* key_;
+  LicenseKeyInformation const* key_;
 
 public:
-  LicenseKeyChecker(LicenseKey const* license_key);
+  LicenseKeyChecker(LicenseKeyInformation const* license_key);
 
   explicit operator bool() const;
 

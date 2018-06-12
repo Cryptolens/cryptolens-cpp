@@ -28,10 +28,12 @@ int constexpr SignatureVerifier = 5;
  */
 namespace Call {
 
-int constexpr BASIC_SKM_ACTIVATE = 1;
-int constexpr BASIC_SKM_HANDLE_ACTIVATE = 2;
+int constexpr BASIC_SKM_ACTIVATE_RAW = 1;
+int constexpr BASIC_SKM_HANDLE_ACTIVATE_RAW = 2;
 int constexpr SIGNATURE_VERIFIER_SET_EXPONENT_BASE64 = 3;
 int constexpr SIGNATURE_VERIFIER_SET_MODULUS_BASE64 = 4;
+int constexpr BASIC_SKM_HANDLE_ACTIVATE = 5;
+int constexpr BASIC_SKM_ACTIVATE = 5;
 
 } // namespace Call
 

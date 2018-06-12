@@ -7,7 +7,6 @@
 #include "ActivationData.hpp"
 #include "Customer.hpp"
 #include "DataObject.hpp"
-#include "LicenseKeyInformation.hpp"
 #include "RawLicenseKey.hpp"
 #include "optional.hpp"
 
@@ -28,18 +27,39 @@ class LicenseKeyChecker;
  *       DO_SOMETHING();
  *     }
  */
-class LicenseKey {
+class LicenseKeyInformation {
 private:
-  LicenseKeyInformation info_;
-  RawLicenseKey raw_;
+  LicenseKeyInformation() { };
+
+  int           product_id;
+  std::uint64_t created;
+  std::uint64_t expires;
+  int           period;
+  bool          block;
+  bool          trial_activation;
+  std::uint64_t sign_date;
+  bool          f1;
+  bool          f2;
+  bool          f3;
+  bool          f4;
+  bool          f5;
+  bool          f6;
+  bool          f7;
+  bool          f8;
+
+  optional<int>                         id;
+  optional<std::string>                 key;
+  optional<std::string>                 notes;
+  optional<int>                         global_id;
+  optional<Customer>                    customer;
+  optional<std::vector<ActivationData>> activated_machines;
+  optional<int>                         maxnoofmachines;
+  optional<std::string>                 allowed_machines;
+  optional<std::vector<DataObject>>     data_objects;
 public:
-  LicenseKey(LicenseKeyInformation && license_key_information, RawLicenseKey && raw_license_key);
-  // TODO: Add factory taking r-value references?
-  //       This would mostly be used internally in the library since in most cases
-  //       the handle class will be responsible for constructing the object.
-  //static optional<LicenseKey> make(basic_Error & e, RawLicenseKey const& raw_license_key);
-  //static optional<LicenseKey> make(basic_Error & e, optional<RawLicenseKey> const& raw_license_key);
-  //static optional<LicenseKey> make_unsafe(basic_Error & e, std::string const& license_key);
+  static optional<LicenseKeyInformation> make(basic_Error & e, RawLicenseKey const& raw_license_key);
+  static optional<LicenseKeyInformation> make(basic_Error & e, optional<RawLicenseKey> const& raw_license_key);
+  static optional<LicenseKeyInformation> make_unsafe(basic_Error & e, std::string const& license_key);
 
   LicenseKeyChecker check() const;
 

@@ -13,12 +13,11 @@
 #include "basic_Error.hpp"
 #include "RawLicenseKey.hpp"
 #include "LicenseKey.hpp"
+#include "LicenseKeyInformation.hpp"
 #include "LicenseKeyChecker.hpp"
 #include "api.hpp"
 
 namespace serialkeymanager_com {
-
-using namespace ArduinoJson;
 
 namespace internal {
 
@@ -34,7 +33,7 @@ handle_activate
 
 template<typename SignatureVerifier>
 optional<RawLicenseKey>
-handle_activate
+handle_activate_raw
   ( basic_Error & e
   , SignatureVerifier const& signature_verifier
   , std::string const& response
@@ -43,13 +42,13 @@ handle_activate
   if (e) { return nullopt; }
 
   auto x = internal::handle_activate(e, signature_verifier, response);
-  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_HANDLE_ACTIVATE); }
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_HANDLE_ACTIVATE_RAW); }
   return x;
 }
 
 template<typename SignatureVerifier>
 RawLicenseKey
-handle_activate_exn
+handle_activate_raw_exn
   ( experimental_v1 experimental
   , SignatureVerifier const& signature_verifier
   , std::string const& response
@@ -64,6 +63,22 @@ handle_activate_exn
   throw ActivateError::from_server_response(NULL);
 }
 
+template<typename SignatureVerifier>
+optional<LicenseKey>
+handle_activate
+  ( basic_Error & e
+  , SignatureVerifier const& signature_verifier
+  , std::string const& response
+  )
+{
+  if (e) { return nullopt; }
+
+  optional<RawLicenseKey> x = internal::handle_activate(e, signature_verifier, response);
+  optional<LicenseKeyInformation> y = LicenseKeyInformation::make(e, x);
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_HANDLE_ACTIVATE); }
+
+  return LicenseKey(std::move(*y), std::move(*x));
+}
 
 /**
  * This class makes it possible to interact with the SKM Web API. Among the
@@ -82,7 +97,7 @@ class basic_SKM
 public:
   basic_SKM() { }
 
-  optional<RawLicenseKey>
+  optional<LicenseKey>
   activate
     ( basic_Error & e
     , std::string token
@@ -92,8 +107,18 @@ public:
     , int fields_to_return = 0
     );
 
+  optional<RawLicenseKey>
+  activate_raw
+    ( basic_Error & e
+    , std::string token
+    , std::string product_id
+    , std::string key
+    , std::string machine_code
+    , int fields_to_return = 0
+    );
+
   RawLicenseKey
-  activate_exn
+  activate_raw_exn
     ( experimental_v1 experimental
     , std::string token
     , std::string product_id
@@ -132,8 +157,48 @@ private:
  *   successful or not.
  */
 template<typename RequestHandler, typename SignatureVerifier>
-optional<RawLicenseKey>
+optional<LicenseKey>
 basic_SKM<RequestHandler, SignatureVerifier>::activate
+  ( basic_Error & e
+  , std::string token
+  , std::string product_id
+  , std::string key
+  , std::string machine_code
+  , int fields_to_return
+  )
+{
+  if (e) { return nullopt; }
+
+  optional<RawLicenseKey> x = this->activate_
+      ( e
+      , std::move(token)
+      , std::move(product_id)
+      , std::move(key)
+      , std::move(machine_code)
+      , fields_to_return
+      );
+  optional<LicenseKeyInformation> y = LicenseKeyInformation::make(e, x);
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE); return nullopt; }
+  return LicenseKey(std::move(*y), std::move(*x));
+}
+
+/**
+ * Make an Activate request to the SKM Web API
+ *
+ * Arguments:
+ *   token - acces token to use
+ *   product_id - the product id
+ *   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
+ *   machine_code - the machine code, i.e. a string that identifies a device
+ *                  for activation.
+ *
+ * Returns:
+ *   An optional with a RawLicenseKey representing if the request was
+ *   successful or not.
+ */
+template<typename RequestHandler, typename SignatureVerifier>
+optional<RawLicenseKey>
+basic_SKM<RequestHandler, SignatureVerifier>::activate_raw
   ( basic_Error & e
   , std::string token
   , std::string product_id
@@ -151,7 +216,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate
                           , std::move(machine_code)
                           , fields_to_return
                           );
-  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE); }
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE_RAW); }
   return x;
 }
 
@@ -183,7 +248,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_
 
   std::string response = request_handler.make_request(e, "Activate", args);
 
-  return handle_activate(e, this->signature_verifier, response);
+  return handle_activate_raw(e, this->signature_verifier, response);
 }
 
 /**
@@ -201,7 +266,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_
  */
 template<typename RequestHandler, typename SignatureVerifier>
 RawLicenseKey
-basic_SKM<RequestHandler, SignatureVerifier>::activate_exn
+basic_SKM<RequestHandler, SignatureVerifier>::activate_raw_exn
   ( experimental_v1 experimental
   , std::string token
   , std::string product_id
@@ -212,7 +277,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_exn
 {
   basic_Error e;
   optional<RawLicenseKey> raw_license_key =
-    activate( e, std::move(token), std::move(product_id), std::move(key)
+    activate_raw( e, std::move(token), std::move(product_id), std::move(key)
             , std::move(machine_code), fields_to_return);
 
   if (!e) { return *raw_license_key; }
@@ -237,6 +302,7 @@ handle_activate
   using namespace errors;
   api::main api;
 
+  using namespace ArduinoJson;
   DynamicJsonBuffer jsonBuffer;
   JsonObject & j = jsonBuffer.parseObject(response);
 

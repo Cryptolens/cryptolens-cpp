@@ -13,7 +13,7 @@ namespace serialkeymanager_com {
  *
  *     LicenseKeyChecker(license_key)
  */
-LicenseKeyChecker::LicenseKeyChecker(LicenseKey const* license_key)
+LicenseKeyChecker::LicenseKeyChecker(LicenseKeyInformation const* license_key)
 : status_(true), key_(license_key)
 { }
 
@@ -125,7 +125,7 @@ LicenseKeyChecker::has_not_feature(int feature) {
 /**
  * Check that the underlying LicenseKey object has expired.
  *
- * time is given as a unix time stamp measured in seconds.
+ * Time is given as a unix time stamp measured in seconds.
  */
 LicenseKeyChecker&
 LicenseKeyChecker::has_expired(std::uint64_t now)
@@ -140,7 +140,7 @@ LicenseKeyChecker::has_expired(std::uint64_t now)
 /**
  * Check that the underlying LicenseKey object has not expired.
  *
- * time is given as a unix time stamp measured in seconds.
+ * Time is given as a unix time stamp measured in seconds.
  */
 LicenseKeyChecker&
 LicenseKeyChecker::has_not_expired(std::uint64_t now)

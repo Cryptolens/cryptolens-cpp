@@ -9,4 +9,5 @@
 #include "DataObject.hpp"
 #include "LicenseKeyChecker.hpp"
 #include "LicenseKey.hpp"
+#include "LicenseKeyInformation.hpp"
 #include "RawLicenseKey.hpp"
