@@ -20,6 +20,9 @@ constexpr int PKEY_SET1_RSA_FAILED = 4;
 constexpr int DIGEST_VERIFY_INIT_FAILED = 5;
 constexpr int DIGEST_VERIFY_UPDATE_FAILED = 6;
 constexpr int DIGEST_VERIFY_FINAL_FAILED = 7;
+constexpr int BN_BIN2BN_FAILED = 8;
+constexpr int BN_NEW_FAILED = 9;
+constexpr int RSA_SET0_KEY_FAILED = 10;
 
 }
 
@@ -65,6 +68,7 @@ verify(basic_Error & e, RSA * rsa, std::string const& message, std::string const
 SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL()
 {
   this->rsa = RSA_new();
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
   if (this->rsa != NULL) {
     this->rsa->n = BN_new();
     if (this->rsa->n == NULL) { RSA_free(this->rsa); }
@@ -72,6 +76,25 @@ SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL()
     this->rsa->e = BN_new();
     if (this->rsa->e == NULL) { RSA_free(this->rsa); }
   }
+#else
+  if (this->rsa != NULL) {
+    BIGNUM *n, *e;
+    n = BN_new();
+    e = BN_new();
+
+    if (n == NULL || e == NULL) {
+      RSA_free(this->rsa);
+      this->rsa = NULL;
+
+      if (n != NULL) { BN_free(n); }
+      if (e != NULL) { BN_free(e); }
+    } else {
+      int result = RSA_set0_key(this->rsa, n, e, NULL);
+      if (result != 1) { RSA_free(this->rsa); }
+    }
+  }
+
+#endif
 }
 
 SignatureVerifier_OpenSSL::~SignatureVerifier_OpenSSL()
@@ -128,8 +151,32 @@ SignatureVerifier_OpenSSL::set_modulus_base64_(basic_Error & e, std::string cons
   optional<std::string> modulus = b64_decode(modulus_base64);
   if (!modulus) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
-  // FIXME: non-void return type
-  BN_bin2bn((unsigned char*)modulus->c_str(),  modulus->size(),  this->rsa->n);
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+  BIGNUM * n = BN_bin2bn((unsigned char*)modulus->c_str(),  modulus->size(),  this->rsa->n);
+  if (n == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_BIN2BN_FAILED); return; }
+#else
+  BIGNUM const* exp_current;
+
+  // void return type
+  RSA_get0_key(this->rsa, NULL, &exp_current, NULL);
+
+  BIGNUM * n = BN_bin2bn((unsigned char*)modulus->c_str(),  modulus->size(), NULL);
+  if (n == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_BIN2BN_FAILED); return; }
+
+  BIGNUM * exp;
+  if (exp_current == NULL) {
+    // Requirements for RSA_set0_key() below is that the first time we call it, both n and e must
+    // be set. So in case e has not been set we allocate a dummy BIGNUM here and use that.
+    exp = BN_new();
+    if (exp == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_NEW_FAILED); return; }
+  } else {
+    // If e is already set it is owned by this->rsa, and it is not a valid argument to RSA_set0_key()
+    exp = NULL;
+  }
+
+  int result = RSA_set0_key(this->rsa, n, exp, NULL);
+  if (result != 1) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_SET0_KEY_FAILED); return; }
+#endif
 }
 
 void
@@ -141,8 +188,32 @@ SignatureVerifier_OpenSSL::set_exponent_base64_(basic_Error & e, std::string con
   optional<std::string> exponent = b64_decode(exponent_base64);
   if (!exponent) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
-  // FIXME: non-void return type
-  BN_bin2bn((unsigned char*)exponent->c_str(), exponent->size(), this->rsa->e);
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+  BIGNUM * exp = BN_bin2bn((unsigned char*)exponent->c_str(), exponent->size(), this->rsa->e);
+  if (exp == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_BIN2BN_FAILED); return; }
+#else
+  BIGNUM const* n_current;
+
+  // void return type
+  RSA_get0_key(this->rsa, &n_current, NULL, NULL);
+
+  BIGNUM * exp = BN_bin2bn((unsigned char*)exponent->c_str(),  exponent->size(), NULL);
+  if (exp == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_NEW_FAILED); return; }
+
+  BIGNUM * n;
+  if (n_current == NULL) {
+    // Requirements for RSA_set0_key() below is that the first time we call it, both n and e must
+    // be set. So in case n has not been set we allocate a dummy BIGNUM here and use that.
+    n = BN_new();
+    if (n == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_NEW_FAILED); return; }
+  } else {
+    // If n is already set it is owned by this->rsa, and it is not a valid argument to RSA_set0_key()
+    n = NULL;
+  }
+
+  int result = RSA_set0_key(this->rsa, n, exp, NULL);
+  if (result != 1) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_SET0_KEY_FAILED); return; }
+#endif
 }
 
 /**
