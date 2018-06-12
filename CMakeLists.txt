@@ -26,6 +26,7 @@ endif ()
 
 add_library (skm STATIC ${SRC})
 target_link_libraries(skm ${LIBS})
+target_include_directories (skm PRIVATE "${skm_SOURCE_DIR}/include/cryptolens")
 target_include_directories (skm PUBLIC "${skm_SOURCE_DIR}/include")
 set_property(TARGET skm PROPERTY CXX_STANDARD 17)
 set_property(TARGET skm PROPERTY CXX_STANDARD_REQURED ON)

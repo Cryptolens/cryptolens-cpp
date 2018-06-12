@@ -2,10 +2,10 @@
 
 #include <curl/curl.h>
 
-#include "basic_SKM.hpp"
-#include "Error.hpp"
-#include "RequestHandler_curl.hpp"
-#include "SignatureVerifier_OpenSSL.hpp"
+#include "cryptolens/basic_SKM.hpp"
+#include "cryptolens/Error.hpp"
+#include "cryptolens/RequestHandler_curl.hpp"
+#include "cryptolens/SignatureVerifier_OpenSSL.hpp"
 
 namespace skm = serialkeymanager_com;
 using SKM = skm::basic_SKM<skm::RequestHandler_curl,skm::SignatureVerifier_OpenSSL>;
