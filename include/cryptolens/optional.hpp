@@ -2,7 +2,9 @@
 
 #include <optional>
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 template<typename T>
 using optional = std::optional<T>;
@@ -10,4 +12,6 @@ using optional = std::optional<T>;
 using std::make_optional;
 using std::nullopt;
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+} // namespace cryptolens_io

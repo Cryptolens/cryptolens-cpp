@@ -7,7 +7,9 @@
 
 #include "RequestHandler_curl.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 size_t
 handle_response(char * ptr, size_t size, size_t nmemb, void *userdata)
@@ -167,4 +169,8 @@ RequestHandler_curl::~RequestHandler_curl()
   }
 }
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

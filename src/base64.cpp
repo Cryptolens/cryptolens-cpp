@@ -60,7 +60,9 @@
 
 #include "base64.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 static const char Base64[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -334,4 +336,8 @@ b64_decode(std::string const& b64)
   return make_optional(std::move(s));
 }
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

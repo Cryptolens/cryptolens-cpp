@@ -17,7 +17,9 @@
 #include "LicenseKeyChecker.hpp"
 #include "api.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 namespace internal {
 
@@ -339,4 +341,8 @@ handle_activate
 
 } // namespace internal
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

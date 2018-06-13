@@ -6,7 +6,9 @@
 
 #include "basic_Error.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 namespace errors {
 
@@ -132,4 +134,8 @@ RequestHandler_curl::build_postfields_(basic_Error & e, char const* method, Map 
   return s;
 }
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

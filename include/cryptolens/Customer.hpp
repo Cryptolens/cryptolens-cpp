@@ -1,6 +1,8 @@
 #pragma once
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 // This immutable class represents a customer
 class Customer {
@@ -43,4 +45,8 @@ public:
   std::uint64_t get_created() const { return created_; }
 };
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

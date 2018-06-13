@@ -4,7 +4,9 @@
 #include "basic_SKM.hpp"
 #include "LicenseKeyInformation.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 /**
  * Attempt to construct a LicenseKeyInformation from a RawLicenseKey
@@ -427,4 +429,8 @@ LicenseKeyInformation::get_data_objects() const
   return data_objects;
 }
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

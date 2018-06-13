@@ -4,7 +4,9 @@
 #include "LicenseKeyInformation.hpp"
 #include "RawLicenseKey.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 LicenseKey::LicenseKey(LicenseKeyInformation && license_key_information, RawLicenseKey && raw_license_key)
 : info_(license_key_information), raw_(raw_license_key)
@@ -268,4 +270,8 @@ LicenseKey::get_data_objects() const
   return info_.get_data_objects();
 }
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

@@ -1,6 +1,8 @@
 #pragma once
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 namespace api {
 
@@ -12,4 +14,8 @@ struct experimental_v1 { };
 
 using api::experimental_v1;
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

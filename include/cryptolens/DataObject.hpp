@@ -2,7 +2,9 @@
 
 #include <string>
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 // An immutable class representing an SKM Data Object
 class DataObject {
@@ -42,4 +44,8 @@ public:
   int                get_int_value() const;
 };
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

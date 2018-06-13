@@ -4,7 +4,9 @@
 
 #include "api.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 namespace errors {
 
@@ -101,4 +103,8 @@ public:
   virtual void set_call(api::main api, int call) { call_ = call; }
 };
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

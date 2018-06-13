@@ -10,7 +10,9 @@
 #include "RawLicenseKey.hpp"
 #include "optional.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 class LicenseKeyChecker;
 
@@ -90,4 +92,8 @@ public:
   optional<std::vector<DataObject>>     const& get_data_objects() const;
 };
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

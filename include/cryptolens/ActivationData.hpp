@@ -1,6 +1,8 @@
 #pragma once
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 // An immutable class representing an activated machine
 // for a given serial key
@@ -30,4 +32,8 @@ public:
   std::uint64_t get_time() const { return time_; }
 };
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

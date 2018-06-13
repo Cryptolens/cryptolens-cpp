@@ -6,7 +6,9 @@
 
 #include "basic_Error.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 /**
  * A signature verifier used by the library for checking the cryptographic
@@ -37,4 +39,8 @@ private:
   void set_exponent_base64_(basic_Error & e, std::string const& exponent_base64);
 };
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

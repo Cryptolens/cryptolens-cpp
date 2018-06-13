@@ -2,7 +2,9 @@
 
 #include <exception>
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 class ActivateError : public std::exception {
 private:
@@ -28,4 +30,8 @@ public:
   virtual const char * what() const noexcept;
 };
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

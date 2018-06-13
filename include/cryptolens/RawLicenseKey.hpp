@@ -6,7 +6,9 @@
 #include "base64.hpp"
 #include "optional.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 /**
  * This class represents a raw reply from the SKM Web API with
@@ -73,4 +75,8 @@ public:
   }
 };
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

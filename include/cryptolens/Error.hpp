@@ -2,7 +2,9 @@
 
 #include "basic_Error.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 class Error : public basic_Error {
 public:
@@ -16,4 +18,8 @@ public:
   size_t get_extra() const noexcept { return get_extra(api::main()); }
 };
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

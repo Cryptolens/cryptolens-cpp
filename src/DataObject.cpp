@@ -1,6 +1,8 @@
 #include "DataObject.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 int
 DataObject::get_id() const
@@ -26,4 +28,8 @@ DataObject::get_int_value() const
   return int_value_;
 }
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io

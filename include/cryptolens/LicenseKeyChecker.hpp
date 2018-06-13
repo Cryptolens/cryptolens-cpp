@@ -2,7 +2,9 @@
 
 #include "LicenseKeyInformation.hpp"
 
-namespace serialkeymanager_com {
+namespace cryptolens_io {
+
+namespace v20180502 {
 
 class LicenseKeyInformation;
 
@@ -24,4 +26,8 @@ public:
   LicenseKeyChecker& is_on_right_machine(std::string const& machine_code);
 };
 
-} // namespace serialkeymanager_com
+} // namespace v20180502
+
+using namespace ::cryptolens_io::v20180502;
+
+} // namespace cryptolens_io
