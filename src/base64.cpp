@@ -223,7 +223,7 @@ b64_pton(char const *src, unsigned char *target, size_t targsize)
 			if (target) {
 				if (tarindex >= targsize)
 					return (-1);
-				target[tarindex] = (pos - Base64) << 2;
+				target[tarindex] = (unsigned char)((pos - Base64) << 2);
 			}
 			state = 1;
 			break;
