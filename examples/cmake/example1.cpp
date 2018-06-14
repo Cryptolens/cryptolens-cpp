@@ -56,13 +56,16 @@ int main()
     return 1;
   }
 
-  std::cout << license_key->get_product_id() << std::endl;
+  std::cout << "License key for product with id: " << license_key->get_product_id() << std::endl;
 
   // Use LicenseKeyChecker to check properties of the license key
-  if (license_key->check().has_feature(1)) {
-    std::cout << "You Are Great And Super Customer!" << std::endl;
-    std::cout << "Welcome!" << std::endl;
+  if (license_key->check().has_expired(1234567)) {
+    std::cout << "Your subscription has expired." << std::endl;
+    return 1;
   }
+
+  if (license_key->check().has_feature(1)) { std::cout << "Welcome! Pro version enabled!" << std::endl; }
+  else                                     { std::cout << "Welcome!" << std::endl; }
 
   curl_global_cleanup();
 }

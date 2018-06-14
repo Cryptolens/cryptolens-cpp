@@ -51,7 +51,7 @@ int main()
 		return 1;
 	}
 
-	std::cout << "Valid license key for product with id: " << license_key->get_product_id() << std::endl;
+	std::cout << "License key for product with id: " << license_key->get_product_id() << std::endl;
 
 	// Use LicenseKeyChecker to check properties of the license key
 	if (license_key->check().has_expired(1234567)) {
