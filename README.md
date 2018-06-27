@@ -1,28 +1,40 @@
-Cryptolens C++ Client API
-=========================
+---
+title: Introduction to C++ Client API
+author: Martin Svedin
+description: A comprehensive article that describes how the C++ client can be used to access Cryptolens Web API.
+labelID: web_api
+---
 
-This repository contains the official C++ API for interacting with the Cryptolens Web API
-(cryptolens.io). There's also a [.NET version](https://github.com/SerialKeyManager/SKGL-Extension-for-dot-NET)
-available.
+# SKM Client API for C++
 
-The C++ API currently supports a subset of the methods available via the Web API, more
-precisely, activation and deactivation of license keys are currently supported.
-The C++ library is currently under development, if you have any other needs, don't hesitate
-to contact us.
+On this page, we have outlined several examples of how to get started with the [SKM Client API](/web-api/skm-client-api) for C++.
 
-The api referece is available at https://api.serialkeymanager.com/cpp/
+> **Note**, SKM Client API for C++ currently supports **activation** and **deactivation** methods. Support for more methods is coming soon.
+
+You can find the API documentation here: [https://api.serialkeymanager.com/cpp/](https://api.serialkeymanager.com/cpp/).
+
+If you are already familiar with the .NET version of the library, we have summarized key differences in an [announcement](https://cryptolens.io/2017/08/new-client-api-for-c/) on our blog.
 
 
-Example projects
-================
+## Table of contents
 
-This repository contains some example projects using the library in the examples/ directory.
+* [Example projects](#example-projects)
+  - [CMake](#cmake) (for Linux)
+  - [Visual Studio](#visual-studio) (for Windows)
+* [Library overview](#library-overview)
+* [Error handling](#error-handling)
+* [Offline activation](#offline-activation)
+* [HTTPS requests outside the library](#https-requests-outside-the-library)
+
+
+## Example projects
+
+[This repository](https://github.com/Cryptolens/SKM-Client-API-CPP) contains some example projects using the library in the examples/ directory.
 The cmake example project is set up to be compiled against OpenSSL and libcurl, while the
 VisualStudio project builds against the CryptoAPI and WinHTTP libraries available on Windows.
 The rest of this section contains instructions for how to build the example projects.
 
-CMake
------
+### CMake
 
 First we need to install libcurl and OpenSSL, including the header files, unless that has
 already been done.
@@ -46,8 +58,7 @@ $ make -j8
 $ ./example1
 ```
 
-Visual Studio
--------------
+### Visual Studio
 
 Getting started with the example project for Visual Studio requires two steps. First we
 build the library file the example project will statically link against, then we build
@@ -69,8 +80,7 @@ Now we can build the example project:
 > For setting up your own Visual Studio project to use the library, we have a step-by-step guide with pre-compiled binaries [here](https://help.cryptolens.io/web-api/cpp/windows).
 
 
-Library overview
-================
+## Library overview
 
 This section contains an overview of the standard way to implement the library in an
 application. The first step is to include the appropriate headers:
@@ -174,8 +184,7 @@ else                                     { std::cout << "Welcome!" << std::endl;
 ```
 
 
-Error handling
-==============
+## Error handling
 
 This section describes in more detail how the library reports when something went wrong.
 The library uses an exceptionless design and return values use optionals where they can be missing.
@@ -196,8 +205,7 @@ several function calls after each other without having to check for errors after
 every single call.
 
 
-Offline activation
-==================
+## Offline activation
 
 One way to support activation while offline is to initially make one activation request
 while connected to the internet and then saving this response. By then reading the saved
@@ -233,8 +241,7 @@ if (e) { handle_error(e); return 1; }
 ```
 
 
-HTTPS requests outside the library
-==================================
+## HTTPS requests outside the library
 
 In some cases it may be needlessly complex to have the Cryptolens library be responsible
 for initiating the HTTPS request to the Web API, instead it might be easier to have some
