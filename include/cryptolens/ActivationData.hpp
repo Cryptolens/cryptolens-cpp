@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace cryptolens_io {
 
 namespace v20180502 {
