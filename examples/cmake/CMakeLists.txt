@@ -19,3 +19,8 @@ add_executable(example2 example2.cpp)
 target_link_libraries(example2 skm)
 set_property(TARGET example2 PROPERTY CXX_STANDARD 17)
 set_property(TARGET example2 PROPERTY CXX_STANDARD_REQURED ON)
+
+add_executable(example3 example3.cpp)
+target_link_libraries(example3 skm)
+set_property(TARGET example3 PROPERTY CXX_STANDARD 17)
+set_property(TARGET example3 PROPERTY CXX_STANDARD_REQURED ON)

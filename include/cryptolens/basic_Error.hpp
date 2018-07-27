@@ -36,6 +36,7 @@ int constexpr SIGNATURE_VERIFIER_SET_EXPONENT_BASE64 = 3;
 int constexpr SIGNATURE_VERIFIER_SET_MODULUS_BASE64 = 4;
 int constexpr BASIC_SKM_HANDLE_ACTIVATE = 5;
 int constexpr BASIC_SKM_ACTIVATE = 5;
+int constexpr BASIC_SKM_ACTIVATE_FLOATING = 6;
 
 } // namespace Call
 

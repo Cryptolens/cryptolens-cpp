@@ -119,6 +119,17 @@ public:
     , int fields_to_return = 0
     );
 
+  optional<LicenseKey>
+  activate_floating
+    ( basic_Error & e
+    , std::string token
+    , std::string product_id
+    , std::string key
+    , std::string machine_code
+    , long floating_time_interval
+    , int fields_to_return = 0
+    );
+
   RawLicenseKey
   activate_raw_exn
     ( experimental_v1 experimental
@@ -140,6 +151,17 @@ private:
     , std::string product_id
     , std::string key
     , std::string machine_code
+    , int fields_to_return = 0
+    );
+
+  optional<RawLicenseKey>
+  activate_floating_
+    ( basic_Error & e
+    , std::string token
+    , std::string product_id
+    , std::string key
+    , std::string machine_code
+    , long floating_time_interval
     , int fields_to_return = 0
     );
 };
@@ -222,6 +244,58 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_raw
   return x;
 }
 
+/**
+ * Make a floating Activate request to the SKM Web API
+ *
+ * A standard and a floating activate request differs in how the
+ * number of machine codes for the license is computed. The standard request
+ * computes the number of machine codes in the entire history. The floating
+ * request instead just computes the machine codes that have been activated
+ * recently, where the length of the interval is given by the
+ * floating_time_interval.
+ *
+ * Arguments:
+ *   token - acces token to use
+ *   product_id - the product id
+ *   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
+ *   machine_code - the machine code, i.e. a string that identifies a device
+ *                  for activation.
+ *   floating_time_interval - we count machine codes that were created after
+ *                            current_time - floating_time_interval, where
+ *                            floating_time_interval is given in seconds.
+ *
+ * Returns:
+ *   An optional with a RawLicenseKey representing if the request was
+ *   successful or not.
+ */
+template<typename RequestHandler, typename SignatureVerifier>
+optional<LicenseKey>
+basic_SKM<RequestHandler, SignatureVerifier>::activate_floating
+  ( basic_Error & e
+  , std::string token
+  , std::string product_id
+  , std::string key
+  , std::string machine_code
+  , long floating_time_interval
+  , int fields_to_return
+  )
+{
+  if (e) { return nullopt; }
+
+  optional<RawLicenseKey> x = this->activate_floating_
+      ( e
+      , std::move(token)
+      , std::move(product_id)
+      , std::move(key)
+      , std::move(machine_code)
+      , floating_time_interval
+      , fields_to_return
+      );
+  optional<LicenseKeyInformation> y = LicenseKeyInformation::make(e, x);
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE_FLOATING); return nullopt; }
+  return LicenseKey(std::move(*y), std::move(*x));
+}
+
 template<typename RequestHandler, typename SignatureVerifier>
 optional<RawLicenseKey>
 basic_SKM<RequestHandler, SignatureVerifier>::activate_
@@ -247,6 +321,40 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_
   args["FieldsToReturn"] = stm.str();
   args["SignMethod"] = "1";
   args["v"] = "1";
+
+  std::string response = request_handler.make_request(e, "Activate", args);
+
+  return handle_activate_raw(e, this->signature_verifier, response);
+}
+
+template<typename RequestHandler, typename SignatureVerifier>
+optional<RawLicenseKey>
+basic_SKM<RequestHandler, SignatureVerifier>::activate_floating_
+  ( basic_Error & e
+  , std::string token
+  , std::string product_id
+  , std::string key
+  , std::string machine_code
+  , long floating_time_interval
+  , int fields_to_return
+  )
+{
+  if (e) { return nullopt; }
+
+  std::unordered_map<std::string,std::string> args;
+  args["token"] = token;
+  args["ProductId"] = product_id;
+  args["Key"] = key;
+  args["Sign"] = "true";
+  args["MachineCode"] = machine_code;
+  // Fix since to_string is not available everywhere
+  //args["FieldsToReturn"] = std::to_string(fields_to_return);
+  std::ostringstream stm; stm << fields_to_return;
+  args["FieldsToReturn"] = stm.str();
+  args["SignMethod"] = "1";
+  args["v"] = "1";
+  stm.str(""); stm.clear(); stm << floating_time_interval;
+  args["FloatingTimeInterval"] = stm.str();
 
   std::string response = request_handler.make_request(e, "Activate", args);
 
