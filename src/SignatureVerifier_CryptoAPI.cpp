@@ -74,6 +74,11 @@ void SignatureVerifier_CryptoAPI::init(basic_Error & e)
 
 SignatureVerifier_CryptoAPI::~SignatureVerifier_CryptoAPI()
 {
+  if (hPubKey_)
+  {
+    CryptDestroyKey(hPubKey_);
+  }
+
   if (hProv_) {
     CryptReleaseContext(hProv_, 0);
   }
