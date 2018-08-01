@@ -24,7 +24,12 @@ class SignatureVerifier_OpenSSL
 {
 public:
   SignatureVerifier_OpenSSL();
-
+#ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
+  SignatureVerifier_OpenSSL(SignatureVerifier_OpenSSL const&) = delete;
+  SignatureVerifier_OpenSSL(SignatureVerifier_OpenSSL &&) = delete;
+  void operator=(SignatureVerifier_OpenSSL const&) = delete;
+  void operator=(SignatureVerifier_OpenSSL &&) = delete;
+#endif
   ~SignatureVerifier_OpenSSL();
 
   void set_modulus_base64(basic_Error & e, std::string const& modulus_base64);

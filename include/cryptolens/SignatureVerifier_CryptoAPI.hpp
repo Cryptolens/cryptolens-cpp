@@ -25,6 +25,12 @@ class SignatureVerifier_CryptoAPI
 {
 public:
   SignatureVerifier_CryptoAPI();
+#ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
+  SignatureVerifier_CryptoAPI(SignatureVerifier_CryptoAPI const&) = delete;
+  SignatureVerifier_CryptoAPI(SignatureVerifier_CryptoAPI &&) = delete;
+  void operator=(SignatureVerifier_CryptoAPI const&) = delete;
+  void operator=(SignatureVerifier_CryptoAPI &&) = delete;
+#endif
   ~SignatureVerifier_CryptoAPI();
 
   void set_modulus_base64(basic_Error & e, std::string const& modulus_base64);

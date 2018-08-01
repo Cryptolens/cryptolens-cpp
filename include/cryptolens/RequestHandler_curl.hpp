@@ -41,6 +41,12 @@ class RequestHandler_curl
 {
 public:
   RequestHandler_curl();
+#ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
+  RequestHandler_curl(RequestHandler_curl const&) = delete;
+  RequestHandler_curl(RequestHandler_curl &&) = delete;
+  void operator=(RequestHandler_curl const&) = delete;
+  void operator=(RequestHandler_curl &&) = delete;
+#endif
   ~RequestHandler_curl();
 
   template<typename Map>

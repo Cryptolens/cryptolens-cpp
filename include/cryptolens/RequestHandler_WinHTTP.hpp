@@ -38,6 +38,12 @@ class RequestHandler_WinHTTP
 {
 public:
   RequestHandler_WinHTTP();
+#ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
+  RequestHandler_WinHTTP(RequestHandler_WinHTTP const&) = delete;
+  RequestHandler_WinHTTP(RequestHandler_WinHTTP &&) = delete;
+  void operator=(RequestHandler_WinHTTP const&) = delete;
+  void operator=(RequestHandler_WinHTTP &&) = delete;
+#endif
   ~RequestHandler_WinHTTP();
 
   template<typename Map>
