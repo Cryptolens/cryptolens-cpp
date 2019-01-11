@@ -36,6 +36,18 @@ LicenseKey::make(basic_Error & e, RawLicenseKey && raw_license_key)
 }
 #endif
 
+std::string
+LicenseKey::to_string() const {
+  std::string s;
+
+  s += "v20180502-";
+  s += raw_.get_base64_license();
+  s += '-';
+  s += raw_.get_signature();
+
+  return s;
+}
+
 /**
  * Return a LicenseKeyChecker working on this LicenseKey object
  */

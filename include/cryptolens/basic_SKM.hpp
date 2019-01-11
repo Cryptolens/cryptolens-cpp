@@ -140,6 +140,9 @@ public:
     , int fields_to_return = 0
     );
 
+  optional<LicenseKey>
+  make_license_key(basic_Error & e, std::string const& s);
+
   SignatureVerifier signature_verifier;
   RequestHandler request_handler;
 
@@ -393,6 +396,39 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_raw_exn
   if (!e) { return *raw_license_key; }
   throw ActivateError::from_server_response(NULL);
 }
+
+template<typename RequestHandler, typename SignatureVerifier>
+optional<LicenseKey>
+basic_SKM<RequestHandler, SignatureVerifier>::make_license_key(basic_Error & e, std::string const& s)
+{
+  if (e) { return nullopt; }
+
+  size_t k = s.find('-');
+  if (k == std::string::npos) { e.set(api::main(), errors::Subsystem::Main, errors::Main::UNKNOWN_SERVER_REPLY); return nullopt; }
+
+  std::string version = s.substr(0, k);
+  std::string rem = s.substr(k+1, std::string::npos);
+  // NOTE: s.substr(s.size(), _) returns empty string, thus the previous line does never throw
+
+  k = rem.find('-');
+  if (k == std::string::npos) { e.set(api::main(), errors::Subsystem::Main, errors::Main::UNKNOWN_SERVER_REPLY); return nullopt; }
+
+  std::string license = rem.substr(0, k);
+  std::string signature = rem.substr(k+1, std::string::npos); // k+1 is fine, see comment above
+
+  optional<RawLicenseKey> x =
+      RawLicenseKey::make
+           ( e
+           , signature_verifier
+           , license
+           , signature
+	   );
+
+  optional<LicenseKeyInformation> y = LicenseKeyInformation::make(e, x);
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_MAKE_LICENSE_KEY); return nullopt; }
+  return LicenseKey(std::move(*y), std::move(*x));
+}
+
 
 namespace internal {
 

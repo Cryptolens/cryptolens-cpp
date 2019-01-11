@@ -210,8 +210,8 @@ every single call.
 One way to support activation while offline is to initially make one activation request
 while connected to the internet and then saving this response. By then reading the saved
 response and performing the cryptographic checks it is not necessary to make another
-request to the Web API in the future. Thus we can proceed as above, but save the response
-to a file
+request to the Web API in the future. Thus we can proceed as during online activation
+but save the response as a string:
 
 ```cpp
 Cryptolens cryptolens_handle;
@@ -219,27 +219,38 @@ cryptolens_handle.signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
 cryptolens_handle.signature_verifier.set_exponent_base64(e, "ABCD");
 ...
 cryptolens::optional<cryptolens::LicenseKey> license_key =
-  cryptolens_handle.activate(...);
+  cryptolens_handle.activate(
+    ( // Object used for reporting if an error occured
+      e
+    , // SKM Access Token
+      "WyI0NjUiLCJBWTBGTlQwZm9WV0FyVnZzMEV1Mm9LOHJmRDZ1SjF0Vk52WTU0VzB2Il0="
+    , // Product id
+      "3646"
+    , // License Key
+      "MPDWY-PQAOW-FKSCH-SGAAU"
+    , // Machine Code
+      "289jf2afs3"
+    );
 if (e) { handle_error(e); return 1; }
-file << license_key->get_license() << "-" << license_key->get_signature() << std::endl;
+
+std::string s = license_key->to_string();
 ```
 
-and then when offline the license key can be verified via:
+The string *s* can now be saved to a file or similar, in an application dependent manner. In order
+to check the license later when offline, load the string *s* and recover the license key as follows:
 
 ```cpp
-std::string s << file;
-size_t k = s.find('-');
-
-if (k == string::npos) { return 1; }
-
-std::string license = s.substr(0, k);
-std::string signature = s.substr(k+1, string::npos);
 cryptolens::Error e;
+Cryptolens cryptolens_handle;
+cryptolens_handle.signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
+cryptolens_handle.signature_verifier.set_exponent_base64(e, "ABCD");
+
 cryptolens::optional<cryptolens::LicenseKey> license_key =
-  cryptolens::LicenseKey::make(e, license, signature);
+  cryptolens_handle.make_license_key(e, s);
 if (e) { handle_error(e); return 1; }
 ```
 
+A full working example can be found as *example4.cpp* in the examples directory.
 
 ## HTTPS requests outside the library
 

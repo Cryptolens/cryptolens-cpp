@@ -36,12 +36,15 @@ private:
   RawLicenseKey raw_;
 public:
   LicenseKey(LicenseKeyInformation && license_key_information, RawLicenseKey && raw_license_key);
+
   // TODO: Add factory taking r-value references?
   //       This would mostly be used internally in the library since in most cases
   //       the handle class will be responsible for constructing the object.
   //static optional<LicenseKey> make(basic_Error & e, RawLicenseKey const& raw_license_key);
   //static optional<LicenseKey> make(basic_Error & e, optional<RawLicenseKey> const& raw_license_key);
   //static optional<LicenseKey> make_unsafe(basic_Error & e, std::string const& license_key);
+
+  std::string to_string() const;
 
   LicenseKeyChecker check() const;
 
