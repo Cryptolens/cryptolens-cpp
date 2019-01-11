@@ -1,6 +1,6 @@
 # Cryptolens Client API for C++
 
-On this page, we have outlined several examples of how to get started with the [Cryptolens Client API](/web-api/skm-client-api) for C++.
+On this page, we have outlined several examples of how to get started with the Cryptolens Client API for C++.
 
 > **Note**, Cryptolens Client API for C++ currently supports **activation** and **deactivation** methods. Support for more methods is coming soon.
 
@@ -62,16 +62,13 @@ The following steps build the library:
  * Open the solution file *vsprojects/Cryptolens.sln* in Visual Studio.
  * Set platform and configuration as appropriate, e.g. *x64* and *Debug*
  * Build the project in Visual Studio
- * Now the folder *vsprojects/Output/$Platform/$Configuration/* contains the *Cryptolens.lib* file. With platform and configuration as above, the file is *vsprojects/Output/x64/Debug/Cryptolens.lib*
+ * Now the folder *vsprojects/Output/$Platform/$Configuration/* contains the *Cryptolens.lib* file. With platform set to "x64" and configuration set to "Debug", the file is *vsprojects/Output/x64/Debug/Cryptolens.lib*
 
 Now we can build the example project:
 
  * Open *examples/VisualStudio/VisualStudio.sln*
  * Set configuration and platform in the same way as when building the library
  * Build and run the project.
-
-> For setting up your own Visual Studio project to use the library, we have a step-by-step guide with pre-compiled binaries [here](https://help.cryptolens.io/web-api/cpp/windows).
-
 
 ## Library overview
 
