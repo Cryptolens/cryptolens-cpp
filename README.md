@@ -42,7 +42,7 @@ $ yum install libcurl-devel openssl-devel
 Next, clone the repository and build the examples
 
 ```
-$ git clone https://github.com/Cryptolens/cryptolens-cpp
+$ git clone https://github.com/Cryptolens/cryptolens-cpp.git
 $ cd cryptolens-cpp/examples/cmake
 $ mkdir build
 $ cd build
