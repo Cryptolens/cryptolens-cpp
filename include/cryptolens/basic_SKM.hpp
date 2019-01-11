@@ -83,7 +83,7 @@ handle_activate
 }
 
 /**
- * This class makes it possible to interact with the SKM Web API. Among the
+ * This class makes it possible to interact with the Cryptolens Web API. Among the
  * various methods available in the Web API the only ones currently supported
  * in the C++ API are Activate and Deactivate.
  *
@@ -170,7 +170,7 @@ private:
 };
 
 /**
- * Make an Activate request to the SKM Web API
+ * Make an Activate request to the Cryptolens Web API
  *
  * Arguments:
  *   token - acces token to use
@@ -210,7 +210,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate
 }
 
 /**
- * Make an Activate request to the SKM Web API
+ * Make an Activate request to the Cryptolens Web API
  *
  * Arguments:
  *   token - acces token to use
@@ -365,7 +365,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_floating_
 }
 
 /**
- * Make an Activate request to the SKM Web API
+ * Make an Activate request to the Cryptolens Web API
  *
  * Arguments:
  *   token - acces token to use

@@ -1,15 +1,8 @@
----
-title: Introduction to C++ Client API
-author: Martin Svedin
-description: A comprehensive article that describes how the C++ client can be used to access Cryptolens Web API.
-labelID: web_api
----
+# Cryptolens Client API for C++
 
-# SKM Client API for C++
+On this page, we have outlined several examples of how to get started with the [Cryptolens Client API](/web-api/skm-client-api) for C++.
 
-On this page, we have outlined several examples of how to get started with the [SKM Client API](/web-api/skm-client-api) for C++.
-
-> **Note**, SKM Client API for C++ currently supports **activation** and **deactivation** methods. Support for more methods is coming soon.
+> **Note**, Cryptolens Client API for C++ currently supports **activation** and **deactivation** methods. Support for more methods is coming soon.
 
 You can find the API documentation here: [https://api.serialkeymanager.com/cpp/](https://api.serialkeymanager.com/cpp/).
 
@@ -29,7 +22,7 @@ If you are already familiar with the .NET version of the library, we have summar
 
 ## Example projects
 
-[This repository](https://github.com/Cryptolens/SKM-Client-API-CPP) contains some example projects using the library in the examples/ directory.
+[This repository](https://github.com/Cryptolens/cryptolens-cpp) contains some example projects using the library in the examples/ directory.
 The cmake example project is set up to be compiled against OpenSSL and libcurl, while the
 VisualStudio project builds against the CryptoAPI and WinHTTP libraries available on Windows.
 The rest of this section contains instructions for how to build the example projects.
@@ -49,8 +42,8 @@ $ yum install libcurl-devel openssl-devel
 Next, clone the repository and build the examples
 
 ```
-$ git clone https://github.com/Cryptolens/SKM-Client-API-CPP.git
-$ cd SKM-Client-API-CPP/examples/cmake
+$ git clone https://github.com/Cryptolens/cryptolens-cpp
+$ cd cryptolens-cpp/examples/cmake
 $ mkdir build
 $ cd build
 $ cmake ..
@@ -92,14 +85,12 @@ application. The first step is to include the appropriate headers:
 #include <cryptolens/SignatureVerifier_YYY.hpp>
 ```
 
-We currently support the following RequestHandlers
+We currently support the following RequestHandlers and SignatureVerifiers
 
 | RequestHandler                | Description                                           |
 | ----------------------------- | ----------------------------------------------------- |
 | `RequestHandler_curl`         | Uses libcurl                                          |
 | `RequestHandler_WinHTTP`      | Uses the WinHTTP library available as part of Windows |
-
-and SignatureVerifiers
 
 | SignatureVerifier             | Description                                     |
 | ----------------------------- | ----------------------------------------------- |
@@ -135,7 +126,7 @@ cryptolens::optional<cryptolens::LicenseKey> license_key =
   cryptolens_handle.activate
     ( // Object used for reporting if an error occured
       e
-    , // SKM Access Token
+    , // Cryptolens Access Token
       "WyI0NjUiLCJBWTBGTlQwZm9WV0FyVnZzMEV1Mm9LOHJmRDZ1SjF0Vk52WTU0VzB2Il0="
     , // Product id
       "3646"
@@ -222,7 +213,7 @@ cryptolens::optional<cryptolens::LicenseKey> license_key =
   cryptolens_handle.activate(
     ( // Object used for reporting if an error occured
       e
-    , // SKM Access Token
+    , // Cryptolens Access Token
       "WyI0NjUiLCJBWTBGTlQwZm9WV0FyVnZzMEV1Mm9LOHJmRDZ1SjF0Vk52WTU0VzB2Il0="
     , // Product id
       "3646"

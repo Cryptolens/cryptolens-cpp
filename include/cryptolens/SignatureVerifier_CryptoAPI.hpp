@@ -13,7 +13,7 @@ namespace v20180502 {
 
 /**
  * A signature verifier used by the library for checking the cryptographic
- * signatures return by the Serialkeymanager.com Web API and thus makes sure
+ * signatures return by the Cryptolens Web API and thus makes sure
  * the responses from the web API has not been tampered with. This signature
  * verifier depends on the Microsoft CryptoAPI.
  *

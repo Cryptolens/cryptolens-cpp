@@ -1,9 +1,9 @@
 #include <curl/curl.h>
 
-#ifdef SKM_CURL_EMBED_CACERTS
+#ifdef CRYPTOLENS_CURL_EMBED_CACERTS
 #include <openssl/ssl.h>
 #include <vector>
-#endif /* SKM_CURL_EMBED_CACERTS */
+#endif /* CRYPTOLENS_CURL_EMBED_CACERTS */
 
 #include "RequestHandler_curl.hpp"
 
@@ -22,7 +22,7 @@ handle_response(char * ptr, size_t size, size_t nmemb, void *userdata)
   return size*nmemb;
 }
 
-#ifdef SKM_CURL_EMBED_CACERTS
+#ifdef CRYPTOLENS_CURL_EMBED_CACERTS
 
 namespace cacerts {
 
@@ -98,7 +98,7 @@ sslctx_function_setup_cacerts(CURL *curl, void *sslctx, void *parm)
      *       https://curl.haxx.se/docs/caextract.html
      *
      *       The vast majority of these certificates are in fact not
-     *       needed to authenticate serialkeymanager.com, and a failure
+     *       needed to authenticate cryptolens.io, and a failure
      *       adding most certificates is not a fatal error.
      */
     BIO * bio = BIO_new_mem_buf((void *)pem.c_str(), -1);
@@ -121,7 +121,7 @@ sslctx_function_setup_cacerts(CURL *curl, void *sslctx, void *parm)
   return CURLE_OK;
 }
 
-#endif /* SKM_CURL_EMBED_CACERTS */
+#endif /* CRYPTOLENS_CURL_EMBED_CACERTS */
 
 RequestHandler_curl::RequestHandler_curl()
 {
@@ -151,10 +151,10 @@ RequestHandler_curl::make_request_(basic_Error & e, std::string const& url, std:
   cc = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, postfields.c_str());
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_POSTFIELDS, cc); return ""; }
 
-#ifdef SKM_CURL_EMBED_CACERTS
+#ifdef CRYPTOLENS_CURL_EMBED_CACERTS
   curl_easy_setopt(this->curl, CURLOPT_SSL_CTX_FUNCTION, *sslctx_function_setup_cacerts);
   curl_easy_setopt(this->curl, CURLOPT_SSL_CTX_DATA, (void*)&e);
-#endif /* SKM_CURL_EMBED_CACERTS */
+#endif /* CRYPTOLENS_CURL_EMBED_CACERTS */
 
   cc = curl_easy_perform(this->curl);
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, PERFORM, cc); return ""; }

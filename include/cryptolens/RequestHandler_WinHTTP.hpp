@@ -27,7 +27,7 @@ int constexpr WINHTTP_POSTFIELDS_TOO_LARGE = 8;
 
 /**
  * A request handler that is responsible for making the HTTPS requests
- * to the Serialkeymanager.com Web API. This request handler is build
+ * to the Cryptolens Web API. This request handler is build
  * around the Curl library, which is responsible for making the
  * actual HTTPS request.
  *

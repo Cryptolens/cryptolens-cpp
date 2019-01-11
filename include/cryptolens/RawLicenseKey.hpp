@@ -11,7 +11,7 @@ namespace cryptolens_io {
 namespace v20180502 {
 
 /**
- * This class represents a raw reply from the SKM Web API with
+ * This class represents a raw reply from the Cryptolens Web API with
  * a license key.
  *
  * This object cannot be queried directly, instead a LicenseKey

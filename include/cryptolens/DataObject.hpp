@@ -6,7 +6,7 @@ namespace cryptolens_io {
 
 namespace v20180502 {
 
-// An immutable class representing an SKM Data Object
+// An immutable class representing an Cryptolens Data Object
 class DataObject {
 private:
   int id_;

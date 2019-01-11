@@ -107,10 +107,10 @@ SignatureVerifier_OpenSSL::~SignatureVerifier_OpenSSL()
 }
 
 /**
- * Sets the modulus of the public key used by the Serialkeymanager.com Web API for signing
+ * Sets the modulus of the public key used by the cryptolens.io Web API for signing
  * the responses.
  *
- * This value is unique for each account and can be found on serialkeymanager.com at the
+ * This value is unique for each account and can be found on cryptolens.io at the
  * "Account Settings" found in the personal menu ("Hello, <account name>!" in the upper
  * right corner). The public key is listed in XML format as something similar to
  *
@@ -126,10 +126,10 @@ SignatureVerifier_OpenSSL::set_modulus_base64(basic_Error & e, std::string const
 }
 
 /**
- * Sets the exponent of the public key used by the Serialkeymanager.com Web API for signing
+ * Sets the exponent of the public key used by the cryptolens.io Web API for signing
  * the responses.
  *
- * This value is unique for each account and can be found on serialkeymanager.com at the
+ * This value is unique for each account and can be found on cryptolens.io at the
  * "Account Settings" found in the personal menu ("Hello, <account name>!" in the upper
  * right corner). The public key is listed in XML format as something similar to
  *

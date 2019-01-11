@@ -30,7 +30,7 @@ int constexpr SETOPT_POSTFIELDS = 9;
 
 /**
  * A request handler that is responsible for making the HTTPS requests
- * to the Serialkeymanager.com Web API. This request handler is build
+ * to the Cryptolens Web API. This request handler is build
  * around the Curl library, which is responsible for making the
  * actual HTTPS request.
  *
@@ -94,7 +94,7 @@ RequestHandler_curl::build_url_(basic_Error & e, char const* method, Map const& 
   if (!this->curl) { e.set(api, errors::Subsystem::RequestHandler, CURL_NULL); return ""; }
 
   char* res;
-  std::string s{"https://serialkeymanager.com/api/key/"};
+  std::string s{"https://app.cryptolens.io/api/key/"};
 
   res = curl_easy_escape(curl, method, 0);
   if (!res) { e.set(api, errors::Subsystem::RequestHandler, ESCAPE); return ""; }

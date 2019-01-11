@@ -20,7 +20,7 @@ void activate(char const* machine_code)
   Cryptolens cryptolens_handle;
   cryptolens::Error e;
   // Setting up the signature verifier with credentials from "Security Settings"
-  // on serialkeymanager.com
+  // on cryptolens.io
   cryptolens_handle.signature_verifier.set_modulus_base64(e, "khbyu3/vAEBHi339fTuo2nUaQgSTBj0jvpt5xnLTTF35FLkGI+5Z3wiKfnvQiCLf+5s4r8JB/Uic/i6/iNjPMILlFeE0N6XZ+2pkgwRkfMOcx6eoewypTPUoPpzuAINJxJRpHym3V6ZJZ1UfYvzRcQBD/lBeAYrvhpCwukQMkGushKsOS6U+d+2C9ZNeP+U+uwuv/xu8YBCBAgGb8YdNojcGzM4SbCtwvJ0fuOfmCWZvUoiumfE4x7rAhp1pa9OEbUe0a5HL+1v7+JLBgkNZ7Z2biiHaM6za7GjHCXU8rojatEQER+MpgDuQV3ZPx8RKRdiJgPnz9ApBHFYDHLDzDw==");
   cryptolens_handle.signature_verifier.set_exponent_base64(e, "AQAB");
 
@@ -28,7 +28,7 @@ void activate(char const* machine_code)
     cryptolens_handle.activate_floating
       ( // Object used for reporting if an error occured
         e
-      , // SKM Access Token
+      , // Cryptolens Access Token
         "WyIxNDQzIiwiZXBCVGc1S2tOVmRielVibXAxaWdtdVNtOXlGTnR0ekhkN2lwRnVKQiJd"
       , // Product id
         "3934"
@@ -45,8 +45,8 @@ void activate(char const* machine_code)
     using namespace cryptolens::errors;
 
     if (e.get_subsystem() == Subsystem::Main) {
-      // Handle errors from the SKM API
-      std::cout << "SKM error: " << e.get_reason() << std::endl;
+      // Handle errors from the Cryptolens API
+      std::cout << "Cryptolens error: " << e.get_reason() << std::endl;
     } else if (e.get_subsystem() == Subsystem::RequestHandler && e.get_reason() == RequestHandler_curl::PERFORM) {
       int curlcode = e.get_extra();
       std::cout << "Error connecting to the server: curlcode: " << curlcode << std::endl;

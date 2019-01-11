@@ -35,7 +35,7 @@ RequestHandler_WinHTTP::make_request_(basic_Error & e, std::string const& postfi
 
   if (postfields.size() > 0xFFFFFFFF) { e.set(api, Subsystem::RequestHandler, err::WINHTTP_POSTFIELDS_TOO_LARGE, GetLastError()); goto cleanup; }
 
-  hSession = WinHttpOpen(L"Cryptolens SKM Client WinHTTP/CryptoAPI"
+  hSession = WinHttpOpen(L"Cryptolens Client WinHTTP/CryptoAPI"
                                   , WINHTTP_ACCESS_TYPE_DEFAULT_PROXY
                                   , WINHTTP_NO_PROXY_NAME
                                   , WINHTTP_NO_PROXY_BYPASS

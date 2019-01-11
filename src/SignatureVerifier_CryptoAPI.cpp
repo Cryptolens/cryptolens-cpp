@@ -85,10 +85,10 @@ SignatureVerifier_CryptoAPI::~SignatureVerifier_CryptoAPI()
 }
 
 /**
- * Sets the modulus of the public key used by the Serialkeymanager.com Web API for signing
+ * Sets the modulus of the public key used by the cryptolens.io Web API for signing
  * the responses.
  *
- * This value is unique for each account and can be found on serialkeymanager.com at the
+ * This value is unique for each account and can be found on cryptolens.io at the
  * "Account Settings" found in the personal menu ("Hello, <account name>!" in the upper
  * right corner). The public key is listed in XML format as something similar to
  *
