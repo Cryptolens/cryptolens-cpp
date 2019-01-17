@@ -43,12 +43,12 @@ Next, clone the repository and build the examples
 
 ```
 $ git clone https://github.com/Cryptolens/cryptolens-cpp.git
-$ cd cryptolens-cpp/examples/cmake
+$ cd cryptolens-cpp/examples/unix/cmake
 $ mkdir build
 $ cd build
 $ cmake ..
 $ make -j8
-$ ./example1
+$ ./example_activate
 ```
 
 ### Visual Studio
@@ -238,7 +238,7 @@ cryptolens::optional<cryptolens::LicenseKey> license_key =
 if (e) { handle_error(e); return 1; }
 ```
 
-A full working example can be found as *example4.cpp* in the examples directory.
+A full working version of the code above can be found as *example_offline.cpp* among the examples.
 
 ## HTTPS requests outside the library
 
