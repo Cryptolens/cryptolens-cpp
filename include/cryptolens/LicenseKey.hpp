@@ -46,6 +46,9 @@ public:
 
   std::string to_string() const;
 
+  LicenseKeyInformation & get_license_key_information() { return info_; }
+  LicenseKeyInformation const& get_license_key_information() const { return info_; }
+
   LicenseKeyChecker check() const;
 
   int           get_product_id() const;
