@@ -12,10 +12,13 @@ public:
   using basic_Error::get_subsystem;
   using basic_Error::get_reason;
   using basic_Error::get_extra;
+  using basic_Error::reset;
 
   int get_subsystem() const noexcept { return get_subsystem(api::main()); }
   int get_reason() const noexcept { return get_reason(api::main()); }
   size_t get_extra() const noexcept { return get_extra(api::main()); }
+
+  void reset() { reset(api::main()); }
 };
 
 } // namespace v20180502
