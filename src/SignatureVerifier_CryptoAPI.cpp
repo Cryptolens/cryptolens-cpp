@@ -67,7 +67,7 @@ void SignatureVerifier_CryptoAPI::init(basic_Error & e)
 {
   if (!CryptAcquireContext(&this->hProv_, NULL, MS_ENH_RSA_AES_PROV, PROV_RSA_AES, CRYPT_VERIFYCONTEXT)) {
     DWORD code = GetLastError();
-    e.set(api::main(), 5, CRYPT_ACQUIRE_CONTEXT_FAILED, code);
+    e.set(api::main(), errors::Subsystem::SignatureVerifier, CRYPT_ACQUIRE_CONTEXT_FAILED, code);
     return;
   }
 }
