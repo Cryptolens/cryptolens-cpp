@@ -403,30 +403,39 @@ basic_SKM<RequestHandler, SignatureVerifier>::make_license_key(basic_Error & e, 
 {
   if (e) { return nullopt; }
 
-  size_t k = s.find('-');
-  if (k == std::string::npos) { e.set(api::main(), errors::Subsystem::Main, errors::Main::UNKNOWN_SERVER_REPLY); return nullopt; }
+  optional<RawLicenseKey> raw_license_key;
 
-  std::string version = s.substr(0, k);
-  std::string rem = s.substr(k+1, std::string::npos);
-  // NOTE: s.substr(s.size(), _) returns empty string, thus the previous line does never throw
+  raw_license_key =
+    ::cryptolens_io::v20180502::internal::handle_activate(e, this->signature_verifier, s);
 
-  k = rem.find('-');
-  if (k == std::string::npos) { e.set(api::main(), errors::Subsystem::Main, errors::Main::UNKNOWN_SERVER_REPLY); return nullopt; }
+  if (e) {
+    e.reset(api::main());
 
-  std::string license = rem.substr(0, k);
-  std::string signature = rem.substr(k+1, std::string::npos); // k+1 is fine, see comment above
+    size_t k = s.find('-');
+    if (k == std::string::npos) { e.set(api::main(), errors::Subsystem::Main, errors::Main::UNKNOWN_SERVER_REPLY); return nullopt; }
 
-  optional<RawLicenseKey> x =
-      RawLicenseKey::make
-           ( e
-           , signature_verifier
-           , license
-           , signature
-	   );
+    std::string version = s.substr(0, k);
+    std::string rem = s.substr(k+1, std::string::npos);
+    // NOTE: s.substr(s.size(), _) returns empty string, thus the previous line does never throw
 
-  optional<LicenseKeyInformation> y = LicenseKeyInformation::make(e, x);
+    k = rem.find('-');
+    if (k == std::string::npos) { e.set(api::main(), errors::Subsystem::Main, errors::Main::UNKNOWN_SERVER_REPLY); return nullopt; }
+
+    std::string license = rem.substr(0, k);
+    std::string signature = rem.substr(k+1, std::string::npos); // k+1 is fine, see comment above
+
+    raw_license_key =
+        RawLicenseKey::make
+             ( e
+             , signature_verifier
+             , license
+             , signature
+             );
+  }
+
+  optional<LicenseKeyInformation> license_key_information = LicenseKeyInformation::make(e, raw_license_key);
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_MAKE_LICENSE_KEY); return nullopt; }
-  return LicenseKey(std::move(*y), std::move(*x));
+  return LicenseKey(std::move(*license_key_information), std::move(*raw_license_key));
 }
 
 
