@@ -43,7 +43,7 @@ RUN mkdir -p /home/builder/cryptolens-cpp/examples/unix/static_docker/cc \
           "$CRYPTOLENS_ROOT/src/LicenseKeyChecker.cpp" \
           "$CRYPTOLENS_ROOT/src/LicenseKeyInformation.cpp" \
           "$CRYPTOLENS_ROOT/src/base64.cpp" \
-          "$CRYPTOLENS_ROOT/src/basic_SKM.cpp" \
+          "$CRYPTOLENS_ROOT/src/basic_Cryptolens.cpp" \
  &&   g++ -c \
           -I "$SSL_ROOT/include" \
           -I "$CURL_ROOT/include" \

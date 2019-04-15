@@ -1,12 +1,12 @@
 #include "../ArduinoJson.hpp"
 
 #include "api.hpp"
-#include "basic_SKM.hpp"
+#include "basic_Cryptolens.hpp"
 #include "LicenseKeyInformation.hpp"
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 /**
  * Attempt to construct a LicenseKeyInformation from a RawLicenseKey
@@ -429,8 +429,6 @@ LicenseKeyInformation::get_data_objects() const
   return data_objects;
 }
 
-} // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
+} // namespace v20190401
 
 } // namespace cryptolens_io

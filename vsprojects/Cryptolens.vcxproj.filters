@@ -21,9 +21,6 @@
     <ClCompile Include="..\src\base64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\basic_SKM.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\DataObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,6 +39,9 @@
     <ClCompile Include="..\src\LicenseKeyInformation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\basic_Cryptolens.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cryptolens\ActivateError.hpp">
@@ -57,9 +57,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cryptolens\basic_Error.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cryptolens\basic_SKM.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cryptolens\core.hpp">
@@ -98,7 +95,7 @@
     <ClInclude Include="..\include\cryptolens\SignatureVerifier_CryptoAPI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cryptolens\SignatureVerifier_OpenSSL.hpp">
+    <ClInclude Include="..\include\cryptolens\basic_Cryptolens.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

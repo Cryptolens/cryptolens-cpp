@@ -8,8 +8,8 @@
 #include <cryptolens/RequestHandler_WinHTTP.hpp>
 #include <cryptolens/SignatureVerifier_CryptoAPI.hpp>
 
-namespace cryptolens = ::cryptolens_io::v20180502;
-using Cryptolens = cryptolens::basic_SKM<cryptolens::RequestHandler_WinHTTP, cryptolens::SignatureVerifier_CryptoAPI>;
+namespace cryptolens = ::cryptolens_io::v20190401;
+using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::RequestHandler_WinHTTP, cryptolens::SignatureVerifier_CryptoAPI>;
 
 /*
  * This is an example of doing offline activation.

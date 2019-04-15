@@ -1,8 +1,8 @@
-#include "basic_SKM.hpp"
+#include "basic_Cryptolens.hpp"
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 namespace internal {
 
@@ -46,8 +46,6 @@ activate_parse_server_error_message(char const* server_response)
 
 } // namespace internal
 
-} // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
+} // namespace v20190401
 
 } // namespace cryptolens_io

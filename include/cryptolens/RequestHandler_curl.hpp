@@ -8,7 +8,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 namespace errors {
 
@@ -140,8 +140,18 @@ RequestHandler_curl::build_postfields_(basic_Error & e, char const* method, Map 
   return s;
 }
 
-} // namespace v20180502
+} // namespace v20190401
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+namespace errors {
+
+namespace RequestHandler_curl = ::cryptolens_io::v20190401::errors::RequestHandler_curl;
+
+} // namespace errors
+
+using RequestHandler_curl = ::cryptolens_io::v20190401::RequestHandler_curl;
+
+} // namespace latest
 
 } // namespace cryptolens_io

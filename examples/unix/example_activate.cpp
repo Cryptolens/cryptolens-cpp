@@ -7,11 +7,11 @@
 #include <cryptolens/RequestHandler_curl.hpp>
 #include <cryptolens/SignatureVerifier_OpenSSL.hpp>
 
-namespace cryptolens = ::cryptolens_io::v20180502;
-using Cryptolens = cryptolens::basic_SKM<cryptolens::RequestHandler_curl,cryptolens::SignatureVerifier_OpenSSL>;
+namespace cryptolens = ::cryptolens_io::v20190401;
+using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::RequestHandler_curl,cryptolens::SignatureVerifier_OpenSSL>;
 
 /*
- * This example uses the basic_SKM class to make a request to the WebAPI
+ * This example uses the basic_Cryptolens class to make a request to the WebAPI
  * and then checks some properties of the license keys.
  */
 

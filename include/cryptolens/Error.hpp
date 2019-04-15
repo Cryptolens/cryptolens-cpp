@@ -4,7 +4,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 class Error : public basic_Error {
 public:
@@ -21,8 +21,12 @@ public:
   void reset() { reset(api::main()); }
 };
 
-} // namespace v20180502
+} // namespace v20190401
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+using Error = ::cryptolens_io::v20190401::Error;
+
+} // namespace latest
 
 } // namespace cryptolens_io

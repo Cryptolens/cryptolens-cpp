@@ -4,7 +4,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 // An immutable class representing an Cryptolens Data Object
 class DataObject {
@@ -44,8 +44,12 @@ public:
   int                get_int_value() const;
 };
 
-} // namespace v20180502
+} // namespace v20190401
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+using DataObject = ::cryptolens_io::v20190401::DataObject;
+
+} // namespace latest
 
 } // namespace cryptolens_io

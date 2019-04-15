@@ -11,8 +11,8 @@
  * some properties on the license key.
  */
 
-namespace cryptolens = ::cryptolens_io::v20180502;
-using Cryptolens = cryptolens::basic_SKM<cryptolens::RequestHandler_WinHTTP, cryptolens::SignatureVerifier_CryptoAPI>;
+namespace cryptolens = ::cryptolens_io::v20190401;
+using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::RequestHandler_WinHTTP, cryptolens::SignatureVerifier_CryptoAPI>;
 
 int main()
 {

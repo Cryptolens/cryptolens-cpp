@@ -162,7 +162,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\ActivateError.cpp" />
     <ClCompile Include="..\src\base64.cpp" />
-    <ClCompile Include="..\src\basic_SKM.cpp" />
+    <ClCompile Include="..\src\basic_Cryptolens.cpp" />
     <ClCompile Include="..\src\DataObject.cpp" />
     <ClCompile Include="..\src\LicenseKey.cpp" />
     <ClCompile Include="..\src\LicenseKeyChecker.cpp" />
@@ -176,7 +176,7 @@
     <ClInclude Include="..\include\cryptolens\api.hpp" />
     <ClInclude Include="..\include\cryptolens\base64.hpp" />
     <ClInclude Include="..\include\cryptolens\basic_Error.hpp" />
-    <ClInclude Include="..\include\cryptolens\basic_SKM.hpp" />
+    <ClInclude Include="..\include\cryptolens\basic_Cryptolens.hpp" />
     <ClInclude Include="..\include\cryptolens\core.hpp" />
     <ClInclude Include="..\include\cryptolens\Customer.hpp" />
     <ClInclude Include="..\include\cryptolens\DataObject.hpp" />
@@ -189,7 +189,6 @@
     <ClInclude Include="..\include\cryptolens\RequestHandler_curl.hpp" />
     <ClInclude Include="..\include\cryptolens\RequestHandler_WinHTTP.hpp" />
     <ClInclude Include="..\include\cryptolens\SignatureVerifier_CryptoAPI.hpp" />
-    <ClInclude Include="..\include\cryptolens\SignatureVerifier_OpenSSL.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

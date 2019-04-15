@@ -4,7 +4,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 ActivateError::ActivateError(int reason)
 : reason_(reason)
@@ -92,8 +92,6 @@ ActivateError::what() const noexcept
   }
 }
 
-} // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
+} // namespace v20190401
 
 } // namespace cryptolens_io

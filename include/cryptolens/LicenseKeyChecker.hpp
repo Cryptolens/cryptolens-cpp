@@ -4,7 +4,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 class LicenseKeyInformation;
 
@@ -26,8 +26,12 @@ public:
   LicenseKeyChecker& is_on_right_machine(std::string const& machine_code);
 };
 
-} // namespace v20180502
+} // namespace v20190401
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+using LicenseKeyChecker = ::cryptolens_io::v20190401::LicenseKeyChecker;
+
+} // namespace latest
 
 } // namespace cryptolens_io

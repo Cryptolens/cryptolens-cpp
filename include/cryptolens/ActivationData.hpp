@@ -4,7 +4,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 // An immutable class representing an activated machine
 // for a given serial key
@@ -34,8 +34,12 @@ public:
   std::uint64_t get_time() const { return time_; }
 };
 
-} // namespace v20180502
+} // namespace v20190401
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+using ::cryptolens_io::v20190401::ActivationData;
+
+} // namespace latest
 
 } // namespace cryptolens_io

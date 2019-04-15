@@ -19,7 +19,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 namespace internal {
 
@@ -51,7 +51,7 @@ handle_activate_raw
 template<typename SignatureVerifier>
 RawLicenseKey
 handle_activate_raw_exn
-  ( experimental_v1 experimental
+  ( api::experimental_v1 experimental
   , SignatureVerifier const& signature_verifier
   , std::string const& response
   )
@@ -94,10 +94,10 @@ handle_activate
  * neccessary.
  */
 template<typename RequestHandler, typename SignatureVerifier>
-class basic_SKM
+class basic_Cryptolens
 {
 public:
-  basic_SKM() { }
+  basic_Cryptolens() { }
 
   optional<LicenseKey>
   activate
@@ -132,7 +132,7 @@ public:
 
   RawLicenseKey
   activate_raw_exn
-    ( experimental_v1 experimental
+    ( api::experimental_v1 experimental
     , std::string token
     , std::string product_id
     , std::string key
@@ -185,7 +185,7 @@ private:
  */
 template<typename RequestHandler, typename SignatureVerifier>
 optional<LicenseKey>
-basic_SKM<RequestHandler, SignatureVerifier>::activate
+basic_Cryptolens<RequestHandler, SignatureVerifier>::activate
   ( basic_Error & e
   , std::string token
   , std::string product_id
@@ -225,7 +225,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate
  */
 template<typename RequestHandler, typename SignatureVerifier>
 optional<RawLicenseKey>
-basic_SKM<RequestHandler, SignatureVerifier>::activate_raw
+basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_raw
   ( basic_Error & e
   , std::string token
   , std::string product_id
@@ -248,7 +248,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_raw
 }
 
 /**
- * Make a floating Activate request to the SKM Web API
+ * Make a floating Activate request to the Cryptolens Web API
  *
  * A standard and a floating activate request differs in how the
  * number of machine codes for the license is computed. The standard request
@@ -273,7 +273,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_raw
  */
 template<typename RequestHandler, typename SignatureVerifier>
 optional<LicenseKey>
-basic_SKM<RequestHandler, SignatureVerifier>::activate_floating
+basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_floating
   ( basic_Error & e
   , std::string token
   , std::string product_id
@@ -301,7 +301,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_floating
 
 template<typename RequestHandler, typename SignatureVerifier>
 optional<RawLicenseKey>
-basic_SKM<RequestHandler, SignatureVerifier>::activate_
+basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_
   ( basic_Error & e
   , std::string token
   , std::string product_id
@@ -332,7 +332,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_
 
 template<typename RequestHandler, typename SignatureVerifier>
 optional<RawLicenseKey>
-basic_SKM<RequestHandler, SignatureVerifier>::activate_floating_
+basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_floating_
   ( basic_Error & e
   , std::string token
   , std::string product_id
@@ -379,8 +379,8 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_floating_
  */
 template<typename RequestHandler, typename SignatureVerifier>
 RawLicenseKey
-basic_SKM<RequestHandler, SignatureVerifier>::activate_raw_exn
-  ( experimental_v1 experimental
+basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_raw_exn
+  ( api::experimental_v1 experimental
   , std::string token
   , std::string product_id
   , std::string key
@@ -399,14 +399,14 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_raw_exn
 
 template<typename RequestHandler, typename SignatureVerifier>
 optional<LicenseKey>
-basic_SKM<RequestHandler, SignatureVerifier>::make_license_key(basic_Error & e, std::string const& s)
+basic_Cryptolens<RequestHandler, SignatureVerifier>::make_license_key(basic_Error & e, std::string const& s)
 {
   if (e) { return nullopt; }
 
   optional<RawLicenseKey> raw_license_key;
 
   raw_license_key =
-    ::cryptolens_io::v20180502::internal::handle_activate(e, this->signature_verifier, s);
+    ::cryptolens_io::v20190401::internal::handle_activate(e, this->signature_verifier, s);
 
   if (e) {
     e.reset(api::main());
@@ -489,13 +489,18 @@ handle_activate
            , signature_verifier
            , j["licenseKey"].as<char const*>()
            , j["signature"].as<char const*>()
-	   );
+           );
 }
 
 } // namespace internal
 
-} // namespace v20180502
+} // namespace v20190401
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+template<typename RequestHandler, typename SignatureVerifier>
+using basic_Cryptolens = ::cryptolens_io::v20190401::basic_Cryptolens<RequestHandler, SignatureVerifier>;
+
+} // namespace latest
 
 } // namespace cryptolens_io

@@ -6,7 +6,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 namespace errors {
 
@@ -107,8 +107,18 @@ RequestHandler_WinHTTP::build_postfields_(basic_Error & e, char const* method, M
   return s;
 }
 
-} // namespace v20180502
+} // namespace v20190401
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+namespace errors {
+
+namespace RequestHandler_WinHTTP = ::cryptolens_io::v20190401::errors::RequestHandler_WinHTTP;
+
+} // namespace errors
+
+using RequestHandler_WinHTTP = ::cryptolens_io::v20190401::RequestHandler_WinHTTP;
+
+} // namespace latest
 
 } // namespace cryptolens_io

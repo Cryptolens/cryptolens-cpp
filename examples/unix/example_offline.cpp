@@ -10,8 +10,8 @@
 #include <cryptolens/RequestHandler_curl.hpp>
 #include <cryptolens/SignatureVerifier_OpenSSL.hpp>
 
-namespace cryptolens = ::cryptolens_io::v20180502;
-using Cryptolens = cryptolens::basic_SKM<cryptolens::RequestHandler_curl,cryptolens::SignatureVerifier_OpenSSL>;
+namespace cryptolens = ::cryptolens_io::v20190401;
+using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::RequestHandler_curl,cryptolens::SignatureVerifier_OpenSSL>;
 
 /*
  * This is an example of doing offline activation.

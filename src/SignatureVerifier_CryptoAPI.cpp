@@ -6,11 +6,9 @@
 #include "base64.hpp"
 #include "optional.hpp"
 
-#include <iostream>
-
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 namespace {
 
@@ -118,7 +116,7 @@ SignatureVerifier_CryptoAPI::set_modulus_base64_(basic_Error & e, std::string co
     if (e) { return; }
   }
 
-  optional<std::string> modulus = b64_decode(modulus_base64);
+  optional<std::string> modulus = internal::b64_decode(modulus_base64);
   if (!modulus) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
   const size_t blobLen = sizeof(BLOBHEADER) + sizeof(RSAPUBKEY) + modulus->size();
@@ -167,7 +165,7 @@ SignatureVerifier_CryptoAPI::verify_message
   if (e) { return false; }
   if (!hProv_ || !hPubKey_) { e.set(api::main(), errors::Subsystem::SignatureVerifier, SIGNATURE_VERIFIER_UNINITIALIZED); return false; }
 
-  optional<std::string> sig = b64_decode(signature_base64);
+  optional<std::string> sig = internal::b64_decode(signature_base64);
   if (!sig) { e.set(api::main(), errors::Subsystem::Base64); return false; }
 
   verify(e, hProv_, hPubKey_, message, *sig);
@@ -176,8 +174,6 @@ SignatureVerifier_CryptoAPI::verify_message
   return true;
 }
 
-} // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
+} // namespace v20190401
 
 } // namespace cryptolens_io

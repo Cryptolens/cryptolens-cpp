@@ -1,12 +1,12 @@
 #include "api.hpp"
-#include "basic_SKM.hpp"
+#include "basic_Cryptolens.hpp"
 #include "LicenseKey.hpp"
 #include "LicenseKeyInformation.hpp"
 #include "RawLicenseKey.hpp"
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 LicenseKey::LicenseKey(LicenseKeyInformation && license_key_information, RawLicenseKey && raw_license_key)
 : info_(license_key_information), raw_(raw_license_key)
@@ -282,8 +282,6 @@ LicenseKey::get_data_objects() const
   return info_.get_data_objects();
 }
 
-} // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
+} // namespace v20190401
 
 } // namespace cryptolens_io

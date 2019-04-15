@@ -10,7 +10,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 RequestHandler_WinHTTP::RequestHandler_WinHTTP() { }
 
@@ -133,8 +133,6 @@ RequestHandler_WinHTTP::percent_encode_(std::string const& s)
   return r;
 }
 
-} // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
+} // namespace v20190401
 
 } // namespace cryptolens_io

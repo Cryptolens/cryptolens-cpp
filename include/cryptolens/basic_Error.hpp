@@ -6,7 +6,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 namespace errors {
 
@@ -105,8 +105,20 @@ public:
   virtual void set_call(api::main api, int call) { call_ = call; }
 };
 
-} // namespace v20180502
+} // namespace v20190401
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+namespace errors {
+
+namespace Subsystem = ::cryptolens_io::v20190401::errors::Subsystem;
+namespace Call = ::cryptolens_io::v20190401::errors::Call;
+namespace Main = ::cryptolens_io::v20190401::errors::Main;
+
+} // namespace errors
+
+using basic_Error = ::cryptolens_io::v20190401::basic_Error;
+
+} // namespace latest
 
 } // namespace cryptolens_io

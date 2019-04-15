@@ -8,7 +8,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 /**
  * A signature verifier used by the library for checking the cryptographic
@@ -44,8 +44,12 @@ private:
   void set_exponent_base64_(basic_Error & e, std::string const& exponent_base64);
 };
 
-} // namespace v20180502
+} // namespace v20190401
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+using SignatureVerifier_OpenSSL = ::cryptolens_io::v20190401::SignatureVerifier_OpenSSL;
+
+} // namespace latest
 
 } // namespace cryptolens_io

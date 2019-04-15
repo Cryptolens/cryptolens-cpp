@@ -4,7 +4,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 class ActivateError : public std::exception {
 private:
@@ -30,8 +30,12 @@ public:
   virtual const char * what() const noexcept;
 };
 
-} // namespace v20180502
+} // namespace v20190401
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+using ::cryptolens_io::v20190401::ActivateError;
+
+} // namespace latest
 
 } // namespace cryptolens_io

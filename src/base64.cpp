@@ -62,7 +62,9 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
+
+namespace internal {
 
 static const char Base64[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -336,8 +338,8 @@ b64_decode(std::string const& b64)
   return make_optional(std::move(s));
 }
 
-} // namespace v20180502
+} // namespace internal
 
-using namespace ::cryptolens_io::v20180502;
+} // namespace v20190401
 
 } // namespace cryptolens_io

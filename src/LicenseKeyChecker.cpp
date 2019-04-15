@@ -2,7 +2,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 /**
  * Construct a LicenseKeyChecker from a LicenseKey object. This can also be
@@ -195,8 +195,6 @@ LicenseKeyChecker::is_on_right_machine(std::string const& machine_code)
   return *this;
 }
 
-} // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
+} // namespace v20190401
 
 } // namespace cryptolens_io

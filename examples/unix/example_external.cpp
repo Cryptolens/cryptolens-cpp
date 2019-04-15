@@ -5,15 +5,14 @@
 #include <cryptolens/RequestHandler_curl.hpp>
 #include <cryptolens/SignatureVerifier_OpenSSL.hpp>
 
+namespace cryptolens = ::cryptolens_io::v20190401;
+using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::RequestHandler_curl,cryptolens::SignatureVerifier_OpenSSL>;
+
 /*
  * This example assumes the reply from the web server has fetched in some
  * other fasion, and then verifies the signature and finally checks
  * some properties on the license key.
  */
-
-namespace cryptolens = ::cryptolens_io::v20180502;
-using Cryptolens = cryptolens::basic_SKM<cryptolens::RequestHandler_curl,cryptolens::SignatureVerifier_OpenSSL>;
-
 int main()
 {
   cryptolens::Error e;
