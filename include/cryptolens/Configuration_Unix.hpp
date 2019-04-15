@@ -4,6 +4,11 @@
 #include "RequestHandler_curl.hpp"
 #include "SignatureVerifier_OpenSSL.hpp"
 
+#include "validators/AndValidator.hpp"
+#include "validators/CorrectKeyValidator.hpp"
+#include "validators/CorrectProductValidator.hpp"
+#include "validators/OnValidMachineValidator.hpp"
+
 namespace cryptolens_io {
 
 namespace v20190401 {
@@ -14,6 +19,12 @@ struct Configuration_Unix {
   using RequestHandler = RequestHandler_curl;
   using SignatureVerifier = SignatureVerifier_OpenSSL;
   using MachineCodeComputer = MachineCodeComputer_;
+
+  template<typename Env>
+  using ActivateValidator = AndValidator_<Env, CorrectKeyValidator_<Env>
+                          , AndValidator_<Env, CorrectProductValidator_<Env>
+                          , AndValidator_<Env, OnValidMachineValidator_<Env>
+                          >>>;
 };
 
 } // namespace v20190401

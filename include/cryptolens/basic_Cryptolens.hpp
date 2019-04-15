@@ -34,6 +34,65 @@ handle_activate
 int
 activate_parse_server_error_message(char const* server_response);
 
+class ActivateEnvironment {
+public:
+  ActivateEnvironment
+    ( LicenseKeyInformation const& license_key_information
+    , int product_id
+    , std::string const& key
+    , std::string const& machine_code
+    , int fields_to_return
+    , bool floating
+    )
+  : license_key_information_(&license_key_information)
+  , product_id_(product_id), key_(&key), machine_code_(&machine_code)
+  , fields_to_return_(fields_to_return), floating_(floating)
+  {}
+
+  LicenseKeyInformation const&
+  get_license_key_information() const {
+    return *license_key_information_;
+  }
+
+  int
+  get_product_id() const
+  {
+    return product_id_;
+  }
+
+  std::string const&
+  get_key() const
+  {
+    return *key_;
+  }
+
+  std::string const&
+  get_machine_code() const
+  {
+    return *machine_code_;
+  }
+
+  int
+  get_fields_to_return() const
+  {
+    return fields_to_return_;
+  }
+
+  bool
+  get_floating() const
+  {
+    return floating_;
+  }
+
+private:
+  LicenseKeyInformation const* license_key_information_;
+  int product_id_;
+  std::string const* key_;
+  std::string const* machine_code_;
+  int fields_to_return_;
+  bool floating_;
+};
+
 } // namespace internal
 
 template<typename SignatureVerifier>
@@ -102,6 +161,7 @@ class basic_Cryptolens
 public:
   basic_Cryptolens(basic_Error & e)
   : response_parser(e), request_handler(e), signature_verifier(e), machine_code_computer(e)
+  , activate_validator(e)
   { }
 
   optional<LicenseKey>
@@ -163,6 +223,7 @@ public:
   typename Configuration::RequestHandler request_handler;
   typename Configuration::SignatureVerifier signature_verifier;
   typename Configuration::MachineCodeComputer machine_code_computer;
+  typename Configuration::template ActivateValidator<internal::ActivateEnvironment> activate_validator;
 
 private:
   optional<RawLicenseKey>
@@ -319,12 +380,18 @@ basic_Cryptolens<Configuration>::activate_floating
       ( e
       , std::move(token)
       , std::move(product_id)
-      , std::move(key)
-      , std::move(machine_code)
+      , key // XXX: Make copy here
+      , machine_code // XXX: Make copy here
       , floating_time_interval
       , fields_to_return
       );
   optional<LicenseKeyInformation> y = LicenseKeyInformation::make(e, x);
+
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE_FLOATING); return nullopt; }
+
+  typename internal::ActivateEnvironment env(*y, product_id, key, machine_code, fields_to_return, true);
+  activate_validator.validate(e, env);
+
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE_FLOATING); return nullopt; }
   return LicenseKey(std::move(*y), std::move(*x));
 }

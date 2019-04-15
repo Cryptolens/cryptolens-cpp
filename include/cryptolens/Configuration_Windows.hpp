@@ -4,6 +4,11 @@
 #include "RequestHandler_WinHTTP.hpp"
 #include "SignatureVerifier_CryptoAPI.hpp"
 
+#include "validators/AndValidator.hpp"
+#include "validators/CorrectKeyValidator.hpp"
+#include "validators/CorrectProductValidator.hpp"
+#include "validators/OnValidMachineValidator.hpp"
+
 namespace cryptolens_io {
 
 namespace v20190401 {
@@ -14,6 +19,12 @@ struct Configuration_Windows {
   using RequestHandler = RequestHandler_WinHTTP;
   using SignatureVerifier = SignatureVerifier_CryptoAPI;
   using MachineCodeComputer = MachineCodeComputer_;
+
+  template<typename Env>
+  using ActivateValidator = AndValidator_<Env, CorrectKeyValidator_<Env>
+                          , AndValidator_<Env, CorrectProductValidator_<Env>
+                          , AndValidator_<Env, OnValidMachineValidator_<Env>
+                          >>>;
 };
 
 } // namespace v20190401
