@@ -38,6 +38,7 @@ int constexpr BASIC_SKM_HANDLE_ACTIVATE = 5;
 int constexpr BASIC_SKM_ACTIVATE = 5;
 int constexpr BASIC_SKM_ACTIVATE_FLOATING = 6;
 int constexpr BASIC_SKM_MAKE_LICENSE_KEY = 7;
+int constexpr BASIC_SKM_LAST_MESSAGE = 8;
 
 } // namespace Call
 

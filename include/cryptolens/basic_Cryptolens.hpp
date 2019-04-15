@@ -31,6 +31,9 @@ handle_activate
   , std::string const& response
   );
 
+int
+activate_parse_server_error_message(char const* server_response);
+
 } // namespace internal
 
 template<typename SignatureVerifier>
@@ -138,6 +141,14 @@ public:
     , int fields_to_return = 0
     );
 
+  std::string
+  last_message
+    ( basic_Error & e
+    , std::string token
+    , std::string channel
+    , int since_unix_timestamp
+    );
+
   optional<LicenseKey>
   make_license_key(basic_Error & e, std::string const& s);
 
@@ -166,6 +177,14 @@ private:
     , std::string machine_code
     , long floating_time_interval
     , int fields_to_return = 0
+    );
+
+  std::string
+  last_message_
+    ( basic_Error & e
+    , std::string token
+    , std::string channel
+    , int since_unix_timestamp
     );
 };
 
@@ -399,6 +418,85 @@ basic_Cryptolens<Configuration>::activate_raw_exn
 }
 
 template<typename Configuration>
+std::string
+basic_Cryptolens<Configuration>::last_message
+  ( basic_Error & e
+  , std::string token
+  , std::string channel
+  , int since_unix_timestamp
+  )
+{
+  if (e) { return ""; }
+
+  std::string message = last_message_(e, token, channel, since_unix_timestamp);
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_LAST_MESSAGE); return ""; }
+  return message;
+}
+
+template<typename Configuration>
+std::string
+basic_Cryptolens<Configuration>::last_message_
+  ( basic_Error & e
+  , std::string token
+  , std::string channel
+  , int since_unix_timestamp
+  )
+{
+  if (e) { return ""; }
+
+  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/message/GetMessages");
+
+  std::ostringstream stm; stm << since_unix_timestamp;
+
+  std::string response =
+    request.add_argument(e, "token"  , token.c_str())
+           .add_argument(e, "Channel", channel.c_str())
+           .add_argument(e, "Time"   , stm.str().c_str())
+           .make(e);
+
+  if (e) { return ""; }
+
+  using namespace ::cryptolens_io::latest::errors;
+  using namespace ::ArduinoJson;
+  api::main api;
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject & j = jsonBuffer.parseObject(response);
+
+  if (!j.success()) { e.set(api, Subsystem::Json); return ""; }
+
+  if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
+    if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
+      e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
+      return "";
+    }
+
+    int reason = internal::activate_parse_server_error_message(j["message"].as<char const*>());
+    e.set(api, Subsystem::Main, reason);
+    return "";
+  }
+
+  if (!j["messages"].is<const JsonArray&>()) { return ""; }
+
+  JsonArray const& array = j["messages"].as<const JsonArray&>();
+  int i_max = -1;
+  int created_max = -1;
+  for (size_t i = 0; i < array.size(); ++i) {
+    if (!array.is<const JsonObject&>(i)) { continue; }
+
+    JsonObject const& msg = array.get<const JsonObject&>(i);
+    if (msg["created"].is<int>() && //msg["created"].as<int>() != 0 &&
+        msg["content"].is<const char*>() && msg["content"].as<const char*>() != NULL)
+    {
+      if (msg["created"] > created_max) { created_max = msg["created"]; i_max = i; }
+    }
+  }
+
+  if (i_max >= 0) { JsonObject const& msg = array.get<const JsonObject&>(i_max); return msg["content"]; }
+
+  return "";
+}
+
+template<typename Configuration>
 optional<LicenseKey>
 basic_Cryptolens<Configuration>::make_license_key(basic_Error & e, std::string const& s)
 {
@@ -441,9 +539,6 @@ basic_Cryptolens<Configuration>::make_license_key(basic_Error & e, std::string c
 
 
 namespace internal {
-
-int
-activate_parse_server_error_message(char const* server_response);
 
 template<typename SignatureVerifier>
 optional<RawLicenseKey>

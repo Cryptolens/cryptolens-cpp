@@ -40,6 +40,8 @@ int main()
         "MPDWY-PQAOW-FKSCH-SGAAU"
       );
 
+  std::string message = cryptolens_handle.last_message(e, "WyIxNzk0IiwiUkhSTWl3ekVBYTRlNjZFQUtVRUNObzBNWDAvZnRmQ2tKUGVkQWZJcSJd", "stable", 1234);
+
   if (e) {
     // Error occured trying to activate the license key
     using namespace cryptolens::errors;
@@ -56,6 +58,7 @@ int main()
     return 1;
   }
 
+  std::cout << "MOTD: " << message << std::endl;
   std::cout << "License key for product with id: " << license_key->get_product_id() << std::endl;
 
   // Use LicenseKeyChecker to check properties of the license key
