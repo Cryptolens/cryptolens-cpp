@@ -162,6 +162,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\ActivateError.cpp" />
     <ClCompile Include="..\src\basic_Cryptolens.cpp" />
+    <ClCompile Include="..\src\basic_SKM.cpp" />
     <ClCompile Include="..\src\DataObject.cpp" />
     <ClCompile Include="..\src\LicenseKey.cpp" />
     <ClCompile Include="..\src\LicenseKeyChecker.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="..\include\cryptolens\api.hpp" />
     <ClInclude Include="..\include\cryptolens\basic_Error.hpp" />
     <ClInclude Include="..\include\cryptolens\basic_Cryptolens.hpp" />
+    <ClInclude Include="..\include\cryptolens\basic_SKM.hpp" />
     <ClInclude Include="..\include\cryptolens\Configuration_Windows.hpp" />
     <ClInclude Include="..\include\cryptolens\core.hpp" />
     <ClInclude Include="..\include\cryptolens\Customer.hpp" />

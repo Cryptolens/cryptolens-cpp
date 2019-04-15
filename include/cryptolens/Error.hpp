@@ -23,6 +23,12 @@ public:
 
 } // namespace v20190401
 
+namespace v20180502 {
+
+using Error = ::cryptolens_io::v20190401::Error;
+
+} // namespace v20180502
+
 namespace latest {
 
 using Error = ::cryptolens_io::v20190401::Error;

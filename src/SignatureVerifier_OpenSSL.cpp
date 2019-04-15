@@ -10,10 +10,6 @@
 #include "base64.hpp"
 #include "SignatureVerifier_OpenSSL.hpp"
 
-namespace cryptolens_io {
-
-namespace v20190401 {
-
 namespace {
 
 constexpr int RSA_NULL = 1;
@@ -28,6 +24,10 @@ constexpr int BN_NEW_FAILED = 9;
 constexpr int RSA_SET0_KEY_FAILED = 10;
 
 } // namespace
+
+namespace cryptolens_io {
+
+namespace v20190401 {
 
 void
 verify(basic_Error & e, RSA * rsa, std::string const& message, std::string const& sig)
@@ -122,6 +122,7 @@ SignatureVerifier_OpenSSL::~SignatureVerifier_OpenSSL()
 void
 SignatureVerifier_OpenSSL::set_modulus_base64(basic_Error & e, std::string const& modulus_base64)
 {
+  if (e) { return; }
   this->set_modulus_base64_(e, modulus_base64);
   if (e) { e.set_call(api::main(), errors::Call::SIGNATURE_VERIFIER_SET_MODULUS_BASE64); }
 }
@@ -141,6 +142,7 @@ SignatureVerifier_OpenSSL::set_modulus_base64(basic_Error & e, std::string const
 void
 SignatureVerifier_OpenSSL::set_exponent_base64(basic_Error & e, std::string const& exponent_base64)
 {
+  if (e) { return; }
   this->set_exponent_base64_(e, exponent_base64);
   if (e) { e.set_call(api::main(), errors::Call::SIGNATURE_VERIFIER_SET_EXPONENT_BASE64); }
 }

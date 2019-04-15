@@ -7,6 +7,7 @@
 
 #include "api.hpp"
 #include "basic_Error.hpp"
+#include "RequestHandler_v20190401_to_v20180502.hpp"
 
 namespace cryptolens_io {
 
@@ -88,5 +89,17 @@ namespace RequestHandler_WinHTTP = ::cryptolens_io::v20190401::errors::RequestHa
 using RequestHandler_WinHTTP = ::cryptolens_io::v20190401::RequestHandler_WinHTTP;
 
 } // namespace latest
+
+namespace v20180502 {
+
+namespace errors {
+
+//XXX: Add stuff here
+
+} // namespace errors
+
+using RequestHandler_WinHTTP = ::cryptolens_io::internal::RequestHandler_v20190401_to_v20180502<::cryptolens_io::v20190401::RequestHandler_WinHTTP>;
+
+} // namespace v20180502
 
 } // namespace cryptolens_io

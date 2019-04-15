@@ -78,6 +78,12 @@ public:
 
 } // namespace v20190401
 
+namespace v20180502 {
+
+using RawLicenseKey = ::cryptolens_io::v20190401::RawLicenseKey;
+
+} // namespace v20180502
+
 namespace latest {
 
 using RawLicenseKey = ::cryptolens_io::v20190401::RawLicenseKey;

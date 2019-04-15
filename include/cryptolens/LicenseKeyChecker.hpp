@@ -28,6 +28,12 @@ public:
 
 } // namespace v20190401
 
+namespace v20180502 {
+
+using LicenseKeyChecker = ::cryptolens_io::v20190401::LicenseKeyChecker;
+
+} // namespace v20180502
+
 namespace latest {
 
 using LicenseKeyChecker = ::cryptolens_io::v20190401::LicenseKeyChecker;

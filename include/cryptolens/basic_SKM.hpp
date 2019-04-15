@@ -19,7 +19,7 @@
 
 namespace cryptolens_io {
 
-namespace v20190401 {
+namespace v20180502 {
 
 namespace internal {
 
@@ -30,68 +30,6 @@ handle_activate
   , SignatureVerifier const& signature_verifier
   , std::string const& response
   );
-
-int
-activate_parse_server_error_message(char const* server_response);
-
-class ActivateEnvironment {
-public:
-  ActivateEnvironment
-    ( LicenseKeyInformation const& license_key_information
-    , int product_id
-    , std::string const& key
-    , std::string const& machine_code
-    , int fields_to_return
-    , bool floating
-    )
-  : license_key_information_(&license_key_information)
-  , product_id_(product_id), key_(&key), machine_code_(&machine_code)
-  , fields_to_return_(fields_to_return), floating_(floating)
-  {}
-
-  LicenseKeyInformation const&
-  get_license_key_information() const {
-    return *license_key_information_;
-  }
-
-  int
-  get_product_id() const
-  {
-    return product_id_;
-  }
-
-  std::string const&
-  get_key() const
-  {
-    return *key_;
-  }
-
-  std::string const&
-  get_machine_code() const
-  {
-    return *machine_code_;
-  }
-
-  int
-  get_fields_to_return() const
-  {
-    return fields_to_return_;
-  }
-
-  bool
-  get_floating() const
-  {
-    return floating_;
-  }
-
-private:
-  LicenseKeyInformation const* license_key_information_;
-  int product_id_;
-  std::string const* key_;
-  std::string const* machine_code_;
-  int fields_to_return_;
-  bool floating_;
-};
 
 } // namespace internal
 
@@ -155,21 +93,19 @@ handle_activate
  * chosen policy classes since in some cases special initialization may be
  * neccessary.
  */
-template<typename Configuration>
-class basic_Cryptolens
+template<typename RequestHandler, typename SignatureVerifier>
+class basic_SKM
 {
 public:
-  basic_Cryptolens(basic_Error & e)
-  : response_parser(e), request_handler(e), signature_verifier(e), machine_code_computer(e)
-  , activate_validator(e)
-  { }
+  basic_SKM() { }
 
   optional<LicenseKey>
   activate
     ( basic_Error & e
     , std::string token
-    , int product_id
+    , std::string product_id
     , std::string key
+    , std::string machine_code
     , int fields_to_return = 0
     );
 
@@ -177,8 +113,9 @@ public:
   activate_raw
     ( basic_Error & e
     , std::string token
-    , int product_id
+    , std::string product_id
     , std::string key
+    , std::string machine_code
     , int fields_to_return = 0
     );
 
@@ -186,8 +123,9 @@ public:
   activate_floating
     ( basic_Error & e
     , std::string token
-    , int product_id
+    , std::string product_id
     , std::string key
+    , std::string machine_code
     , long floating_time_interval
     , int fields_to_return = 0
     );
@@ -196,41 +134,24 @@ public:
   activate_raw_exn
     ( api::experimental_v1 experimental
     , std::string token
-    , int product_id
+    , std::string product_id
     , std::string key
+    , std::string machine_code
     , int fields_to_return = 0
-    );
-
-  std::string
-  create_trial_key
-    ( basic_Error & e
-    , std::string token
-    , int product_id
-    );
-
-  std::string
-  last_message
-    ( basic_Error & e
-    , std::string token
-    , std::string channel
-    , int since_unix_timestamp
     );
 
   optional<LicenseKey>
   make_license_key(basic_Error & e, std::string const& s);
 
-  typename Configuration::ResponseParser response_parser;
-  typename Configuration::RequestHandler request_handler;
-  typename Configuration::SignatureVerifier signature_verifier;
-  typename Configuration::MachineCodeComputer machine_code_computer;
-  typename Configuration::template ActivateValidator<internal::ActivateEnvironment> activate_validator;
+  SignatureVerifier signature_verifier;
+  RequestHandler request_handler;
 
 private:
   optional<RawLicenseKey>
   activate_
     ( basic_Error & e
     , std::string token
-    , int product_id
+    , std::string product_id
     , std::string key
     , std::string machine_code
     , int fields_to_return = 0
@@ -240,26 +161,11 @@ private:
   activate_floating_
     ( basic_Error & e
     , std::string token
-    , int product_id
+    , std::string product_id
     , std::string key
     , std::string machine_code
     , long floating_time_interval
     , int fields_to_return = 0
-    );
-
-  std::string
-  create_trial_key_
-    ( basic_Error & e
-    , std::string token
-    , int product_id
-    );
-
-  std::string
-  last_message_
-    ( basic_Error & e
-    , std::string token
-    , std::string channel
-    , int since_unix_timestamp
     );
 };
 
@@ -270,24 +176,25 @@ private:
  *   token - acces token to use
  *   product_id - the product id
  *   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
+ *   machine_code - the machine code, i.e. a string that identifies a device
+ *                  for activation.
  *
  * Returns:
  *   An optional with a RawLicenseKey representing if the request was
  *   successful or not.
  */
-template<typename Configuration>
+template<typename RequestHandler, typename SignatureVerifier>
 optional<LicenseKey>
-basic_Cryptolens<Configuration>::activate
+basic_SKM<RequestHandler, SignatureVerifier>::activate
   ( basic_Error & e
   , std::string token
-  , int product_id
+  , std::string product_id
   , std::string key
+  , std::string machine_code
   , int fields_to_return
   )
 {
   if (e) { return nullopt; }
-
-  std::string machine_code = machine_code_computer.get_machine_code(e);
 
   optional<RawLicenseKey> x = this->activate_
       ( e
@@ -309,24 +216,25 @@ basic_Cryptolens<Configuration>::activate
  *   token - acces token to use
  *   product_id - the product id
  *   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
+ *   machine_code - the machine code, i.e. a string that identifies a device
+ *                  for activation.
  *
  * Returns:
  *   An optional with a RawLicenseKey representing if the request was
  *   successful or not.
  */
-template<typename Configuration>
+template<typename RequestHandler, typename SignatureVerifier>
 optional<RawLicenseKey>
-basic_Cryptolens<Configuration>::activate_raw
+basic_SKM<RequestHandler, SignatureVerifier>::activate_raw
   ( basic_Error & e
   , std::string token
-  , int product_id
+  , std::string product_id
   , std::string key
+  , std::string machine_code
   , int fields_to_return
   )
 {
   if (e) { return nullopt; }
-
-  std::string machine_code = machine_code_computer.get_machine_code(e);
 
   auto x = this->activate_( e
                           , std::move(token)
@@ -340,7 +248,7 @@ basic_Cryptolens<Configuration>::activate_raw
 }
 
 /**
- * Make a floating Activate request to the Cryptolens Web API
+ * Make a floating Activate request to the SKM Web API
  *
  * A standard and a floating activate request differs in how the
  * number of machine codes for the license is computed. The standard request
@@ -353,6 +261,8 @@ basic_Cryptolens<Configuration>::activate_raw
  *   token - acces token to use
  *   product_id - the product id
  *   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
+ *   machine_code - the machine code, i.e. a string that identifies a device
+ *                  for activation.
  *   floating_time_interval - we count machine codes that were created after
  *                            current_time - floating_time_interval, where
  *                            floating_time_interval is given in seconds.
@@ -361,62 +271,40 @@ basic_Cryptolens<Configuration>::activate_raw
  *   An optional with a RawLicenseKey representing if the request was
  *   successful or not.
  */
-template<typename Configuration>
+template<typename RequestHandler, typename SignatureVerifier>
 optional<LicenseKey>
-basic_Cryptolens<Configuration>::activate_floating
+basic_SKM<RequestHandler, SignatureVerifier>::activate_floating
   ( basic_Error & e
   , std::string token
-  , int product_id
+  , std::string product_id
   , std::string key
+  , std::string machine_code
   , long floating_time_interval
   , int fields_to_return
   )
 {
   if (e) { return nullopt; }
-
-  std::string machine_code = machine_code_computer.get_machine_code(e);
 
   optional<RawLicenseKey> x = this->activate_floating_
       ( e
       , std::move(token)
       , std::move(product_id)
-      , key // XXX: Make copy here
-      , machine_code // XXX: Make copy here
+      , std::move(key)
+      , std::move(machine_code)
       , floating_time_interval
       , fields_to_return
       );
   optional<LicenseKeyInformation> y = LicenseKeyInformation::make(e, x);
-
-  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE_FLOATING); return nullopt; }
-
-  typename internal::ActivateEnvironment env(*y, product_id, key, machine_code, fields_to_return, true);
-  activate_validator.validate(e, env);
-
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE_FLOATING); return nullopt; }
   return LicenseKey(std::move(*y), std::move(*x));
 }
 
-template<typename Configuration>
-std::string
-basic_Cryptolens<Configuration>::create_trial_key
-  ( basic_Error & e
-  , std::string token
-  , int product_id
-  )
-{
-  if (e) { return ""; }
-
-  std::string key = create_trial_key_(e, token, product_id);
-  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_CREATE_TRIAL_KEY); return ""; }
-  return key;
-}
-
-template<typename Configuration>
+template<typename RequestHandler, typename SignatureVerifier>
 optional<RawLicenseKey>
-basic_Cryptolens<Configuration>::activate_
+basic_SKM<RequestHandler, SignatureVerifier>::activate_
   ( basic_Error & e
   , std::string token
-  , int product_id
+  , std::string product_id
   , std::string key
   , std::string machine_code
   , int fields_to_return
@@ -424,31 +312,30 @@ basic_Cryptolens<Configuration>::activate_
 {
   if (e) { return nullopt; }
 
-  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/key/Activate");
+  std::unordered_map<std::string,std::string> args;
+  args["token"] = token;
+  args["ProductId"] = product_id;
+  args["Key"] = key;
+  args["Sign"] = "true";
+  args["MachineCode"] = machine_code;
+  // Fix since to_string is not available everywhere
+  //args["FieldsToReturn"] = std::to_string(fields_to_return);
+  std::ostringstream stm; stm << fields_to_return;
+  args["FieldsToReturn"] = stm.str();
+  args["SignMethod"] = "1";
+  args["v"] = "1";
 
-  std::ostringstream product_id_; product_id_ << product_id;
-  std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
+  std::string response = request_handler.make_request(e, "Activate", args);
 
-  std::string response =
-    request.add_argument(e, "token"         , token.c_str())
-           .add_argument(e, "ProductId"     , product_id_.str().c_str())
-           .add_argument(e, "Key"           , key.c_str())
-           .add_argument(e, "Sign"          , "true")
-           .add_argument(e, "MachineCode"   , machine_code.c_str())
-           .add_argument(e, "FieldsToReturn", fields_to_return_.str().c_str())
-           .add_argument(e, "SignMethod"    , "1")
-           .add_argument(e, "v"             , "1")
-           .make(e);
-
-  return handle_activate_raw(e, this->signature_verifier, response);
+  return ::cryptolens_io::v20180502::handle_activate_raw(e, this->signature_verifier, response);
 }
 
-template<typename Configuration>
+template<typename RequestHandler, typename SignatureVerifier>
 optional<RawLicenseKey>
-basic_Cryptolens<Configuration>::activate_floating_
+basic_SKM<RequestHandler, SignatureVerifier>::activate_floating_
   ( basic_Error & e
   , std::string token
-  , int product_id
+  , std::string product_id
   , std::string key
   , std::string machine_code
   , long floating_time_interval
@@ -457,25 +344,24 @@ basic_Cryptolens<Configuration>::activate_floating_
 {
   if (e) { return nullopt; }
 
-  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/key/Activate");
+  std::unordered_map<std::string,std::string> args;
+  args["token"] = token;
+  args["ProductId"] = product_id;
+  args["Key"] = key;
+  args["Sign"] = "true";
+  args["MachineCode"] = machine_code;
+  // Fix since to_string is not available everywhere
+  //args["FieldsToReturn"] = std::to_string(fields_to_return);
+  std::ostringstream stm; stm << fields_to_return;
+  args["FieldsToReturn"] = stm.str();
+  args["SignMethod"] = "1";
+  args["v"] = "1";
+  stm.str(""); stm.clear(); stm << floating_time_interval;
+  args["FloatingTimeInterval"] = stm.str();
 
-  std::ostringstream product_id_; product_id_ << product_id;
-  std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
-  std::ostringstream floating_time_interval_; floating_time_interval_ << floating_time_interval;
+  std::string response = request_handler.make_request(e, "Activate", args);
 
-  std::string response =
-    request.add_argument(e, "token"               , token.c_str())
-           .add_argument(e, "ProductId"           , product_id_.str().c_str())
-           .add_argument(e, "Key"                 , key.c_str())
-           .add_argument(e, "Sign"                , "true")
-           .add_argument(e, "MachineCode"         , machine_code.c_str())
-           .add_argument(e, "FieldsToReturn"      , fields_to_return_.str().c_str())
-           .add_argument(e, "SignMethod"          , "1")
-           .add_argument(e, "v"                   , "1")
-           .add_argument(e, "FloatingTimeInterval", floating_time_interval_.str().c_str())
-           .make(e);
-
-  return handle_activate_raw(e, this->signature_verifier, response);
+  return ::cryptolens_io::v20180502::handle_activate_raw(e, this->signature_verifier, response);
 }
 
 /**
@@ -491,20 +377,18 @@ basic_Cryptolens<Configuration>::activate_floating_
  * Returns:
  *   A RawLicenseKey. If the request is unsuecessful an ActivateError is thrown.
  */
-template<typename Configuration>
+template<typename RequestHandler, typename SignatureVerifier>
 RawLicenseKey
-basic_Cryptolens<Configuration>::activate_raw_exn
+basic_SKM<RequestHandler, SignatureVerifier>::activate_raw_exn
   ( api::experimental_v1 experimental
   , std::string token
-  , int product_id
+  , std::string product_id
   , std::string key
+  , std::string machine_code
   , int fields_to_return
   )
 {
   basic_Error e;
-
-  std::string machine_code = machine_code_computer.get_machine_code(e);
-
   optional<RawLicenseKey> raw_license_key =
     activate_raw( e, std::move(token), std::move(product_id), std::move(key)
             , std::move(machine_code), fields_to_return);
@@ -513,146 +397,16 @@ basic_Cryptolens<Configuration>::activate_raw_exn
   throw ActivateError::from_server_response(NULL);
 }
 
-template<typename Configuration>
-std::string
-basic_Cryptolens<Configuration>::last_message
-  ( basic_Error & e
-  , std::string token
-  , std::string channel
-  , int since_unix_timestamp
-  )
-{
-  if (e) { return ""; }
-
-  std::string message = last_message_(e, token, channel, since_unix_timestamp);
-  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_LAST_MESSAGE); return ""; }
-  return message;
-}
-
-template<typename Configuration>
-std::string
-basic_Cryptolens<Configuration>::create_trial_key_
-  ( basic_Error & e
-  , std::string token
-  , int product_id
-  )
-{
-  if (e) { return ""; }
-
-  std::string machine_code = machine_code_computer.get_machine_code(e);
-
-  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/Key/CreateTrialKey");
-
-  std::ostringstream product_id_; product_id_ << product_id;
-
-  std::string response =
-    request.add_argument(e, "token"      , token.c_str())
-           .add_argument(e, "ProductId"  , product_id_.str().c_str())
-           .add_argument(e, "MachineCode", machine_code.c_str())
-           .make(e);
-
-  if (e) { return ""; }
-
-  using namespace ::cryptolens_io::latest::errors;
-  using namespace ::ArduinoJson;
-  api::main api;
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject & j = jsonBuffer.parseObject(response);
-
-  if (!j.success()) { e.set(api, Subsystem::Json); return ""; }
-
-  if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
-    if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
-      e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
-      return "";
-    }
-
-    // XXX: Update
-    int reason = internal::activate_parse_server_error_message(j["message"].as<char const*>());
-    e.set(api, Subsystem::Main, reason);
-    return "";
-  }
-
-  if (!j["key"].is<char const*>()) { e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY); return ""; }
-
-  char const* key = j["key"].as<char const*>();
-
-  return key ? key : "";
-}
-
-template<typename Configuration>
-std::string
-basic_Cryptolens<Configuration>::last_message_
-  ( basic_Error & e
-  , std::string token
-  , std::string channel
-  , int since_unix_timestamp
-  )
-{
-  if (e) { return ""; }
-
-  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/message/GetMessages");
-
-  std::ostringstream stm; stm << since_unix_timestamp;
-
-  std::string response =
-    request.add_argument(e, "token"  , token.c_str())
-           .add_argument(e, "Channel", channel.c_str())
-           .add_argument(e, "Time"   , stm.str().c_str())
-           .make(e);
-
-  if (e) { return ""; }
-
-  using namespace ::cryptolens_io::latest::errors;
-  using namespace ::ArduinoJson;
-  api::main api;
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject & j = jsonBuffer.parseObject(response);
-
-  if (!j.success()) { e.set(api, Subsystem::Json); return ""; }
-
-  if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
-    if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
-      e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
-      return "";
-    }
-
-    int reason = internal::activate_parse_server_error_message(j["message"].as<char const*>());
-    e.set(api, Subsystem::Main, reason);
-    return "";
-  }
-
-  if (!j["messages"].is<const JsonArray&>()) { return ""; }
-
-  JsonArray const& array = j["messages"].as<const JsonArray&>();
-  int i_max = -1;
-  int created_max = -1;
-  for (size_t i = 0; i < array.size(); ++i) {
-    if (!array.is<const JsonObject&>(i)) { continue; }
-
-    JsonObject const& msg = array.get<const JsonObject&>(i);
-    if (msg["created"].is<int>() &&
-        msg["content"].is<const char*>() && msg["content"].as<const char*>() != NULL)
-    {
-      if (msg["created"] > created_max) { created_max = msg["created"]; i_max = i; }
-    }
-  }
-
-  if (i_max >= 0) { JsonObject const& msg = array.get<const JsonObject&>(i_max); return msg["content"]; }
-
-  return "";
-}
-
-template<typename Configuration>
+template<typename RequestHandler, typename SignatureVerifier>
 optional<LicenseKey>
-basic_Cryptolens<Configuration>::make_license_key(basic_Error & e, std::string const& s)
+basic_SKM<RequestHandler, SignatureVerifier>::make_license_key(basic_Error & e, std::string const& s)
 {
   if (e) { return nullopt; }
 
   optional<RawLicenseKey> raw_license_key;
 
   raw_license_key =
-    ::cryptolens_io::v20190401::internal::handle_activate(e, this->signature_verifier, s);
+    ::cryptolens_io::v20180502::internal::handle_activate(e, this->signature_verifier, s);
 
   if (e) {
     e.reset(api::main());
@@ -684,7 +438,11 @@ basic_Cryptolens<Configuration>::make_license_key(basic_Error & e, std::string c
   return LicenseKey(std::move(*license_key_information), std::move(*raw_license_key));
 }
 
+
 namespace internal {
+
+int
+activate_parse_server_error_message(char const* server_response);
 
 template<typename SignatureVerifier>
 optional<RawLicenseKey>
@@ -731,18 +489,11 @@ handle_activate
            , signature_verifier
            , j["licenseKey"].as<char const*>()
            , j["signature"].as<char const*>()
-           );
+	   );
 }
 
 } // namespace internal
 
-} // namespace v20190401
-
-namespace latest {
-
-template<typename Configuration>
-using basic_Cryptolens = ::cryptolens_io::v20190401::basic_Cryptolens<Configuration>;
-
-} // namespace latest
+} // namespace v20180502
 
 } // namespace cryptolens_io

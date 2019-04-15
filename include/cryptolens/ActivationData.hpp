@@ -36,6 +36,12 @@ public:
 
 } // namespace v20190401
 
+namespace v20180502 {
+
+using ::cryptolens_io::v20190401::ActivationData;
+
+} // namespace v20180502
+
 namespace latest {
 
 using ::cryptolens_io::v20190401::ActivationData;

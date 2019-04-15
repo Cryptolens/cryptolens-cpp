@@ -6,6 +6,8 @@
 #include "imports/windows/wincrypt.h"
 
 #include "basic_Error.hpp"
+#include "Error.hpp"
+#include "SignatureVerifier_v20190401_to_v20180502.hpp"
 
 namespace cryptolens_io {
 
@@ -51,5 +53,21 @@ namespace latest {
 using SignatureVerifier_CryptoAPI = ::cryptolens_io::v20190401::SignatureVerifier_CryptoAPI;
 
 } // namespace latest
+
+namespace v20180502 {
+
+/**
+ * A signature verifier used by the library for checking the cryptographic
+ * signatures return by the Cryptolens Web API and thus makes sure
+ * the responses from the web API has not been tampered with. This signature
+ * verifier depends on the Microsoft CryptoAPI.
+ *
+ * In order for this signature verifier to work the modulus and exponent
+ * must be set using the set_modulus_base64() and set_exponent_base64()
+ * methods.
+ */
+using SignatureVerifier_CryptoAPI = ::cryptolens_io::internal::SignatureVerifier_v20190401_to_v20180502<::cryptolens_io::v20190401::SignatureVerifier_CryptoAPI>;
+
+} // namespace v20180502
 
 } // namespace cryptolens_io

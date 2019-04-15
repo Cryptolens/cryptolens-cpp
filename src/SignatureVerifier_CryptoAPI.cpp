@@ -7,10 +7,6 @@
 #include "api.hpp"
 #include "base64.hpp"
 
-namespace cryptolens_io {
-
-namespace v20190401 {
-
 namespace {
 
 constexpr int SIGNATURE_VERIFIER_UNINITIALIZED = 1;
@@ -25,6 +21,10 @@ constexpr int MESSAGE_TOO_LARGE = 9;
 constexpr int SIGNATURE_TOO_LARGE = 10;
 
 }
+
+namespace cryptolens_io {
+
+namespace v20190401 {
 
 void
 verify(basic_Error & e, HCRYPTPROV hProv, HCRYPTKEY hPubKey, std::string const& message, std::string sig)

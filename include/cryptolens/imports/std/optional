@@ -28,4 +28,14 @@ using ::cryptolens_io::v20190401::nullopt;
 
 } // namespace latest
 
+namespace v20180502 {
+
+template<typename T>
+using optional = ::cryptolens_io::v20190401::optional<T>;
+
+using ::cryptolens_io::v20190401::make_optional;
+using ::cryptolens_io::v20190401::nullopt;
+
+} // namespace v20180502
+
 } // namespace cryptolens_io

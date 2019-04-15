@@ -46,6 +46,12 @@ public:
 
 } // namespace v20190401
 
+namespace v20180502 {
+
+using DataObject = ::cryptolens_io::v20190401::DataObject;
+
+} // namespace v20180502
+
 namespace latest {
 
 using DataObject = ::cryptolens_io::v20190401::DataObject;

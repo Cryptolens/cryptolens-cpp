@@ -5,6 +5,7 @@
 #include "imports/curl/curl.h"
 
 #include "basic_Error.hpp"
+#include "RequestHandler_v20190401_to_v20180502.hpp"
 
 namespace cryptolens_io {
 
@@ -87,5 +88,29 @@ namespace RequestHandler_curl = ::cryptolens_io::v20190401::errors::RequestHandl
 using RequestHandler_curl = ::cryptolens_io::v20190401::RequestHandler_curl;
 
 } // namespace latest
+
+namespace v20180502 {
+
+namespace errors {
+
+namespace RequestHandler_curl {
+
+int constexpr CURL_NULL = 1;
+int constexpr ESCAPE = 2;
+int constexpr SETOPT_URL = 3;
+int constexpr SETOPT_WRITEFUNCTION = 4;
+int constexpr SETOPT_WRITEDATA = 5;
+int constexpr SETOPT_VERIFYPEER = 6;
+int constexpr SETOPT_VERIFYHOST = 7;
+int constexpr PERFORM = 8;
+int constexpr SETOPT_POSTFIELDS = 9;
+
+} // namespace RequestHandler_curl
+
+} // namespace errors
+
+using RequestHandler_curl = ::cryptolens_io::internal::RequestHandler_v20190401_to_v20180502<::cryptolens_io::v20190401::RequestHandler_curl>;
+
+} // namespace v20180502
 
 } // namespace cryptolens_io

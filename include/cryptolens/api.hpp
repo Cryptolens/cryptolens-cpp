@@ -25,4 +25,15 @@ using ::cryptolens_io::v20190401::api::experimental_v1;
 
 } // namespace latest
 
+namespace v20180502 {
+
+namespace api {
+
+using ::cryptolens_io::v20190401::api::main;
+using ::cryptolens_io::v20190401::api::experimental_v1;
+
+} // namespace api
+
+} // namespace v20180502
+
 } // namespace cryptolens_io

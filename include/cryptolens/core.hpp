@@ -5,6 +5,7 @@
 #include "api.hpp"
 #include "basic_Error.hpp"
 #include "basic_Cryptolens.hpp"
+#include "basic_SKM.hpp"
 #include "Customer.hpp"
 #include "DataObject.hpp"
 #include "LicenseKeyChecker.hpp"

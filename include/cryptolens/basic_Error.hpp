@@ -126,6 +126,20 @@ public:
 
 } // namespace v20190401
 
+namespace v20180502 {
+
+namespace errors {
+
+namespace Subsystem = ::cryptolens_io::v20190401::errors::Subsystem;
+namespace Call = ::cryptolens_io::v20190401::errors::Call;
+namespace Main = ::cryptolens_io::v20190401::errors::Main;
+
+} // namespace errors
+
+using basic_Error = ::cryptolens_io::v20190401::basic_Error;
+
+} // namespace v20180502
+
 namespace latest {
 
 namespace errors {

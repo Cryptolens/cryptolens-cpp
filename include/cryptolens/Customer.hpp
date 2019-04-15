@@ -47,6 +47,12 @@ public:
 
 } // namespace v20190401
 
+namespace v20180502 {
+
+using Customer = ::cryptolens_io::v20190401::Customer;
+
+} // namespace v20180502
+
 namespace latest {
 
 using Customer = ::cryptolens_io::v20190401::Customer;

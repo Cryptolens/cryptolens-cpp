@@ -81,6 +81,12 @@ public:
 
 } // namespace v20190401
 
+namespace v20180502 {
+
+using LicenseKey = ::cryptolens_io::v20190401::LicenseKey;
+
+} // namespace v20180502
+
 namespace latest {
 
 using LicenseKey = ::cryptolens_io::v20190401::LicenseKey;
