@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ResponseParser_ArduinoJson5.hpp"
 #include "RequestHandler_WinHTTP.hpp"
 #include "SignatureVerifier_CryptoAPI.hpp"
 
@@ -9,6 +10,7 @@ namespace v20190401 {
 
 template<typename MachineCodeComputer_>
 struct Configuration_Windows {
+  using ResponseParser = ResponseParser_ArduinoJson5;
   using RequestHandler = RequestHandler_WinHTTP;
   using SignatureVerifier = SignatureVerifier_CryptoAPI;
   using MachineCodeComputer = MachineCodeComputer_;

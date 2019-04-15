@@ -98,7 +98,7 @@ class basic_Cryptolens
 {
 public:
   basic_Cryptolens(basic_Error & e)
-  : request_handler(e), signature_verifier(e), machine_code_computer(e)
+  : response_parser(e), request_handler(e), signature_verifier(e), machine_code_computer(e)
   { }
 
   optional<LicenseKey>
@@ -141,6 +141,7 @@ public:
   optional<LicenseKey>
   make_license_key(basic_Error & e, std::string const& s);
 
+  typename Configuration::ResponseParser response_parser;
   typename Configuration::RequestHandler request_handler;
   typename Configuration::SignatureVerifier signature_verifier;
   typename Configuration::MachineCodeComputer machine_code_computer;
