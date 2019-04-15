@@ -5,6 +5,7 @@
 #include "imports/windows/Windows.h"
 #include "imports/windows/winhttp.h"
 
+#include "api.hpp"
 #include "basic_Error.hpp"
 
 namespace cryptolens_io {
@@ -23,10 +24,29 @@ int constexpr WINHTTP_RECIEVE_RESPONSE_FAILED = 5;
 int constexpr WINHTTP_QUERY_DATA_AVAILABLE_FAILED = 6;
 int constexpr WINHTTP_READ_DATA_FAILED = 7;
 int constexpr WINHTTP_POSTFIELDS_TOO_LARGE = 8;
+int constexpr MULTIBYTETOWIDE_ENDPOINT = 9;
+int constexpr MULTIBYTETOWIDE_HOST = 10;
 
 } // namespace RequestHandler_WinHTTP
 
 } // namespace errors
+
+class RequestHandler_WinHTTP_PostBuilder {
+public:
+  RequestHandler_WinHTTP_PostBuilder(char const* host, char const* endpoint);
+
+  RequestHandler_WinHTTP_PostBuilder &
+  add_argument(basic_Error & e, char const* key, char const* value);
+
+  std::string
+  make(basic_Error & e);
+
+private:
+  char separator_;
+  std::string postfields_;
+  char const* host_;
+  char const* endpoint_;
+};
 
 /**
  * A request handler that is responsible for making the HTTPS requests
@@ -49,66 +69,11 @@ public:
 #endif
   ~RequestHandler_WinHTTP();
 
-  template<typename Map>
-  std::string
-  make_request(basic_Error & e, char const* method, Map const& map);
+  using PostBuilder = RequestHandler_WinHTTP_PostBuilder;
 
-private:
-  std::string
-  make_request_(basic_Error & e, std::string const& postfields);
-
-  std::string percent_encode_(std::string const& s);
-
-  template<typename Map>
-  std::string
-  build_url_(basic_Error & e, char const* method, Map const& map);
-
-  template<typename Map>
-  std::string
-  build_postfields_(basic_Error & e, char const* method, Map const& map);
+  PostBuilder
+  post_request(basic_Error& e, char const* host, char const* endpoint);
 };
-
-/**
- * This method is used internally in the library and need not be called by the user.
- */
-template<typename Map>
-std::string
-RequestHandler_WinHTTP::make_request(basic_Error & e, char const* method, Map const& map)
-{
-  if (e) { return ""; }
-
-  std::string postfields = build_postfields_(e, method, map);
-  return make_request_(e, postfields);
-}
-
-template<typename Map>
-std::string
-RequestHandler_WinHTTP::build_postfields_(basic_Error & e, char const* method, Map const& map)
-{
-  if (e) { return ""; }
-
-  using namespace errors::RequestHandler_WinHTTP;
-
-  std::string s{""};
-
-  bool first = true;
-  char separator = '&';
-  for (auto& x : map) {
-    if (first) { first = false; }
-    else       { s += separator; }
-
-    std::string res;
-    res = percent_encode_(x.first);
-    s += res;
-
-    s += '=';
-
-    res = percent_encode_(x.second);
-    s += res;
-  }
-
-  return s;
-}
 
 } // namespace v20190401
 

@@ -28,6 +28,23 @@ int constexpr SETOPT_POSTFIELDS = 9;
 
 } // namespace errors
 
+class RequestHandler_curl_PostBuilder {
+public:
+  RequestHandler_curl_PostBuilder(CURL * curl, char const* host, char const* endpoint);
+
+  RequestHandler_curl_PostBuilder &
+  add_argument(basic_Error & e, char const* key, char const* value);
+
+  std::string
+  make(basic_Error & e);
+
+private:
+  CURL *curl_;
+  char separator_;
+  std::string postfields_;
+  std::string url_;
+};
+
 /**
  * A request handler that is responsible for making the HTTPS requests
  * to the Cryptolens Web API. This request handler is build
@@ -49,96 +66,13 @@ public:
 #endif
   ~RequestHandler_curl();
 
-  template<typename Map>
-  std::string
-  make_request(basic_Error & e, char const* method, Map const& map);
+  using PostBuilder = RequestHandler_curl_PostBuilder;
 
+  PostBuilder
+  post_request(basic_Error & e, char const* host, char const* endpoint);
 private:
   CURL *curl;
-
-  std::string
-  make_request_(basic_Error & e, std::string const& url, std::string const& postfields);
-
-  template<typename Map>
-  std::string
-  build_url_(basic_Error & e, char const* method, Map const& map);
-
-  template<typename Map>
-  std::string
-  build_postfields_(basic_Error & e, char const* method, Map const& map);
 };
-
-/**
- * This method is used internally in the library and need not be called by the user.
- */
-template<typename Map>
-std::string
-RequestHandler_curl::make_request(basic_Error & e, char const* method, Map const& map)
-{
-  if (e) { return ""; }
-
-  std::string url = build_url_(e, method, map);
-  std::string postfields = build_postfields_(e, method, map);
-  return make_request_(e, url, postfields);
-}
-
-template<typename Map>
-std::string
-RequestHandler_curl::build_url_(basic_Error & e, char const* method, Map const& map)
-{
-  if (e) { return ""; }
-
-  using namespace errors::RequestHandler_curl;
-  api::main api;
-
-  if (!this->curl) { e.set(api, errors::Subsystem::RequestHandler, CURL_NULL); return ""; }
-
-  char* res;
-  std::string s{"https://app.cryptolens.io/api/key/"};
-
-  res = curl_easy_escape(curl, method, 0);
-  if (!res) { e.set(api, errors::Subsystem::RequestHandler, ESCAPE); return ""; }
-  s += res;
-  curl_free(res);
-
-  return s;
-}
-
-template<typename Map>
-std::string
-RequestHandler_curl::build_postfields_(basic_Error & e, char const* method, Map const& map)
-{
-  if (e) { return ""; }
-
-  using namespace errors::RequestHandler_curl;
-  api::main api;
-
-  if (!this->curl) { e.set(api, errors::Subsystem::RequestHandler, CURL_NULL); return ""; }
-
-  char* res;
-  std::string s{""};
-
-  bool first = true;
-  char separator = '&';
-  for (auto& x : map) {
-    if (first) { first = false; }
-    else       { s += separator; }
-
-    res = curl_easy_escape(curl, x.first.c_str(), 0);
-    if (!res) { e.set(api, errors::Subsystem::RequestHandler, ESCAPE); return ""; }
-    s += res;
-    curl_free(res);
-
-    s += '=';
-
-    res = curl_easy_escape(curl, x.second.c_str(), 0);
-    if (!res) { e.set(api, errors::Subsystem::RequestHandler, ESCAPE); return ""; }
-    s += res;
-    curl_free(res);
-  }
-
-  return s;
-}
 
 } // namespace v20190401
 

@@ -10,6 +10,68 @@ namespace cryptolens_io {
 
 namespace v20190401 {
 
+/*
+ * RequestHandler_curl
+ */
+
+RequestHandler_curl::RequestHandler_curl(basic_Error & e)
+{
+  this->curl = curl_easy_init();
+}
+
+RequestHandler_curl::~RequestHandler_curl()
+{
+  if (this->curl) {
+    curl_easy_cleanup(this->curl);
+  }
+}
+
+RequestHandler_curl::PostBuilder
+RequestHandler_curl::post_request(basic_Error & e, char const* host, char const* endpoint)
+{
+  return RequestHandler_curl_PostBuilder(curl, host, endpoint);
+}
+
+/*
+ * RequestHandler_curl_PostBuilder
+ */
+
+RequestHandler_curl_PostBuilder::RequestHandler_curl_PostBuilder(CURL * curl, char const* host, char const* endpoint)
+: curl_(curl), separator_(' '), postfields_(), url_("https://")
+{
+  url_ += host;
+  if (url_.size() > 0 && url_.back() != '/' && endpoint != nullptr && *endpoint != '/') { url_ += '/'; }
+  url_ += endpoint;
+}
+
+RequestHandler_curl_PostBuilder &
+RequestHandler_curl_PostBuilder::add_argument(basic_Error & e, char const* key, char const* value) {
+  if (e) { return *this; }
+
+  api::main api;
+  using namespace errors::RequestHandler_curl;
+
+  if (!this->curl_) { e.set(api, errors::Subsystem::RequestHandler, CURL_NULL); return *this; }
+
+  if (separator_ == ' ') { separator_ = '&'; }
+  else                   { postfields_ += separator_; }
+
+  char* res;
+  res = curl_easy_escape(curl_, key, 0);
+  if (!res) { e.set(api, errors::Subsystem::RequestHandler, ESCAPE); return *this; }
+  postfields_ += res;
+  curl_free(res);
+
+  postfields_ += '=';
+
+  res = curl_easy_escape(curl_, value, 0);
+  if (!res) { e.set(api, errors::Subsystem::RequestHandler, ESCAPE); return *this; }
+  postfields_ += res;
+  curl_free(res);
+
+  return *this;
+}
+
 size_t
 handle_response(char * ptr, size_t size, size_t nmemb, void *userdata)
 {
@@ -122,13 +184,8 @@ sslctx_function_setup_cacerts(CURL *curl, void *sslctx, void *parm)
 
 #endif /* CRYPTOLENS_CURL_EMBED_CACERTS */
 
-RequestHandler_curl::RequestHandler_curl(basic_Error & e)
-{
-  this->curl = curl_easy_init();
-}
-
 std::string
-RequestHandler_curl::make_request_(basic_Error & e, std::string const& url, std::string const& postfields)
+RequestHandler_curl_PostBuilder::make(basic_Error & e)
 {
   if (e) { return ""; }
 
@@ -136,36 +193,29 @@ RequestHandler_curl::make_request_(basic_Error & e, std::string const& url, std:
   using namespace errors::RequestHandler_curl;
   api::main api;
 
-  if (!this->curl) { e.set(api, Subsystem::RequestHandler, CURL_NULL); return ""; }
+  if (!this->curl_) { e.set(api, Subsystem::RequestHandler, CURL_NULL); return ""; }
 
   std::string response;
   CURLcode cc;
 
-  cc = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
+  cc = curl_easy_setopt(this->curl_, CURLOPT_URL, url_.c_str());
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_URL, cc); return ""; }
-  cc = curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, handle_response);
+  cc = curl_easy_setopt(this->curl_, CURLOPT_WRITEFUNCTION, handle_response);
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_WRITEFUNCTION, cc); return ""; }
-  cc = curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, (void *)&response);
+  cc = curl_easy_setopt(this->curl_, CURLOPT_WRITEDATA, (void *)&response);
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_WRITEDATA, cc); return ""; }
-  cc = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, postfields.c_str());
+  cc = curl_easy_setopt(this->curl_, CURLOPT_POSTFIELDS, postfields_.c_str());
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_POSTFIELDS, cc); return ""; }
 
 #ifdef CRYPTOLENS_CURL_EMBED_CACERTS
-  curl_easy_setopt(this->curl, CURLOPT_SSL_CTX_FUNCTION, *sslctx_function_setup_cacerts);
-  curl_easy_setopt(this->curl, CURLOPT_SSL_CTX_DATA, (void*)&e);
+  curl_easy_setopt(this->curl_, CURLOPT_SSL_CTX_FUNCTION, *sslctx_function_setup_cacerts);
+  curl_easy_setopt(this->curl_, CURLOPT_SSL_CTX_DATA, (void*)&e);
 #endif /* CRYPTOLENS_CURL_EMBED_CACERTS */
 
-  cc = curl_easy_perform(this->curl);
+  cc = curl_easy_perform(this->curl_);
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, PERFORM, cc); return ""; }
 
   return response;
-}
-
-RequestHandler_curl::~RequestHandler_curl()
-{
-  if (this->curl) {
-    curl_easy_cleanup(this->curl);
-  }
 }
 
 } // namespace v20190401

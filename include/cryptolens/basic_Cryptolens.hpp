@@ -309,19 +309,21 @@ basic_Cryptolens<Configuration>::activate_
 {
   if (e) { return nullopt; }
 
-  std::unordered_map<std::string,std::string> args;
-  args["token"] = token;
-  std::ostringstream product_id_; product_id_ << product_id;
-  args["ProductId"] = product_id_.str();
-  args["Key"] = key;
-  args["Sign"] = "true";
-  args["MachineCode"] = machine_code;
-  std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
-  args["FieldsToReturn"] = fields_to_return_.str();
-  args["SignMethod"] = "1";
-  args["v"] = "1";
+  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/key/Activate");
 
-  std::string response = request_handler.make_request(e, "Activate", args);
+  std::ostringstream product_id_; product_id_ << product_id;
+  std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
+
+  std::string response =
+    request.add_argument(e, "token"         , token.c_str())
+           .add_argument(e, "ProductId"     , product_id_.str().c_str())
+           .add_argument(e, "Key"           , key.c_str())
+           .add_argument(e, "Sign"          , "true")
+           .add_argument(e, "MachineCode"   , machine_code.c_str())
+           .add_argument(e, "FieldsToReturn", fields_to_return_.str().c_str())
+           .add_argument(e, "SignMethod"    , "1")
+           .add_argument(e, "v"             , "1")
+           .make(e);
 
   return handle_activate_raw(e, this->signature_verifier, response);
 }
@@ -340,21 +342,23 @@ basic_Cryptolens<Configuration>::activate_floating_
 {
   if (e) { return nullopt; }
 
-  std::unordered_map<std::string,std::string> args;
-  args["token"] = token;
-  std::ostringstream product_id_; product_id_ << product_id;
-  args["ProductId"] = product_id_.str();
-  args["Key"] = key;
-  args["Sign"] = "true";
-  args["MachineCode"] = machine_code;
-  std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
-  args["FieldsToReturn"] = fields_to_return_.str();
-  args["SignMethod"] = "1";
-  args["v"] = "1";
-  std::ostringstream floating_time_interval_; floating_time_interval_ << floating_time_interval;
-  args["FloatingTimeInterval"] = floating_time_interval_.str();
+  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/key/Activate");
 
-  std::string response = request_handler.make_request(e, "Activate", args);
+  std::ostringstream product_id_; product_id_ << product_id;
+  std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
+  std::ostringstream floating_time_interval_; floating_time_interval_ << floating_time_interval;
+
+  std::string response =
+    request.add_argument(e, "token"               , token.c_str())
+           .add_argument(e, "ProductId"           , product_id_.str().c_str())
+           .add_argument(e, "Key"                 , key.c_str())
+           .add_argument(e, "Sign"                , "true")
+           .add_argument(e, "MachineCode"         , machine_code.c_str())
+           .add_argument(e, "FieldsToReturn"      , fields_to_return_.str().c_str())
+           .add_argument(e, "SignMethod"          , "1")
+           .add_argument(e, "v"                   , "1")
+           .add_argument(e, "FloatingTimeInterval", floating_time_interval_.str().c_str())
+           .make(e);
 
   return handle_activate_raw(e, this->signature_verifier, response);
 }
