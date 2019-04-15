@@ -32,7 +32,7 @@ void activate(char const* machine_code)
       , // Cryptolens Access Token
         "WyIxNDQzIiwiZXBCVGc1S2tOVmRielVibXAxaWdtdVNtOXlGTnR0ekhkN2lwRnVKQiJd"
       , // Product id
-        "3934"
+        3934
       , // License Key
         "KRQNS-CSPNV-XRQBT-MTSBI"
       , // Floating interval

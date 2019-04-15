@@ -105,7 +105,7 @@ public:
   activate
     ( basic_Error & e
     , std::string token
-    , std::string product_id
+    , int product_id
     , std::string key
     , int fields_to_return = 0
     );
@@ -114,7 +114,7 @@ public:
   activate_raw
     ( basic_Error & e
     , std::string token
-    , std::string product_id
+    , int product_id
     , std::string key
     , int fields_to_return = 0
     );
@@ -123,7 +123,7 @@ public:
   activate_floating
     ( basic_Error & e
     , std::string token
-    , std::string product_id
+    , int product_id
     , std::string key
     , long floating_time_interval
     , int fields_to_return = 0
@@ -133,7 +133,7 @@ public:
   activate_raw_exn
     ( api::experimental_v1 experimental
     , std::string token
-    , std::string product_id
+    , int product_id
     , std::string key
     , int fields_to_return = 0
     );
@@ -151,7 +151,7 @@ private:
   activate_
     ( basic_Error & e
     , std::string token
-    , std::string product_id
+    , int product_id
     , std::string key
     , std::string machine_code
     , int fields_to_return = 0
@@ -161,7 +161,7 @@ private:
   activate_floating_
     ( basic_Error & e
     , std::string token
-    , std::string product_id
+    , int product_id
     , std::string key
     , std::string machine_code
     , long floating_time_interval
@@ -186,7 +186,7 @@ optional<LicenseKey>
 basic_Cryptolens<Configuration>::activate
   ( basic_Error & e
   , std::string token
-  , std::string product_id
+  , int product_id
   , std::string key
   , int fields_to_return
   )
@@ -225,7 +225,7 @@ optional<RawLicenseKey>
 basic_Cryptolens<Configuration>::activate_raw
   ( basic_Error & e
   , std::string token
-  , std::string product_id
+  , int product_id
   , std::string key
   , int fields_to_return
   )
@@ -272,7 +272,7 @@ optional<LicenseKey>
 basic_Cryptolens<Configuration>::activate_floating
   ( basic_Error & e
   , std::string token
-  , std::string product_id
+  , int product_id
   , std::string key
   , long floating_time_interval
   , int fields_to_return
@@ -301,7 +301,7 @@ optional<RawLicenseKey>
 basic_Cryptolens<Configuration>::activate_
   ( basic_Error & e
   , std::string token
-  , std::string product_id
+  , int product_id
   , std::string key
   , std::string machine_code
   , int fields_to_return
@@ -311,14 +311,13 @@ basic_Cryptolens<Configuration>::activate_
 
   std::unordered_map<std::string,std::string> args;
   args["token"] = token;
-  args["ProductId"] = product_id;
+  std::ostringstream product_id_; product_id_ << product_id;
+  args["ProductId"] = product_id_.str();
   args["Key"] = key;
   args["Sign"] = "true";
   args["MachineCode"] = machine_code;
-  // Fix since to_string is not available everywhere
-  //args["FieldsToReturn"] = std::to_string(fields_to_return);
-  std::ostringstream stm; stm << fields_to_return;
-  args["FieldsToReturn"] = stm.str();
+  std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
+  args["FieldsToReturn"] = fields_to_return_.str();
   args["SignMethod"] = "1";
   args["v"] = "1";
 
@@ -332,7 +331,7 @@ optional<RawLicenseKey>
 basic_Cryptolens<Configuration>::activate_floating_
   ( basic_Error & e
   , std::string token
-  , std::string product_id
+  , int product_id
   , std::string key
   , std::string machine_code
   , long floating_time_interval
@@ -343,18 +342,17 @@ basic_Cryptolens<Configuration>::activate_floating_
 
   std::unordered_map<std::string,std::string> args;
   args["token"] = token;
-  args["ProductId"] = product_id;
+  std::ostringstream product_id_; product_id_ << product_id;
+  args["ProductId"] = product_id_.str();
   args["Key"] = key;
   args["Sign"] = "true";
   args["MachineCode"] = machine_code;
-  // Fix since to_string is not available everywhere
-  //args["FieldsToReturn"] = std::to_string(fields_to_return);
-  std::ostringstream stm; stm << fields_to_return;
-  args["FieldsToReturn"] = stm.str();
+  std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
+  args["FieldsToReturn"] = fields_to_return_.str();
   args["SignMethod"] = "1";
   args["v"] = "1";
-  stm.str(""); stm.clear(); stm << floating_time_interval;
-  args["FloatingTimeInterval"] = stm.str();
+  std::ostringstream floating_time_interval_; floating_time_interval_ << floating_time_interval;
+  args["FloatingTimeInterval"] = floating_time_interval_.str();
 
   std::string response = request_handler.make_request(e, "Activate", args);
 
@@ -379,7 +377,7 @@ RawLicenseKey
 basic_Cryptolens<Configuration>::activate_raw_exn
   ( api::experimental_v1 experimental
   , std::string token
-  , std::string product_id
+  , int product_id
   , std::string key
   , int fields_to_return
   )

@@ -67,7 +67,7 @@ int write_license_key_to_file(LPCWSTR file_name)
 			, // Cryptolens Access Token
 			"WyI0NjUiLCJBWTBGTlQwZm9WV0FyVnZzMEV1Mm9LOHJmRDZ1SjF0Vk52WTU0VzB2Il0="
 			, // Product id
-			"3646"
+			3646
 			, // License Key
 			"MPDWY-PQAOW-FKSCH-SGAAU"
 		);
