@@ -39,6 +39,8 @@ int constexpr BASIC_SKM_ACTIVATE = 5;
 int constexpr BASIC_SKM_ACTIVATE_FLOATING = 6;
 int constexpr BASIC_SKM_MAKE_LICENSE_KEY = 7;
 int constexpr BASIC_SKM_LAST_MESSAGE = 8;
+int constexpr BASIC_SKM_CREATE_TRIAL_KEY = 9;
+int constexpr BASIC_CRYPTOLENS_CREATE_TRIAL_KEY = BASIC_SKM_CREATE_TRIAL_KEY;
 
 } // namespace Call
 

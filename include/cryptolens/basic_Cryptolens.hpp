@@ -142,6 +142,13 @@ public:
     );
 
   std::string
+  create_trial_key
+    ( basic_Error & e
+    , std::string token
+    , int product_id
+    );
+
+  std::string
   last_message
     ( basic_Error & e
     , std::string token
@@ -177,6 +184,13 @@ private:
     , std::string machine_code
     , long floating_time_interval
     , int fields_to_return = 0
+    );
+
+  std::string
+  create_trial_key_
+    ( basic_Error & e
+    , std::string token
+    , int product_id
     );
 
   std::string
@@ -316,6 +330,21 @@ basic_Cryptolens<Configuration>::activate_floating
 }
 
 template<typename Configuration>
+std::string
+basic_Cryptolens<Configuration>::create_trial_key
+  ( basic_Error & e
+  , std::string token
+  , int product_id
+  )
+{
+  if (e) { return ""; }
+
+  std::string key = create_trial_key_(e, token, product_id);
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_CREATE_TRIAL_KEY); return ""; }
+  return key;
+}
+
+template<typename Configuration>
 optional<RawLicenseKey>
 basic_Cryptolens<Configuration>::activate_
   ( basic_Error & e
@@ -435,6 +464,57 @@ basic_Cryptolens<Configuration>::last_message
 
 template<typename Configuration>
 std::string
+basic_Cryptolens<Configuration>::create_trial_key_
+  ( basic_Error & e
+  , std::string token
+  , int product_id
+  )
+{
+  if (e) { return ""; }
+
+  std::string machine_code = machine_code_computer.get_machine_code(e);
+
+  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/Key/CreateTrialKey");
+
+  std::ostringstream product_id_; product_id_ << product_id;
+
+  std::string response =
+    request.add_argument(e, "token"      , token.c_str())
+           .add_argument(e, "ProductId"  , product_id_.str().c_str())
+           .add_argument(e, "MachineCode", machine_code.c_str())
+           .make(e);
+
+  if (e) { return ""; }
+
+  using namespace ::cryptolens_io::latest::errors;
+  using namespace ::ArduinoJson;
+  api::main api;
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject & j = jsonBuffer.parseObject(response);
+
+  if (!j.success()) { e.set(api, Subsystem::Json); return ""; }
+
+  if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
+    if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
+      e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
+      return "";
+    }
+
+    // XXX: Update
+    int reason = internal::activate_parse_server_error_message(j["message"].as<char const*>());
+    e.set(api, Subsystem::Main, reason);
+    return "";
+  }
+
+  if (!j["key"].is<char const*>()) { e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY); return ""; }
+
+  char const* key = j["key"].as<char const*>();
+
+  return key ? key : "";
+}
+
+template<typename Configuration>
+std::string
 basic_Cryptolens<Configuration>::last_message_
   ( basic_Error & e
   , std::string token
@@ -536,7 +616,6 @@ basic_Cryptolens<Configuration>::make_license_key(basic_Error & e, std::string c
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_MAKE_LICENSE_KEY); return nullopt; }
   return LicenseKey(std::move(*license_key_information), std::move(*raw_license_key));
 }
-
 
 namespace internal {
 

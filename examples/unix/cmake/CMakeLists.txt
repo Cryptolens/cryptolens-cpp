@@ -15,6 +15,11 @@ target_link_libraries(example_activate cryptolens)
 set_property(TARGET example_activate PROPERTY CXX_STANDARD 17)
 set_property(TARGET example_activate PROPERTY CXX_STANDARD_REQURED ON)
 
+add_executable(example_create_trial_key ../example_create_trial_key.cpp)
+target_link_libraries(example_create_trial_key cryptolens)
+set_property(TARGET example_create_trial_key PROPERTY CXX_STANDARD 17)
+set_property(TARGET example_create_trial_key PROPERTY CXX_STANDARD_REQURED ON)
+
 add_executable(example_external ../example_external.cpp)
 target_link_libraries(example_external cryptolens)
 set_property(TARGET example_external PROPERTY CXX_STANDARD 17)
