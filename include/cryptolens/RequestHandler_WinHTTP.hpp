@@ -2,6 +2,9 @@
 
 #include <string>
 
+#include "imports/windows/Windows.h"
+#include "imports/windows/winhttp.h"
+
 #include "basic_Error.hpp"
 
 namespace cryptolens_io {

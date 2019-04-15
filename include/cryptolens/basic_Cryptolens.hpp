@@ -5,9 +5,9 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "optional.hpp"
+#include "imports/std/optional"
 
-#include "../ArduinoJson.hpp"
+#include "imports/ArduinoJson5/ArduinoJson.hpp"
 
 #include "ActivateError.hpp"
 #include "basic_Error.hpp"

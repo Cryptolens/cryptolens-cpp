@@ -1,8 +1,7 @@
-#include <curl/curl.h>
-
 #ifdef CRYPTOLENS_CURL_EMBED_CACERTS
-#include <openssl/ssl.h>
 #include <vector>
+
+#include "imports/openssl/ssl.h"
 #endif /* CRYPTOLENS_CURL_EMBED_CACERTS */
 
 #include "RequestHandler_curl.hpp"

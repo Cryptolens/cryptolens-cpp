@@ -184,7 +184,7 @@
     <ClInclude Include="..\include\cryptolens\LicenseKey.hpp" />
     <ClInclude Include="..\include\cryptolens\LicenseKeyChecker.hpp" />
     <ClInclude Include="..\include\cryptolens\LicenseKeyInformation.hpp" />
-    <ClInclude Include="..\include\cryptolens\optional.hpp" />
+    <ClInclude Include="..\include\cryptolens\imports\std\optional" />
     <ClInclude Include="..\include\cryptolens\RawLicenseKey.hpp" />
     <ClInclude Include="..\include\cryptolens\RequestHandler_curl.hpp" />
     <ClInclude Include="..\include\cryptolens\RequestHandler_WinHTTP.hpp" />

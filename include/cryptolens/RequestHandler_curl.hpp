@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <curl/curl.h>
+#include "imports/curl/curl.h"
 
 #include "basic_Error.hpp"
 

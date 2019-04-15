@@ -1,13 +1,14 @@
 #include <string>
 
-#include <openssl/bn.h>
-#include <openssl/evp.h>
-#include <openssl/rsa.h>
+#include "imports/std/optional"
 
-#include "SignatureVerifier_OpenSSL.hpp"
+#include "imports/openssl/bn.h"
+#include "imports/openssl/evp.h"
+#include "imports/openssl/rsa.h"
+
 #include "api.hpp"
 #include "base64.hpp"
-#include "optional.hpp"
+#include "SignatureVerifier_OpenSSL.hpp"
 
 namespace cryptolens_io {
 

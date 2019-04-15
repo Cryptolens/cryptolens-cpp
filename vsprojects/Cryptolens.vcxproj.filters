@@ -80,7 +80,7 @@
     <ClInclude Include="..\include\cryptolens\LicenseKeyInformation.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cryptolens\optional.hpp">
+    <ClInclude Include="..\include\cryptolens\imports\std\optional">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cryptolens\RawLicenseKey.hpp">
