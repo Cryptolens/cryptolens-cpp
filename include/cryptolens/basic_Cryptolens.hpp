@@ -93,7 +93,7 @@ handle_activate
  * chosen policy classes since in some cases special initialization may be
  * neccessary.
  */
-template<typename RequestHandler, typename SignatureVerifier>
+template<typename Configuration>
 class basic_Cryptolens
 {
 public:
@@ -143,8 +143,8 @@ public:
   optional<LicenseKey>
   make_license_key(basic_Error & e, std::string const& s);
 
-  SignatureVerifier signature_verifier;
-  RequestHandler request_handler;
+  typename Configuration::RequestHandler request_handler;
+  typename Configuration::SignatureVerifier signature_verifier;
 
 private:
   optional<RawLicenseKey>
@@ -183,9 +183,9 @@ private:
  *   An optional with a RawLicenseKey representing if the request was
  *   successful or not.
  */
-template<typename RequestHandler, typename SignatureVerifier>
+template<typename Configuration>
 optional<LicenseKey>
-basic_Cryptolens<RequestHandler, SignatureVerifier>::activate
+basic_Cryptolens<Configuration>::activate
   ( basic_Error & e
   , std::string token
   , std::string product_id
@@ -223,9 +223,9 @@ basic_Cryptolens<RequestHandler, SignatureVerifier>::activate
  *   An optional with a RawLicenseKey representing if the request was
  *   successful or not.
  */
-template<typename RequestHandler, typename SignatureVerifier>
+template<typename Configuration>
 optional<RawLicenseKey>
-basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_raw
+basic_Cryptolens<Configuration>::activate_raw
   ( basic_Error & e
   , std::string token
   , std::string product_id
@@ -271,9 +271,9 @@ basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_raw
  *   An optional with a RawLicenseKey representing if the request was
  *   successful or not.
  */
-template<typename RequestHandler, typename SignatureVerifier>
+template<typename Configuration>
 optional<LicenseKey>
-basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_floating
+basic_Cryptolens<Configuration>::activate_floating
   ( basic_Error & e
   , std::string token
   , std::string product_id
@@ -299,9 +299,9 @@ basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_floating
   return LicenseKey(std::move(*y), std::move(*x));
 }
 
-template<typename RequestHandler, typename SignatureVerifier>
+template<typename Configuration>
 optional<RawLicenseKey>
-basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_
+basic_Cryptolens<Configuration>::activate_
   ( basic_Error & e
   , std::string token
   , std::string product_id
@@ -330,9 +330,9 @@ basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_
   return handle_activate_raw(e, this->signature_verifier, response);
 }
 
-template<typename RequestHandler, typename SignatureVerifier>
+template<typename Configuration>
 optional<RawLicenseKey>
-basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_floating_
+basic_Cryptolens<Configuration>::activate_floating_
   ( basic_Error & e
   , std::string token
   , std::string product_id
@@ -377,9 +377,9 @@ basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_floating_
  * Returns:
  *   A RawLicenseKey. If the request is unsuecessful an ActivateError is thrown.
  */
-template<typename RequestHandler, typename SignatureVerifier>
+template<typename Configuration>
 RawLicenseKey
-basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_raw_exn
+basic_Cryptolens<Configuration>::activate_raw_exn
   ( api::experimental_v1 experimental
   , std::string token
   , std::string product_id
@@ -397,9 +397,9 @@ basic_Cryptolens<RequestHandler, SignatureVerifier>::activate_raw_exn
   throw ActivateError::from_server_response(NULL);
 }
 
-template<typename RequestHandler, typename SignatureVerifier>
+template<typename Configuration>
 optional<LicenseKey>
-basic_Cryptolens<RequestHandler, SignatureVerifier>::make_license_key(basic_Error & e, std::string const& s)
+basic_Cryptolens<Configuration>::make_license_key(basic_Error & e, std::string const& s)
 {
   if (e) { return nullopt; }
 
@@ -498,8 +498,8 @@ handle_activate
 
 namespace latest {
 
-template<typename RequestHandler, typename SignatureVerifier>
-using basic_Cryptolens = ::cryptolens_io::v20190401::basic_Cryptolens<RequestHandler, SignatureVerifier>;
+template<typename Configuration>
+using basic_Cryptolens = ::cryptolens_io::v20190401::basic_Cryptolens<Configuration>;
 
 } // namespace latest
 

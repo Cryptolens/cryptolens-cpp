@@ -177,6 +177,7 @@
     <ClInclude Include="..\include\cryptolens\base64.hpp" />
     <ClInclude Include="..\include\cryptolens\basic_Error.hpp" />
     <ClInclude Include="..\include\cryptolens\basic_Cryptolens.hpp" />
+    <ClInclude Include="..\include\cryptolens\Configuration_Windows.hpp" />
     <ClInclude Include="..\include\cryptolens\core.hpp" />
     <ClInclude Include="..\include\cryptolens\Customer.hpp" />
     <ClInclude Include="..\include\cryptolens\DataObject.hpp" />

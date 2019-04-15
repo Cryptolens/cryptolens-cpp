@@ -98,5 +98,8 @@
     <ClInclude Include="..\include\cryptolens\basic_Cryptolens.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cryptolens\Configuration_Windows.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

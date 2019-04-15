@@ -2,17 +2,15 @@
 
 #include "cryptolens\core.hpp"
 #include "cryptolens\Error.hpp"
-#include "cryptolens\RequestHandler_WinHTTP.hpp"
-#include "cryptolens\SignatureVerifier_CryptoAPI.hpp"
+#include "cryptolens\Configuration_Windows.hpp"
 
 namespace cryptolens = ::cryptolens_io::v20190401;
-using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::RequestHandler_WinHTTP, cryptolens::SignatureVerifier_CryptoAPI>;
+using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::Configuration_Windows>;
 
 /*
 * This example uses the basic_SKM class to make a request to the WebAPI
 * and then checks some properties of the license keys.
 */
-
 int main()
 {
 	Cryptolens cryptolens_handle;

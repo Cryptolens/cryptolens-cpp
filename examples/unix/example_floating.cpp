@@ -4,11 +4,10 @@
 
 #include <cryptolens/core.hpp>
 #include <cryptolens/Error.hpp>
-#include <cryptolens/RequestHandler_curl.hpp>
-#include <cryptolens/SignatureVerifier_OpenSSL.hpp>
+#include <cryptolens/Configuration_Unix.hpp>
 
 namespace cryptolens = ::cryptolens_io::v20190401;
-using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::RequestHandler_curl,cryptolens::SignatureVerifier_OpenSSL>;
+using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::Configuration_Unix>;
 
 /*
  * This example uses the basic_Cryptolens class to make a request to the WebAPI

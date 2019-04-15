@@ -2,18 +2,16 @@
 
 #include <cryptolens/core.hpp>
 #include <cryptolens/Error.hpp>
-#include "cryptolens/RequestHandler_WinHTTP.hpp"
-#include <cryptolens/SignatureVerifier_CryptoAPI.hpp>
+#include <cryptolens/Configuration_Windows.hpp>
+
+namespace cryptolens = ::cryptolens_io::v20190401;
+using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::Configuration_Windows>;
 
 /*
  * This example assumes the reply from the web server has fetched in some
  * other fasion, and then verifies the signature and finally checks
  * some properties on the license key.
  */
-
-namespace cryptolens = ::cryptolens_io::v20190401;
-using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::RequestHandler_WinHTTP, cryptolens::SignatureVerifier_CryptoAPI>;
-
 int main()
 {
 	Cryptolens cryptolens_handle;
