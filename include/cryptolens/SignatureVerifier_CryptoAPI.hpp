@@ -24,7 +24,7 @@ namespace v20190401 {
 class SignatureVerifier_CryptoAPI
 {
 public:
-  SignatureVerifier_CryptoAPI();
+  SignatureVerifier_CryptoAPI(basic_Error & e);
 #ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
   SignatureVerifier_CryptoAPI(SignatureVerifier_CryptoAPI const&) = delete;
   SignatureVerifier_CryptoAPI(SignatureVerifier_CryptoAPI &&) = delete;

@@ -122,7 +122,7 @@ sslctx_function_setup_cacerts(CURL *curl, void *sslctx, void *parm)
 
 #endif /* CRYPTOLENS_CURL_EMBED_CACERTS */
 
-RequestHandler_curl::RequestHandler_curl()
+RequestHandler_curl::RequestHandler_curl(basic_Error & e)
 {
   this->curl = curl_easy_init();
 }

@@ -68,7 +68,7 @@ verify(basic_Error & e, RSA * rsa, std::string const& message, std::string const
   EVP_MD_CTX_destroy(ctx);
 }
 
-SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL()
+SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL(basic_Error & e)
 {
   this->rsa = RSA_new();
 #if OPENSSL_VERSION_NUMBER < 0x10100000L

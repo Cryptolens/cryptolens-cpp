@@ -23,7 +23,7 @@ namespace v20190401 {
 class SignatureVerifier_OpenSSL
 {
 public:
-  SignatureVerifier_OpenSSL();
+  SignatureVerifier_OpenSSL(basic_Error & e);
 #ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
   SignatureVerifier_OpenSSL(SignatureVerifier_OpenSSL const&) = delete;
   SignatureVerifier_OpenSSL(SignatureVerifier_OpenSSL &&) = delete;

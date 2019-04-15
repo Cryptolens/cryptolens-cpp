@@ -40,7 +40,7 @@ int constexpr SETOPT_POSTFIELDS = 9;
 class RequestHandler_curl
 {
 public:
-  RequestHandler_curl();
+  RequestHandler_curl(basic_Error & e);
 #ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
   RequestHandler_curl(RequestHandler_curl const&) = delete;
   RequestHandler_curl(RequestHandler_curl &&) = delete;

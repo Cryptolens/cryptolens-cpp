@@ -97,7 +97,9 @@ template<typename Configuration>
 class basic_Cryptolens
 {
 public:
-  basic_Cryptolens() { }
+  basic_Cryptolens(basic_Error & e)
+  : request_handler(e), signature_verifier(e)
+  { }
 
   optional<LicenseKey>
   activate

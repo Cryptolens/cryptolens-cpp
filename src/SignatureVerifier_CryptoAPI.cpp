@@ -60,7 +60,7 @@ verify(basic_Error & e, HCRYPTPROV hProv, HCRYPTKEY hPubKey, std::string const& 
   }
 }
 
-SignatureVerifier_CryptoAPI::SignatureVerifier_CryptoAPI() : hProv_{}, hPubKey_{} { }
+SignatureVerifier_CryptoAPI::SignatureVerifier_CryptoAPI(basic_Error & e) : hProv_{}, hPubKey_{} { }
 
 void SignatureVerifier_CryptoAPI::init(basic_Error & e)
 {

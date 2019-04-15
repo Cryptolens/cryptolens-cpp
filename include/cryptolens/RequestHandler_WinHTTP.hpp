@@ -40,7 +40,7 @@ int constexpr WINHTTP_POSTFIELDS_TOO_LARGE = 8;
 class RequestHandler_WinHTTP
 {
 public:
-  RequestHandler_WinHTTP();
+  RequestHandler_WinHTTP(basic_Error & e);
 #ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
   RequestHandler_WinHTTP(RequestHandler_WinHTTP const&) = delete;
   RequestHandler_WinHTTP(RequestHandler_WinHTTP &&) = delete;

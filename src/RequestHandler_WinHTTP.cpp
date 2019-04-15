@@ -12,7 +12,7 @@ namespace cryptolens_io {
 
 namespace v20190401 {
 
-RequestHandler_WinHTTP::RequestHandler_WinHTTP() { }
+RequestHandler_WinHTTP::RequestHandler_WinHTTP(basic_Error & e) {}
 
 RequestHandler_WinHTTP::~RequestHandler_WinHTTP() { }
 
