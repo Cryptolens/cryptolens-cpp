@@ -2,7 +2,6 @@
 
 #include "../api.hpp"
 #include "../basic_Error.hpp"
-#include "../LicenseKeyInformation.hpp"
 
 namespace cryptolens_io {
 

@@ -70,6 +70,7 @@ constexpr int PRODUCT_NOT_FOUND         = 5;
 constexpr int KEY_NOT_FOUND             = 6;
 constexpr int KEY_BLOCKED               = 7;
 constexpr int DEVICE_LIMIT_REACHED      = 8;
+constexpr int KEY_EXPIRED               = 9;
 
 } // namespace Main
 
