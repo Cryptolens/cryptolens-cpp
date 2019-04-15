@@ -80,7 +80,7 @@ int write_license_key_to_file(LPCWSTR file_name)
 			std::cout << "Cryptolens error: " << e.get_reason() << std::endl;
 		}
 		else if (e.get_subsystem() == Subsystem::RequestHandler) {
-			int code = e.get_extra();
+			size_t code = e.get_extra();
 			std::cout << "Error connecting to the server: error code: " << code << std::endl;
 		}
 		else {
