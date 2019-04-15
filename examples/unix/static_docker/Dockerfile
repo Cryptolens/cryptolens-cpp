@@ -37,13 +37,13 @@ RUN mkdir -p /home/builder/cryptolens-cpp/examples/unix/static_docker/cc \
  &&   export CRYPTOLENS_ROOT="/home/builder/cryptolens-cpp" \
  &&   g++ -c \
           -I "$CRYPTOLENS_ROOT/include/cryptolens" \
+          "$CRYPTOLENS_ROOT/src/basic_Cryptolens.cpp" \
           "$CRYPTOLENS_ROOT/src/ActivateError.cpp" \
           "$CRYPTOLENS_ROOT/src/DataObject.cpp" \
           "$CRYPTOLENS_ROOT/src/LicenseKey.cpp" \
           "$CRYPTOLENS_ROOT/src/LicenseKeyChecker.cpp" \
           "$CRYPTOLENS_ROOT/src/LicenseKeyInformation.cpp" \
-          "$CRYPTOLENS_ROOT/src/base64.cpp" \
-          "$CRYPTOLENS_ROOT/src/basic_Cryptolens.cpp" \
+          "$CRYPTOLENS_ROOT/third_party/base64_OpenBSD/base64.cpp" \
  &&   g++ -c \
           -I "$SSL_ROOT/include" \
           -I "$CURL_ROOT/include" \
