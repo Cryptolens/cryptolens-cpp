@@ -167,6 +167,8 @@
     <ClCompile Include="..\src\LicenseKey.cpp" />
     <ClCompile Include="..\src\LicenseKeyChecker.cpp" />
     <ClCompile Include="..\src\LicenseKeyInformation.cpp" />
+    <ClCompile Include="..\src\MachineCodeComputer_COM.cpp" />
+    <ClCompile Include="..\src\MachineCodeComputer_static.cpp" />
     <ClCompile Include="..\src\RequestHandler_WinHTTP.cpp" />
     <ClCompile Include="..\src\SignatureVerifier_CryptoAPI.cpp" />
   </ItemGroup>

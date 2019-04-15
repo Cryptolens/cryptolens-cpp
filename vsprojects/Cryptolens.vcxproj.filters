@@ -42,6 +42,12 @@
     <ClCompile Include="..\src\basic_Cryptolens.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\MachineCodeComputer_COM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MachineCodeComputer_static.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cryptolens\ActivateError.hpp">

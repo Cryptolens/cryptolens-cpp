@@ -3,7 +3,7 @@ project (cryptolens)
 
 set (CRYPTOLENS_CURL_EMBED_CACERTS OFF CACHE BOOL "embed the ca certs in the library instead of using curl defaults?")
 
-set (SRC  "../../../src/ActivateError.cpp" "../../../src/DataObject.cpp" "../../../src/LicenseKey.cpp" "../../../src/LicenseKeyChecker.cpp" "../../../src/LicenseKeyInformation.cpp" "../../../src/base64.cpp" "../../../src/basic_Cryptolens.cpp")
+set (SRC  "../../../src/ActivateError.cpp" "../../../src/DataObject.cpp" "../../../src/LicenseKey.cpp" "../../../src/LicenseKeyChecker.cpp" "../../../src/LicenseKeyInformation.cpp" "../../../src/MachineCodeComputer_static.cpp" "../../../src/base64.cpp" "../../../src/basic_Cryptolens.cpp")
 set (SRC ${SRC} "../../../src/SignatureVerifier_OpenSSL.cpp")
 set (SRC ${SRC} "../../../src/RequestHandler_curl.cpp")
 

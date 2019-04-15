@@ -7,16 +7,19 @@ namespace cryptolens_io {
 
 namespace v20190401 {
 
+template<typename MachineCodeComputer_>
 struct Configuration_Windows {
   using RequestHandler = RequestHandler_WinHTTP;
   using SignatureVerifier = SignatureVerifier_CryptoAPI;
+  using MachineCodeComputer = MachineCodeComputer_;
 };
 
 } // namespace v20190401
 
 namespace latest {
 
-using Configuration_Windows = ::cryptolens_io::v20190401::Configuration_Windows;
+template<typename MachineCodeComputer_>
+using Configuration_Windows = ::cryptolens_io::v20190401::Configuration_Windows<MachineCodeComputer_>;
 
 } // namespace latest
 

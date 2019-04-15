@@ -98,7 +98,7 @@ class basic_Cryptolens
 {
 public:
   basic_Cryptolens(basic_Error & e)
-  : request_handler(e), signature_verifier(e)
+  : request_handler(e), signature_verifier(e), machine_code_computer(e)
   { }
 
   optional<LicenseKey>
@@ -107,7 +107,6 @@ public:
     , std::string token
     , std::string product_id
     , std::string key
-    , std::string machine_code
     , int fields_to_return = 0
     );
 
@@ -117,7 +116,6 @@ public:
     , std::string token
     , std::string product_id
     , std::string key
-    , std::string machine_code
     , int fields_to_return = 0
     );
 
@@ -127,7 +125,6 @@ public:
     , std::string token
     , std::string product_id
     , std::string key
-    , std::string machine_code
     , long floating_time_interval
     , int fields_to_return = 0
     );
@@ -138,7 +135,6 @@ public:
     , std::string token
     , std::string product_id
     , std::string key
-    , std::string machine_code
     , int fields_to_return = 0
     );
 
@@ -147,6 +143,7 @@ public:
 
   typename Configuration::RequestHandler request_handler;
   typename Configuration::SignatureVerifier signature_verifier;
+  typename Configuration::MachineCodeComputer machine_code_computer;
 
 private:
   optional<RawLicenseKey>
@@ -178,8 +175,6 @@ private:
  *   token - acces token to use
  *   product_id - the product id
  *   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
- *   machine_code - the machine code, i.e. a string that identifies a device
- *                  for activation.
  *
  * Returns:
  *   An optional with a RawLicenseKey representing if the request was
@@ -192,11 +187,12 @@ basic_Cryptolens<Configuration>::activate
   , std::string token
   , std::string product_id
   , std::string key
-  , std::string machine_code
   , int fields_to_return
   )
 {
   if (e) { return nullopt; }
+
+  std::string machine_code = machine_code_computer.get_machine_code(e);
 
   optional<RawLicenseKey> x = this->activate_
       ( e
@@ -218,8 +214,6 @@ basic_Cryptolens<Configuration>::activate
  *   token - acces token to use
  *   product_id - the product id
  *   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
- *   machine_code - the machine code, i.e. a string that identifies a device
- *                  for activation.
  *
  * Returns:
  *   An optional with a RawLicenseKey representing if the request was
@@ -232,11 +226,12 @@ basic_Cryptolens<Configuration>::activate_raw
   , std::string token
   , std::string product_id
   , std::string key
-  , std::string machine_code
   , int fields_to_return
   )
 {
   if (e) { return nullopt; }
+
+  std::string machine_code = machine_code_computer.get_machine_code(e);
 
   auto x = this->activate_( e
                           , std::move(token)
@@ -263,8 +258,6 @@ basic_Cryptolens<Configuration>::activate_raw
  *   token - acces token to use
  *   product_id - the product id
  *   key - the serial key string, e.g. ABCDE-EFGHI-JKLMO-PQRST
- *   machine_code - the machine code, i.e. a string that identifies a device
- *                  for activation.
  *   floating_time_interval - we count machine codes that were created after
  *                            current_time - floating_time_interval, where
  *                            floating_time_interval is given in seconds.
@@ -280,12 +273,13 @@ basic_Cryptolens<Configuration>::activate_floating
   , std::string token
   , std::string product_id
   , std::string key
-  , std::string machine_code
   , long floating_time_interval
   , int fields_to_return
   )
 {
   if (e) { return nullopt; }
+
+  std::string machine_code = machine_code_computer.get_machine_code(e);
 
   optional<RawLicenseKey> x = this->activate_floating_
       ( e
@@ -386,11 +380,13 @@ basic_Cryptolens<Configuration>::activate_raw_exn
   , std::string token
   , std::string product_id
   , std::string key
-  , std::string machine_code
   , int fields_to_return
   )
 {
   basic_Error e;
+
+  std::string machine_code = machine_code_computer.get_machine_code(e);
+
   optional<RawLicenseKey> raw_license_key =
     activate_raw( e, std::move(token), std::move(product_id), std::move(key)
             , std::move(machine_code), fields_to_return);
