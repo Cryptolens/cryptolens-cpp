@@ -6,7 +6,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 namespace errors {
 
@@ -31,13 +31,31 @@ int constexpr SignatureVerifier = 5;
 namespace Call {
 
 int constexpr BASIC_SKM_ACTIVATE_RAW = 1;
+int constexpr BASIC_CRYPTOLENS_ACTIVATE_RAW = BASIC_SKM_ACTIVATE_RAW;
+
 int constexpr BASIC_SKM_HANDLE_ACTIVATE_RAW = 2;
+int constexpr BASIC_CRYPTOLENS_HANDLE_ACTIVATE_RAW = BASIC_SKM_HANDLE_ACTIVATE_RAW;
+
 int constexpr SIGNATURE_VERIFIER_SET_EXPONENT_BASE64 = 3;
 int constexpr SIGNATURE_VERIFIER_SET_MODULUS_BASE64 = 4;
+
 int constexpr BASIC_SKM_HANDLE_ACTIVATE = 5;
+int constexpr BASIC_CRYPTOLENS_HANDLE_ACTIVATE = BASIC_SKM_HANDLE_ACTIVATE;
+
 int constexpr BASIC_SKM_ACTIVATE = 5;
+int constexpr BASIC_CRYPTOLENS_ACTIVATE = BASIC_SKM_ACTIVATE;
+
 int constexpr BASIC_SKM_ACTIVATE_FLOATING = 6;
+int constexpr BASIC_CRYPTOLENS_ACTIVATE_FLOATING = BASIC_SKM_ACTIVATE_FLOATING;
+
 int constexpr BASIC_SKM_MAKE_LICENSE_KEY = 7;
+int constexpr BASIC_CRYPTOLENS_MAKE_LICENSE_KEY = BASIC_SKM_MAKE_LICENSE_KEY;
+
+int constexpr BASIC_SKM_LAST_MESSAGE = 8;
+int constexpr BASIC_CRYPTOLENS_LAST_MESSAGE = BASIC_SKM_LAST_MESSAGE;
+
+int constexpr BASIC_SKM_CREATE_TRIAL_KEY = 9;
+int constexpr BASIC_CRYPTOLENS_CREATE_TRIAL_KEY = BASIC_SKM_CREATE_TRIAL_KEY;
 
 } // namespace Call
 
@@ -52,6 +70,7 @@ constexpr int PRODUCT_NOT_FOUND         = 5;
 constexpr int KEY_NOT_FOUND             = 6;
 constexpr int KEY_BLOCKED               = 7;
 constexpr int DEVICE_LIMIT_REACHED      = 8;
+constexpr int KEY_EXPIRED               = 9;
 
 } // namespace Main
 
@@ -105,8 +124,34 @@ public:
   virtual void set_call(api::main api, int call) { call_ = call; }
 };
 
+} // namespace v20190401
+
+namespace v20180502 {
+
+namespace errors {
+
+namespace Subsystem = ::cryptolens_io::v20190401::errors::Subsystem;
+namespace Call = ::cryptolens_io::v20190401::errors::Call;
+namespace Main = ::cryptolens_io::v20190401::errors::Main;
+
+} // namespace errors
+
+using basic_Error = ::cryptolens_io::v20190401::basic_Error;
+
 } // namespace v20180502
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+namespace errors {
+
+namespace Subsystem = ::cryptolens_io::v20190401::errors::Subsystem;
+namespace Call = ::cryptolens_io::v20190401::errors::Call;
+namespace Main = ::cryptolens_io::v20190401::errors::Main;
+
+} // namespace errors
+
+using basic_Error = ::cryptolens_io::v20190401::basic_Error;
+
+} // namespace latest
 
 } // namespace cryptolens_io

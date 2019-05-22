@@ -2,13 +2,14 @@
 
 #include <string>
 
+#include "imports/std/optional"
+
 #include "basic_Error.hpp"
 #include "base64.hpp"
-#include "optional.hpp"
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 /**
  * This class represents a raw reply from the Cryptolens Web API with
@@ -54,7 +55,7 @@ public:
   {
     if (e) { return nullopt; }
 
-    optional<std::string> decoded = b64_decode(base64_license);
+    optional<std::string> decoded = ::cryptolens_io::v20190401::internal::b64_decode(base64_license);
 
     if (!decoded) {
       e.set(api::main(), errors::Subsystem::Base64);
@@ -75,8 +76,18 @@ public:
   }
 };
 
+} // namespace v20190401
+
+namespace v20180502 {
+
+using RawLicenseKey = ::cryptolens_io::v20190401::RawLicenseKey;
+
 } // namespace v20180502
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+using RawLicenseKey = ::cryptolens_io::v20190401::RawLicenseKey;
+
+} // namespace latest
 
 } // namespace cryptolens_io

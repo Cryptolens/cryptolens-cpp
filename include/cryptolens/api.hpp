@@ -2,7 +2,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 namespace api {
 
@@ -12,10 +12,28 @@ struct experimental_v1 { };
 
 } // namespace api
 
-using api::experimental_v1;
+} // namespace v20190401
+
+namespace latest {
+
+namespace api {
+
+using ::cryptolens_io::v20190401::api::main;
+using ::cryptolens_io::v20190401::api::experimental_v1;
+
+} // namespace api
+
+} // namespace latest
+
+namespace v20180502 {
+
+namespace api {
+
+using ::cryptolens_io::v20190401::api::main;
+using ::cryptolens_io::v20190401::api::experimental_v1;
+
+} // namespace api
 
 } // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
 
 } // namespace cryptolens_io

@@ -3,17 +3,18 @@
 #include <string>
 #include <vector>
 
+#include "imports/std/optional"
+
 #include "basic_Error.hpp"
 #include "ActivationData.hpp"
 #include "Customer.hpp"
 #include "DataObject.hpp"
 #include "LicenseKeyInformation.hpp"
 #include "RawLicenseKey.hpp"
-#include "optional.hpp"
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 class LicenseKeyChecker;
 
@@ -78,8 +79,18 @@ public:
   optional<std::vector<DataObject>>     const& get_data_objects() const;
 };
 
+} // namespace v20190401
+
+namespace v20180502 {
+
+using LicenseKey = ::cryptolens_io::v20190401::LicenseKey;
+
 } // namespace v20180502
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+using LicenseKey = ::cryptolens_io::v20190401::LicenseKey;
+
+} // namespace latest
 
 } // namespace cryptolens_io

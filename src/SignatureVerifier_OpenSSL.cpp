@@ -1,17 +1,14 @@
 #include <string>
 
-#include <openssl/bn.h>
-#include <openssl/evp.h>
-#include <openssl/rsa.h>
+#include "imports/std/optional"
 
-#include "SignatureVerifier_OpenSSL.hpp"
+#include "imports/openssl/bn.h"
+#include "imports/openssl/evp.h"
+#include "imports/openssl/rsa.h"
+
 #include "api.hpp"
 #include "base64.hpp"
-#include "optional.hpp"
-
-namespace cryptolens_io {
-
-namespace v20180502 {
+#include "SignatureVerifier_OpenSSL.hpp"
 
 namespace {
 
@@ -26,7 +23,11 @@ constexpr int BN_BIN2BN_FAILED = 8;
 constexpr int BN_NEW_FAILED = 9;
 constexpr int RSA_SET0_KEY_FAILED = 10;
 
-}
+} // namespace
+
+namespace cryptolens_io {
+
+namespace v20190401 {
 
 void
 verify(basic_Error & e, RSA * rsa, std::string const& message, std::string const& sig)
@@ -67,7 +68,7 @@ verify(basic_Error & e, RSA * rsa, std::string const& message, std::string const
   EVP_MD_CTX_destroy(ctx);
 }
 
-SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL()
+SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL(basic_Error & e)
 {
   this->rsa = RSA_new();
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
@@ -121,6 +122,7 @@ SignatureVerifier_OpenSSL::~SignatureVerifier_OpenSSL()
 void
 SignatureVerifier_OpenSSL::set_modulus_base64(basic_Error & e, std::string const& modulus_base64)
 {
+  if (e) { return; }
   this->set_modulus_base64_(e, modulus_base64);
   if (e) { e.set_call(api::main(), errors::Call::SIGNATURE_VERIFIER_SET_MODULUS_BASE64); }
 }
@@ -140,6 +142,7 @@ SignatureVerifier_OpenSSL::set_modulus_base64(basic_Error & e, std::string const
 void
 SignatureVerifier_OpenSSL::set_exponent_base64(basic_Error & e, std::string const& exponent_base64)
 {
+  if (e) { return; }
   this->set_exponent_base64_(e, exponent_base64);
   if (e) { e.set_call(api::main(), errors::Call::SIGNATURE_VERIFIER_SET_EXPONENT_BASE64); }
 }
@@ -150,7 +153,7 @@ SignatureVerifier_OpenSSL::set_modulus_base64_(basic_Error & e, std::string cons
   if (e) { return; }
   if (this->rsa == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_NULL); return; }
 
-  optional<std::string> modulus = b64_decode(modulus_base64);
+  optional<std::string> modulus = ::cryptolens_io::v20190401::internal::b64_decode(modulus_base64);
   if (!modulus) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
@@ -187,7 +190,7 @@ SignatureVerifier_OpenSSL::set_exponent_base64_(basic_Error & e, std::string con
   if (e) { return; }
   if (this->rsa == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_NULL); return; }
 
-  optional<std::string> exponent = b64_decode(exponent_base64);
+  optional<std::string> exponent = ::cryptolens_io::v20190401::internal::b64_decode(exponent_base64);
   if (!exponent) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
@@ -232,7 +235,7 @@ const
   if (e) { return false; }
   if (this->rsa == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_NULL); return false; }
 
-  optional<std::string> sig = b64_decode(signature_base64);
+  optional<std::string> sig = ::cryptolens_io::v20190401::internal::b64_decode(signature_base64);
   if (!sig) { e.set(api::main(), errors::Subsystem::Base64); return false; }
 
   verify(e, this->rsa, message, *sig);
@@ -241,8 +244,6 @@ const
   return true;
 }
 
-} // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
+} // namespace v20190401
 
 } // namespace cryptolens_io

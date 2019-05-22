@@ -1,16 +1,11 @@
 #include <memory>
 #include <string>
 
+#include "imports/std/optional"
+
 #include "SignatureVerifier_CryptoAPI.hpp"
 #include "api.hpp"
 #include "base64.hpp"
-#include "optional.hpp"
-
-#include <iostream>
-
-namespace cryptolens_io {
-
-namespace v20180502 {
 
 namespace {
 
@@ -26,6 +21,10 @@ constexpr int MESSAGE_TOO_LARGE = 9;
 constexpr int SIGNATURE_TOO_LARGE = 10;
 
 }
+
+namespace cryptolens_io {
+
+namespace v20190401 {
 
 void
 verify(basic_Error & e, HCRYPTPROV hProv, HCRYPTKEY hPubKey, std::string const& message, std::string sig)
@@ -61,7 +60,7 @@ verify(basic_Error & e, HCRYPTPROV hProv, HCRYPTKEY hPubKey, std::string const& 
   }
 }
 
-SignatureVerifier_CryptoAPI::SignatureVerifier_CryptoAPI() : hProv_{}, hPubKey_{} { }
+SignatureVerifier_CryptoAPI::SignatureVerifier_CryptoAPI(basic_Error & e) : hProv_{}, hPubKey_{} { }
 
 void SignatureVerifier_CryptoAPI::init(basic_Error & e)
 {
@@ -118,7 +117,7 @@ SignatureVerifier_CryptoAPI::set_modulus_base64_(basic_Error & e, std::string co
     if (e) { return; }
   }
 
-  optional<std::string> modulus = b64_decode(modulus_base64);
+  optional<std::string> modulus = internal::b64_decode(modulus_base64);
   if (!modulus) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
   const size_t blobLen = sizeof(BLOBHEADER) + sizeof(RSAPUBKEY) + modulus->size();
@@ -167,7 +166,7 @@ SignatureVerifier_CryptoAPI::verify_message
   if (e) { return false; }
   if (!hProv_ || !hPubKey_) { e.set(api::main(), errors::Subsystem::SignatureVerifier, SIGNATURE_VERIFIER_UNINITIALIZED); return false; }
 
-  optional<std::string> sig = b64_decode(signature_base64);
+  optional<std::string> sig = internal::b64_decode(signature_base64);
   if (!sig) { e.set(api::main(), errors::Subsystem::Base64); return false; }
 
   verify(e, hProv_, hPubKey_, message, *sig);
@@ -176,8 +175,6 @@ SignatureVerifier_CryptoAPI::verify_message
   return true;
 }
 
-} // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
+} // namespace v20190401
 
 } // namespace cryptolens_io

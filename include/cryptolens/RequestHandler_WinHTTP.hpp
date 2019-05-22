@@ -2,11 +2,16 @@
 
 #include <string>
 
+#include "imports/windows/Windows.h"
+#include "imports/windows/winhttp.h"
+
+#include "api.hpp"
 #include "basic_Error.hpp"
+#include "RequestHandler_v20190401_to_v20180502.hpp"
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 namespace errors {
 
@@ -20,10 +25,29 @@ int constexpr WINHTTP_RECIEVE_RESPONSE_FAILED = 5;
 int constexpr WINHTTP_QUERY_DATA_AVAILABLE_FAILED = 6;
 int constexpr WINHTTP_READ_DATA_FAILED = 7;
 int constexpr WINHTTP_POSTFIELDS_TOO_LARGE = 8;
+int constexpr MULTIBYTETOWIDE_ENDPOINT = 9;
+int constexpr MULTIBYTETOWIDE_HOST = 10;
 
 } // namespace RequestHandler_WinHTTP
 
 } // namespace errors
+
+class RequestHandler_WinHTTP_PostBuilder {
+public:
+  RequestHandler_WinHTTP_PostBuilder(char const* host, char const* endpoint);
+
+  RequestHandler_WinHTTP_PostBuilder &
+  add_argument(basic_Error & e, char const* key, char const* value);
+
+  std::string
+  make(basic_Error & e);
+
+private:
+  char separator_;
+  std::string postfields_;
+  char const* host_;
+  char const* endpoint_;
+};
 
 /**
  * A request handler that is responsible for making the HTTPS requests
@@ -37,7 +61,7 @@ int constexpr WINHTTP_POSTFIELDS_TOO_LARGE = 8;
 class RequestHandler_WinHTTP
 {
 public:
-  RequestHandler_WinHTTP();
+  RequestHandler_WinHTTP(basic_Error & e);
 #ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
   RequestHandler_WinHTTP(RequestHandler_WinHTTP const&) = delete;
   RequestHandler_WinHTTP(RequestHandler_WinHTTP &&) = delete;
@@ -46,69 +70,36 @@ public:
 #endif
   ~RequestHandler_WinHTTP();
 
-  template<typename Map>
-  std::string
-  make_request(basic_Error & e, char const* method, Map const& map);
+  using PostBuilder = RequestHandler_WinHTTP_PostBuilder;
 
-private:
-  std::string
-  make_request_(basic_Error & e, std::string const& postfields);
-
-  std::string percent_encode_(std::string const& s);
-
-  template<typename Map>
-  std::string
-  build_url_(basic_Error & e, char const* method, Map const& map);
-
-  template<typename Map>
-  std::string
-  build_postfields_(basic_Error & e, char const* method, Map const& map);
+  PostBuilder
+  post_request(basic_Error& e, char const* host, char const* endpoint);
 };
 
-/**
- * This method is used internally in the library and need not be called by the user.
- */
-template<typename Map>
-std::string
-RequestHandler_WinHTTP::make_request(basic_Error & e, char const* method, Map const& map)
-{
-  if (e) { return ""; }
+} // namespace v20190401
 
-  std::string postfields = build_postfields_(e, method, map);
-  return make_request_(e, postfields);
-}
+namespace latest {
 
-template<typename Map>
-std::string
-RequestHandler_WinHTTP::build_postfields_(basic_Error & e, char const* method, Map const& map)
-{
-  if (e) { return ""; }
+namespace errors {
 
-  using namespace errors::RequestHandler_WinHTTP;
+namespace RequestHandler_WinHTTP = ::cryptolens_io::v20190401::errors::RequestHandler_WinHTTP;
 
-  std::string s{""};
+} // namespace errors
 
-  bool first = true;
-  char separator = '&';
-  for (auto& x : map) {
-    if (first) { first = false; }
-    else       { s += separator; }
+using RequestHandler_WinHTTP = ::cryptolens_io::v20190401::RequestHandler_WinHTTP;
 
-    std::string res;
-    res = percent_encode_(x.first);
-    s += res;
+} // namespace latest
 
-    s += '=';
+namespace v20180502 {
 
-    res = percent_encode_(x.second);
-    s += res;
-  }
+namespace errors {
 
-  return s;
-}
+//XXX: Add stuff here
+
+} // namespace errors
+
+using RequestHandler_WinHTTP = ::cryptolens_io::internal::RequestHandler_v20190401_to_v20180502<::cryptolens_io::v20190401::RequestHandler_WinHTTP>;
 
 } // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
 
 } // namespace cryptolens_io

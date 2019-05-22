@@ -2,7 +2,7 @@
 
 On this page, we have outlined several examples of how to get started with the Cryptolens Client API for C++.
 
-> **Note**, Cryptolens Client API for C++ currently supports **activation** and **deactivation** methods. Support for more methods is coming soon.
+> **Note**, Cryptolens Client API for C++ currently supports a subset of the full Cryptolens Web API. Please contact us (XXX: Add link) if you need something in particular.
 
 You can find the API documentation here: [https://help.cryptolens.io/api/cpp/](https://help.cryptolens.io/api/cpp/).
 
@@ -70,6 +70,8 @@ Now we can build the example project:
  * Set configuration and platform in the same way as when building the library
  * Build and run the project.
 
+Instructions for how to add the library to your own project can be found [here](https://help.cryptolens.io/cpp/). XXX: Fix link
+
 ## Library overview
 
 This section contains an overview of the standard way to implement the library in an
@@ -78,33 +80,44 @@ application. The first step is to include the appropriate headers:
 ```cpp
 #include <cryptolens/core.hpp>
 #include <cryptolens/Error.hpp>
-#include <cryptolens/RequestHandler_XXX.hpp>
-#include <cryptolens/SignatureVerifier_YYY.hpp>
+#include <cryptolens/Configuration_XXX.hpp>
+#include <cryptolens/MachineCodeComputer_YYY.hpp>
+
+namespace cryptolens = ::cryptolens_io::v20190401;
 ```
 
-We currently support the following RequestHandlers and SignatureVerifiers
+Besides including headers the above code sets up a namespace alias for the api version of the C++
+library we are using.
 
-| RequestHandler                | Description                                           |
-| ----------------------------- | ----------------------------------------------------- |
-| `RequestHandler_curl`         | Uses libcurl                                          |
-| `RequestHandler_WinHTTP`      | Uses the WinHTTP library available as part of Windows |
+The `Configuration` class allows for using different libraries for parsing JSON, making HTTPS
+requests, performing cryptographic operations as well as minor changes in the behaviour of the
+library. We currently support the following `Configurations` and `MachineCodeComputers`:
 
-| SignatureVerifier             | Description                                     |
-| ----------------------------- | ----------------------------------------------- |
-| `SignatureVerifier_OpenSSL`   | Uses OpenSSL or LibreSSL                        |
-| `SignatureVerifier_CryptoAPI` | Uses the CryptoAPI available as part of Windows |
+| Configuration                         | Description                                           |
+| -----------------------------------   | ----------------------------------------------------- |
+| `Configuration_Unix`                 | Good default configuration for Unix-like based systems. Uses ArduinoJson 5, libcurl and OpenSSL. Checks if the license key has expired against the users system time. |
+| `Configuration_Unix_IgnoreExpires`   | Same as `Configuration_Unix`, but does not check if the license key has expired against the users system time. |
+| `Configuration_Windows`               | Good default configuration for Windows based systems. Uses ArduinoJson 5, WinHTTP and CryptoAPI. Checks if the license key has expired against the users system time. |
+| `Configuration_Windows_IgnoreExpires` | Same as `Configuration_Windows`, but does not check if the license key has expired against the users system time. |
+
+| MachineCodeComputer             | Description                                     |
+| ------------------------------- | ----------------------------------------------- |
+| `MachineCodeComputer_static`    | Does not automatically compute a machine code, instead the machine code is set by calling a function |
 
 The next step is to create and set up a handle class responsible for making requests
 to the Cryptolens Web API.
 
 ```cpp
 using Cryptolens = cryptolens::basic_Cryptolens
-                     <cryptolens::RequestHandler_curl, cryptolens::SignatureVerifier_OpenSSL>;
+                     <cryptolens::Configuration_XXX<cryptolens::MachineCodeComputer_static>>;
 
-Cryptolens cryptolens_handle;
 cryptolens::Error e;
+Cryptolens cryptolens_handle(e);
+
 cryptolens_handle.signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
 cryptolens_handle.signature_verifier.set_exponent_base64(e, "ABCD");
+
+cryptolens_handle.machine_code_computer.set_machine_code(e, "289jf2afs3");
 ```
 
 Here the strings `"ABCDEFGHI1234"` and `"ABCD"` needs to be replaced by your public keys. These
@@ -116,6 +129,8 @@ the following value on the website
 <RSAKeyValue><Modulus>ABCDEFGHI1234</Modulus><Exponent>ABCD</Exponent></RSAKeyValue>
 ```
 
+In this example we set the machine code used to `"289jf2afs3"`.
+
 Now that the handle class has been set up, we can attempt to activate a license key
 
 ```cpp
@@ -126,11 +141,9 @@ cryptolens::optional<cryptolens::LicenseKey> license_key =
     , // Cryptolens Access Token
       "WyI0NjUiLCJBWTBGTlQwZm9WV0FyVnZzMEV1Mm9LOHJmRDZ1SjF0Vk52WTU0VzB2Il0="
     , // Product id
-      "3646"
+      3646
     , // License Key
       "MPDWY-PQAOW-FKSCH-SGAAU"
-    , // Machine Code
-      "289jf2afs3"
     );
 
 if (e) {
@@ -150,8 +163,6 @@ The `activate` method takes several arguments:
     https://app.cryptolens.io/Product.
  1. The fourth argument is a string containing the license key string, in most cases this will be
     input by the user of the application in some application dependent fashion.
- 1. The last argument is an optional identifier for the device the application is running on, or
-    something similar.
 
 After the `activate` call we check if an error occurred by converting `e` to bool. If an error
 occured this returns true. If an error occurs, the optional containing the `LicenseKey` object
@@ -167,8 +178,8 @@ if (license_key->check()->has_expired(1234567)) {
   return 1;
 }
 
-if (license_key->check()-has_feature(1)) { std::cout << "Welcome! Pro version enabled!" << std::endl; }
-else                                     { std::cout << "Welcome!" << std::endl; }
+if (license_key->check()->has_feature(1)) { std::cout << "Welcome! Pro version enabled!" << std::endl; }
+else                                      { std::cout << "Welcome!" << std::endl; }
 ```
 
 
@@ -202,22 +213,24 @@ request to the Web API in the future. Thus we can proceed as during online activ
 but save the response as a string:
 
 ```cpp
-Cryptolens cryptolens_handle;
+cryptolens::Error e;
+Cryptolens cryptolens_handle(e);
+
 cryptolens_handle.signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
 cryptolens_handle.signature_verifier.set_exponent_base64(e, "ABCD");
-...
+
+cryptolens_handle.machine_code_computer.set_machine_code(e, "289jf2afs3");
+
 cryptolens::optional<cryptolens::LicenseKey> license_key =
-  cryptolens_handle.activate(
+  cryptolens_handle.activate
     ( // Object used for reporting if an error occured
       e
     , // Cryptolens Access Token
       "WyI0NjUiLCJBWTBGTlQwZm9WV0FyVnZzMEV1Mm9LOHJmRDZ1SjF0Vk52WTU0VzB2Il0="
     , // Product id
-      "3646"
+      3646
     , // License Key
       "MPDWY-PQAOW-FKSCH-SGAAU"
-    , // Machine Code
-      "289jf2afs3"
     );
 if (e) { handle_error(e); return 1; }
 
@@ -229,9 +242,12 @@ to check the license later when offline, load the string *s* and recover the lic
 
 ```cpp
 cryptolens::Error e;
-Cryptolens cryptolens_handle;
+Cryptolens cryptolens_handle(e);
+
 cryptolens_handle.signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
 cryptolens_handle.signature_verifier.set_exponent_base64(e, "ABCD");
+
+cryptolens_handle.machine_code_computer.set_machine_code(e, "289jf2afs3");
 
 cryptolens::optional<cryptolens::LicenseKey> license_key =
   cryptolens_handle.make_license_key(e, s);
@@ -251,13 +267,16 @@ by using the `handle_activate()` function as follows
 ```cpp
 std::string web_api_response; // Some other part of the code creates and populates this object
 
-SignatureVerifier_XXX signature_verifier;
 cryptolens::Error e;
-signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
-signature_verifier.set_exponent_base64(e, "ABCD");
+Cryptolens cryptolens_handle(e);
 
-cryptolens::optional<cryptolens::LicenseKey> key =
-  cryptolens::handle_activate(e, signature_verifier, web_api_resonse);
+cryptolens_handle.signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
+cryptolens_handle.signature_verifier.set_exponent_base64(e, "ABCD");
+
+cryptolens_handle.machine_code_computer.set_machine_code(e, "289jf2afs3");
+
+cryptolens::optional<cryptolens::LicenseKey> license_key =
+  cryptolens_handle.make_license_key(e, web_api_response);
 if (e) { handle_error(e); return 1; }
 ```
 

@@ -2,7 +2,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 int
 DataObject::get_id() const
@@ -28,8 +28,6 @@ DataObject::get_int_value() const
   return int_value_;
 }
 
-} // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
+} // namespace v20190401
 
 } // namespace cryptolens_io

@@ -4,7 +4,7 @@ project (cryptolens)
 set (CRYPTOLENS_BUILD_TESTS OFF CACHE BOOL "build tests?")
 set (CRYPTOLENS_CURL_EMBED_CACERTS OFF CACHE BOOL "embed the ca certs in the library instead of using system default files?")
 
-set (SRC  "src/ActivateError.cpp" "src/DataObject.cpp" "src/LicenseKey.cpp" "src/LicenseKeyChecker.cpp" "src/LicenseKeyInformation.cpp" "src/base64.cpp" "src/basic_SKM.cpp")
+set (SRC "src/ActivateError.cpp" "src/DataObject.cpp" "src/LicenseKey.cpp" "src/LicenseKeyChecker.cpp" "src/LicenseKeyInformation.cpp" "src/MachineCodeComputer_static.cpp" "src/basic_Cryptolens.cpp" "src/basic_SKM.cpp" "third_party/base64_OpenBSD/base64.cpp")
 set (LIBS "")
 
 find_package(OpenSSL)

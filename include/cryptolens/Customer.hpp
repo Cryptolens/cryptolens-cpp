@@ -2,7 +2,7 @@
 
 namespace cryptolens_io {
 
-namespace v20180502 {
+namespace v20190401 {
 
 // This immutable class represents a customer
 class Customer {
@@ -45,8 +45,18 @@ public:
   std::uint64_t get_created() const { return created_; }
 };
 
+} // namespace v20190401
+
+namespace v20180502 {
+
+using Customer = ::cryptolens_io::v20190401::Customer;
+
 } // namespace v20180502
 
-using namespace ::cryptolens_io::v20180502;
+namespace latest {
+
+using Customer = ::cryptolens_io::v20190401::Customer;
+
+} // namespace latest
 
 } // namespace cryptolens_io

@@ -5,9 +5,9 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "optional.hpp"
+#include "imports/std/optional"
 
-#include "../ArduinoJson.hpp"
+#include "imports/ArduinoJson5/ArduinoJson.hpp"
 
 #include "ActivateError.hpp"
 #include "basic_Error.hpp"
@@ -51,7 +51,7 @@ handle_activate_raw
 template<typename SignatureVerifier>
 RawLicenseKey
 handle_activate_raw_exn
-  ( experimental_v1 experimental
+  ( api::experimental_v1 experimental
   , SignatureVerifier const& signature_verifier
   , std::string const& response
   )
@@ -132,7 +132,7 @@ public:
 
   RawLicenseKey
   activate_raw_exn
-    ( experimental_v1 experimental
+    ( api::experimental_v1 experimental
     , std::string token
     , std::string product_id
     , std::string key
@@ -327,7 +327,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_
 
   std::string response = request_handler.make_request(e, "Activate", args);
 
-  return handle_activate_raw(e, this->signature_verifier, response);
+  return ::cryptolens_io::v20180502::handle_activate_raw(e, this->signature_verifier, response);
 }
 
 template<typename RequestHandler, typename SignatureVerifier>
@@ -361,7 +361,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_floating_
 
   std::string response = request_handler.make_request(e, "Activate", args);
 
-  return handle_activate_raw(e, this->signature_verifier, response);
+  return ::cryptolens_io::v20180502::handle_activate_raw(e, this->signature_verifier, response);
 }
 
 /**
@@ -380,7 +380,7 @@ basic_SKM<RequestHandler, SignatureVerifier>::activate_floating_
 template<typename RequestHandler, typename SignatureVerifier>
 RawLicenseKey
 basic_SKM<RequestHandler, SignatureVerifier>::activate_raw_exn
-  ( experimental_v1 experimental
+  ( api::experimental_v1 experimental
   , std::string token
   , std::string product_id
   , std::string key
@@ -495,7 +495,5 @@ handle_activate
 } // namespace internal
 
 } // namespace v20180502
-
-using namespace ::cryptolens_io::v20180502;
 
 } // namespace cryptolens_io
