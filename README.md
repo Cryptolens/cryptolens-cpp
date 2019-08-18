@@ -2,7 +2,7 @@
 
 On this page, we have outlined several examples of how to get started with the Cryptolens Client API for C++.
 
-> **Note**, Cryptolens Client API for C++ currently supports a subset of the full Cryptolens Web API. Please contact us (XXX: Add link) if you need something in particular.
+> **Note**, Cryptolens Client API for C++ currently supports a subset of the full Cryptolens Web API. Please contact us if you need something in particular.
 
 You can find the API documentation here: [https://help.cryptolens.io/api/cpp/](https://help.cryptolens.io/api/cpp/).
 
@@ -70,7 +70,7 @@ Now we can build the example project:
  * Set configuration and platform in the same way as when building the library
  * Build and run the project.
 
-Instructions for how to add the library to your own project can be found [here](https://help.cryptolens.io/cpp/). XXX: Fix link
+Instructions for how to add the library to your own Visual Studio project can be found [here](https://help.cryptolens.io/web-api/cpp/windows).
 
 ## Library overview
 
