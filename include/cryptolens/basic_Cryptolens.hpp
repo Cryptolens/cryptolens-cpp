@@ -3,19 +3,17 @@
 #include <cstring>
 #include <string>
 #include <sstream>
-#include <unordered_map>
 
 #include "imports/std/optional"
 
-#include "imports/ArduinoJson5/ArduinoJson.hpp"
-
 #include "ActivateError.hpp"
-#include "basic_Error.hpp"
-#include "RawLicenseKey.hpp"
-#include "LicenseKey.hpp"
-#include "LicenseKeyInformation.hpp"
-#include "LicenseKeyChecker.hpp"
 #include "api.hpp"
+#include "basic_Error.hpp"
+#include "LicenseKey.hpp"
+#include "LicenseKeyChecker.hpp"
+#include "LicenseKeyInformation.hpp"
+#include "RawLicenseKey.hpp"
+#include "ResponseParser_ArduinoJson5.hpp"
 
 namespace cryptolens_io {
 
@@ -23,10 +21,11 @@ namespace v20190401 {
 
 namespace internal {
 
-template<typename SignatureVerifier>
+template<typename ResponseParser, typename SignatureVerifier>
 optional<RawLicenseKey>
 handle_activate
   ( basic_Error & e
+  , ResponseParser const& response_parser
   , SignatureVerifier const& signature_verifier
   , std::string const& response
   );
@@ -105,7 +104,10 @@ handle_activate_raw
 {
   if (e) { return nullopt; }
 
-  auto x = internal::handle_activate(e, signature_verifier, response);
+  ResponseParser_ArduinoJson5 response_parser(e);
+  if (e) { return nullopt; }
+
+  auto x = internal::handle_activate(e, response_parser, signature_verifier, response);
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_HANDLE_ACTIVATE_RAW); }
   return x;
 }
@@ -137,8 +139,11 @@ handle_activate
 {
   if (e) { return nullopt; }
 
-  optional<RawLicenseKey> x = internal::handle_activate(e, signature_verifier, response);
-  optional<LicenseKeyInformation> y = LicenseKeyInformation::make(e, x);
+  ResponseParser_ArduinoJson5 response_parser(e);
+  if (e) { return nullopt; }
+
+  optional<RawLicenseKey> x = internal::handle_activate(e, response_parser, signature_verifier, response);
+  optional<LicenseKeyInformation> y = response_parser.make_license_key_information(e, x);
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_HANDLE_ACTIVATE); }
 
   return LicenseKey(std::move(*y), std::move(*x));
@@ -292,13 +297,18 @@ basic_Cryptolens<Configuration>::activate
   optional<RawLicenseKey> x = this->activate_
       ( e
       , std::move(token)
-      , std::move(product_id)
-      , std::move(key)
-      , std::move(machine_code)
+      , product_id
+      , key // NOTE: Copy is performed here
+      , machine_code // NOTE: Copy is performed here
       , fields_to_return
       );
-  optional<LicenseKeyInformation> y = LicenseKeyInformation::make(e, x);
+  optional<LicenseKeyInformation> y = response_parser.make_license_key_information(e, x);
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE); return nullopt; }
+
+  typename internal::ActivateEnvironment env(*y, product_id, key, machine_code, fields_to_return, false);
+  activate_validator.validate(e, env);
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE); return nullopt; }
+
   return LicenseKey(std::move(*y), std::move(*x));
 }
 
@@ -380,19 +390,18 @@ basic_Cryptolens<Configuration>::activate_floating
       ( e
       , std::move(token)
       , std::move(product_id)
-      , key // XXX: Make copy here
-      , machine_code // XXX: Make copy here
+      , key // NOTE: Copy is performed here
+      , machine_code // NOTE: Copy is performed here
       , floating_time_interval
       , fields_to_return
       );
-  optional<LicenseKeyInformation> y = LicenseKeyInformation::make(e, x);
-
+  optional<LicenseKeyInformation> y = response_parser.make_license_key_information(e, x);
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE_FLOATING); return nullopt; }
 
   typename internal::ActivateEnvironment env(*y, product_id, key, machine_code, fields_to_return, true);
   activate_validator.validate(e, env);
-
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE_FLOATING); return nullopt; }
+
   return LicenseKey(std::move(*y), std::move(*x));
 }
 
@@ -553,31 +562,7 @@ basic_Cryptolens<Configuration>::create_trial_key_
 
   if (e) { return ""; }
 
-  using namespace ::cryptolens_io::latest::errors;
-  using namespace ::ArduinoJson;
-  api::main api;
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject & j = jsonBuffer.parseObject(response);
-
-  if (!j.success()) { e.set(api, Subsystem::Json); return ""; }
-
-  if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
-    if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
-      e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
-      return "";
-    }
-
-    // XXX: Update
-    int reason = internal::activate_parse_server_error_message(j["message"].as<char const*>());
-    e.set(api, Subsystem::Main, reason);
-    return "";
-  }
-
-  if (!j["key"].is<char const*>()) { e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY); return ""; }
-
-  char const* key = j["key"].as<char const*>();
-
-  return key ? key : "";
+  return response_parser.parse_create_trial_key_response(e, response);
 }
 
 template<typename Configuration>
@@ -603,44 +588,7 @@ basic_Cryptolens<Configuration>::last_message_
 
   if (e) { return ""; }
 
-  using namespace ::cryptolens_io::latest::errors;
-  using namespace ::ArduinoJson;
-  api::main api;
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject & j = jsonBuffer.parseObject(response);
-
-  if (!j.success()) { e.set(api, Subsystem::Json); return ""; }
-
-  if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
-    if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
-      e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
-      return "";
-    }
-
-    int reason = internal::activate_parse_server_error_message(j["message"].as<char const*>());
-    e.set(api, Subsystem::Main, reason);
-    return "";
-  }
-
-  if (!j["messages"].is<const JsonArray&>()) { return ""; }
-
-  JsonArray const& array = j["messages"].as<const JsonArray&>();
-  int i_max = -1;
-  int created_max = -1;
-  for (size_t i = 0; i < array.size(); ++i) {
-    if (!array.is<const JsonObject&>(i)) { continue; }
-
-    JsonObject const& msg = array.get<const JsonObject&>(i);
-    if (msg["created"].is<int>() &&
-        msg["content"].is<const char*>() && msg["content"].as<const char*>() != NULL)
-    {
-      if (msg["created"] > created_max) { created_max = msg["created"]; i_max = i; }
-    }
-  }
-
-  if (i_max >= 0) { JsonObject const& msg = array.get<const JsonObject&>(i_max); return msg["content"]; }
-
-  return "";
+  return response_parser.parse_last_message_response(e, response);
 }
 
 template<typename Configuration>
@@ -652,7 +600,7 @@ basic_Cryptolens<Configuration>::make_license_key(basic_Error & e, std::string c
   optional<RawLicenseKey> raw_license_key;
 
   raw_license_key =
-    ::cryptolens_io::v20190401::internal::handle_activate(e, this->signature_verifier, s);
+    ::cryptolens_io::v20190401::internal::handle_activate(e, this->response_parser, this->signature_verifier, s);
 
   if (e) {
     e.reset(api::main());
@@ -679,58 +627,32 @@ basic_Cryptolens<Configuration>::make_license_key(basic_Error & e, std::string c
              );
   }
 
-  optional<LicenseKeyInformation> license_key_information = LicenseKeyInformation::make(e, raw_license_key);
+  optional<LicenseKeyInformation> license_key_information = response_parser.make_license_key_information(e, raw_license_key);
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_MAKE_LICENSE_KEY); return nullopt; }
   return LicenseKey(std::move(*license_key_information), std::move(*raw_license_key));
 }
 
 namespace internal {
 
-template<typename SignatureVerifier>
+template<typename ResponseParser, typename SignatureVerifier>
 optional<RawLicenseKey>
 handle_activate
   ( basic_Error & e
+  , ResponseParser const& response_parser
   , SignatureVerifier const& signature_verifier
   , std::string const& response
   )
 {
   if (e) { return nullopt; }
 
-  using namespace errors;
-  api::main api;
-
-  using namespace ArduinoJson;
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject & j = jsonBuffer.parseObject(response);
-
-  if (!j.success()) { e.set(api, Subsystem::Json); return nullopt; }
-
-  if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
-    if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
-      e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
-      return nullopt;
-    }
-
-    int reason = activate_parse_server_error_message(j["message"].as<char const*>());
-    e.set(api, Subsystem::Main, reason);
-    return nullopt;
-  }
-
-  if (!j["licenseKey"].is<char const*>() || j["licenseKey"].as<char const*>() == NULL) {
-    e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
-    return nullopt;
-  }
-
-  if (!j["signature"].is<char const*>() || j["signature"].as<char const*>() == NULL) {
-    e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
-    return nullopt;
-  }
+  optional<std::pair<std::string, std::string>> x = response_parser.parse_activate_response(e, response);
+  if (e) { return nullopt; }
 
   return RawLicenseKey::make
            ( e
            , signature_verifier
-           , j["licenseKey"].as<char const*>()
-           , j["signature"].as<char const*>()
+           , x->first
+           , x->second
            );
 }
 

@@ -5,8 +5,9 @@
 
 #include "imports/std/optional"
 
-#include "basic_Error.hpp"
+#include "api.hpp"
 #include "ActivationData.hpp"
+#include "basic_Error.hpp"
 #include "Customer.hpp"
 #include "DataObject.hpp"
 #include "RawLicenseKey.hpp"
@@ -32,37 +33,68 @@ class LicenseKeyChecker;
  */
 class LicenseKeyInformation {
 private:
-  LicenseKeyInformation() { };
+  LicenseKeyInformation();
 
-  int           product_id;
-  std::uint64_t created;
-  std::uint64_t expires;
-  int           period;
-  bool          block;
-  bool          trial_activation;
-  std::uint64_t sign_date;
-  bool          f1;
-  bool          f2;
-  bool          f3;
-  bool          f4;
-  bool          f5;
-  bool          f6;
-  bool          f7;
-  bool          f8;
+  int           product_id_;
+  std::uint64_t created_;
+  std::uint64_t expires_;
+  int           period_;
+  bool          block_;
+  bool          trial_activation_;
+  std::uint64_t sign_date_;
+  bool          f1_;
+  bool          f2_;
+  bool          f3_;
+  bool          f4_;
+  bool          f5_;
+  bool          f6_;
+  bool          f7_;
+  bool          f8_;
 
-  optional<int>                         id;
-  optional<std::string>                 key;
-  optional<std::string>                 notes;
-  optional<int>                         global_id;
-  optional<Customer>                    customer;
-  optional<std::vector<ActivationData>> activated_machines;
-  optional<int>                         maxnoofmachines;
-  optional<std::string>                 allowed_machines;
-  optional<std::vector<DataObject>>     data_objects;
+  optional<int>                         id_;
+  optional<std::string>                 key_;
+  optional<std::string>                 notes_;
+  optional<int>                         global_id_;
+  optional<Customer>                    customer_;
+  optional<std::vector<ActivationData>> activated_machines_;
+  optional<int>                         maxnoofmachines_;
+  optional<std::string>                 allowed_machines_;
+  optional<std::vector<DataObject>>     data_objects_;
 public:
+  LicenseKeyInformation(
+    api::internal::main,
+    int           product_id,
+    std::uint64_t created,
+    std::uint64_t expires,
+    int           period,
+    bool          block,
+    bool          trial_activation,
+    std::uint64_t sign_date,
+    bool          f1,
+    bool          f2,
+    bool          f3,
+    bool          f4,
+    bool          f5,
+    bool          f6,
+    bool          f7,
+    bool          f8,
+
+    optional<int>                         id,
+    optional<std::string>                 key,
+    optional<std::string>                 notes,
+    optional<int>                         global_id,
+    optional<Customer>                    customer,
+    optional<std::vector<ActivationData>> activated_machines,
+    optional<int>                         maxnoofmachines,
+    optional<std::string>                 allowed_machines,
+    optional<std::vector<DataObject>>     data_objects
+  );
+
+#if 1
   static optional<LicenseKeyInformation> make(basic_Error & e, RawLicenseKey const& raw_license_key);
   static optional<LicenseKeyInformation> make(basic_Error & e, optional<RawLicenseKey> const& raw_license_key);
   static optional<LicenseKeyInformation> make_unsafe(basic_Error & e, std::string const& license_key);
+#endif
 
   LicenseKeyChecker check() const;
 

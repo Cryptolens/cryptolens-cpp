@@ -12,30 +12,6 @@ LicenseKey::LicenseKey(LicenseKeyInformation && license_key_information, RawLice
 : info_(license_key_information), raw_(raw_license_key)
 { }
 
-#if 0
-LicenseKey
-LicenseKey::make(basic_Error & e, LicenseKeyInformation && license_key_information, RawLicenseKey && raw_license_key)
-{
-  if (e) { return nullopt; }
-
-  return LicenseKey(license_key_information, raw_license_key);
-}
-
-LicenseKey
-LicenseKey::make(basic_Error & e, RawLicenseKey && raw_license_key)
-{
-  if (e) { return nullopt; }
-
-  optional<LicenseKeyInformation> license_key_information = LicenseKeyInformation::make(e, raw_license_key);
-
-  if (e) { return nullopt; }
-  if (!license_key_information) { return nullopt; }
-  // TODO: Set call location
-
-  return LicenseKey(std::move(*license_key_information), raw_license_key);
-}
-#endif
-
 std::string
 LicenseKey::to_string() const {
   std::string s;

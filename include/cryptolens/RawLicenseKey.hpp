@@ -36,12 +36,11 @@ class RawLicenseKey {
   std::string signature_;
   std::string license_;
 public:
-  // TODO: Move methods
-  std::string const& get_base64_license() const { return base64_license_; }
+  std::string const& get_base64_license() const;
 
-  std::string const& get_signature() const { return signature_; }
+  std::string const& get_signature() const;
 
-  std::string const& get_license() const { return license_; }
+  std::string const& get_license() const;
 
   template<typename SignatureVerifier>
   static

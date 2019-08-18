@@ -26,7 +26,7 @@ public:
   , company_name_(std::move(company_name))
   , created_(created)
   {
-    // TODO: Check length requirements
+    // TODO: Check length requirements (does not matter when we are just reading things from the web api)
   }
 
   // Returns the customer id

@@ -10,6 +10,12 @@ struct main { };
 
 struct experimental_v1 { };
 
+namespace internal {
+
+struct main { };
+
+}  // namespace internal
+
 } // namespace api
 
 } // namespace v20190401

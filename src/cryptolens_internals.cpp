@@ -1,4 +1,6 @@
-#include "basic_Cryptolens.hpp"
+#include <cstring>
+
+#include "basic_Error.hpp"
 
 namespace cryptolens_io {
 

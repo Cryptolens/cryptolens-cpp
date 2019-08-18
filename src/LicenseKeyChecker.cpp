@@ -70,7 +70,9 @@ LicenseKeyChecker::has_feature(int feature) {
   break;
 
   default:
-    // TODO: Decide on how to handle invalid feature
+    // NOTE: Maybe we should have set status_ to false here, but the current
+    //       behaviour has been live and the de facto standard for a long time
+    //       now.
   break;
   }
 
@@ -117,7 +119,9 @@ LicenseKeyChecker::has_not_feature(int feature) {
   break;
 
   default:
-    // TODO: Decide on how to handle invalid feature
+    // NOTE: Maybe we should have set status_ to false here, but the current
+    //       behaviour has been live and the de facto standard for a long time
+    //       now.
   break;
   }
 

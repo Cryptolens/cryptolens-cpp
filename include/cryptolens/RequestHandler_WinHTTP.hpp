@@ -94,7 +94,7 @@ namespace v20180502 {
 
 namespace errors {
 
-//XXX: Add stuff here
+namespace RequestHandler_WinHTTP = ::cryptolens_io::v20190401::errors::RequestHandler_WinHTTP;
 
 } // namespace errors
 

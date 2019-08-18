@@ -38,7 +38,7 @@ RequestHandler_v20190401_to_v20180502<RequestHandler>::make_request(::cryptolens
 
   if (e) { return ""; }
   if (e_) {
-    e.set(api::main(), errors::Subsystem::RequestHandler);  // XXX: Add stuff here
+    e.set(api::main(), errors::Subsystem::RequestHandler);  // TODO: Add more detailed error code
     return "";
   }
 

@@ -1,13 +1,71 @@
-#include "imports/ArduinoJson5/ArduinoJson.hpp"
-
 #include "api.hpp"
 #include "basic_Cryptolens.hpp"
 #include "LicenseKeyInformation.hpp"
+#include "ResponseParser_ArduinoJson5.hpp"
 
 namespace cryptolens_io {
 
 namespace v20190401 {
 
+LicenseKeyInformation::LicenseKeyInformation()
+{}
+
+LicenseKeyInformation::LicenseKeyInformation(
+  api::internal::main,
+  int           product_id,
+  std::uint64_t created,
+  std::uint64_t expires,
+  int           period,
+  bool          block,
+  bool          trial_activation,
+  std::uint64_t sign_date,
+  bool          f1,
+  bool          f2,
+  bool          f3,
+  bool          f4,
+  bool          f5,
+  bool          f6,
+  bool          f7,
+  bool          f8,
+
+  optional<int>                         id,
+  optional<std::string>                 key,
+  optional<std::string>                 notes,
+  optional<int>                         global_id,
+  optional<Customer>                    customer,
+  optional<std::vector<ActivationData>> activated_machines,
+  optional<int>                         maxnoofmachines,
+  optional<std::string>                 allowed_machines,
+  optional<std::vector<DataObject>>     data_objects
+  )
+  : product_id_(product_id)
+  , created_(created)
+  , expires_(expires)
+  , period_(period)
+  , block_(block)
+  , trial_activation_(trial_activation)
+  , sign_date_(sign_date)
+  , f1_(f1)
+  , f2_(f2)
+  , f3_(f3)
+  , f4_(f4)
+  , f5_(f5)
+  , f6_(f6)
+  , f7_(f7)
+  , f8_(f8)
+
+  , id_(std::move(id))
+  , key_(std::move(key))
+  , notes_(std::move(notes))
+  , global_id_(std::move(global_id))
+  , customer_(std::move(customer))
+  , activated_machines_(std::move(activated_machines))
+  , maxnoofmachines_(std::move(maxnoofmachines))
+  , allowed_machines_(std::move(allowed_machines))
+  , data_objects_(std::move(data_objects))
+  { };
+
+#if 1
 /**
  * Attempt to construct a LicenseKeyInformation from a RawLicenseKey
  */
@@ -46,162 +104,11 @@ LicenseKeyInformation::make_unsafe(basic_Error & e, std::string const& license_k
 {
   if (e) { return nullopt; }
 
-  using namespace ArduinoJson;
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject & j = jsonBuffer.parseObject(license_key);
+  ResponseParser_ArduinoJson5 response_parser(e);
 
-  if (!j.success()) { e.set(api::main(), errors::Subsystem::Json); return nullopt; }
-
-  bool mandatory_missing =
-      !( j["ProductId"].is<unsigned long>()
-      && j["Created"].is<unsigned long>()
-      && j["Expires"].is<unsigned long>()
-      && j["Period"].is<unsigned long>()
-      && j["Block"].is<bool>()
-      && j["TrialActivation"].is<bool>()
-      && j["SignDate"].is<unsigned long>()
-      && j["F1"].is<bool>()
-      && j["F2"].is<bool>()
-      && j["F3"].is<bool>()
-      && j["F4"].is<bool>()
-      && j["F5"].is<bool>()
-      && j["F6"].is<bool>()
-      && j["F7"].is<bool>()
-      && j["F8"].is<bool>()
-      );
-
-  if (mandatory_missing) { e.set(api::main(), errors::Subsystem::Json); return nullopt; }
-
-  LicenseKeyInformation key;
-
-  key.product_id       = j["ProductId"].as<unsigned long>();
-  key.created          = j["Created"].as<unsigned long>();
-  key.expires          = j["Expires"].as<unsigned long>();
-  key.period           = j["Period"].as<unsigned long>();
-  key.block            = j["Block"].as<bool>();
-  key.trial_activation = j["TrialActivation"].as<bool>();
-  key.sign_date        = j["SignDate"].as<unsigned long>();
-  key.f1               = j["F1"].as<bool>();
-  key.f2               = j["F2"].as<bool>();
-  key.f3               = j["F3"].as<bool>();
-  key.f4               = j["F4"].as<bool>();
-  key.f5               = j["F5"].as<bool>();
-  key.f6               = j["F6"].as<bool>();
-  key.f7               = j["F7"].as<bool>();
-  key.f8               = j["F8"].as<bool>();
-
-  if (j["ID"].is<unsigned long>()) {
-    key.id = j["ID"].as<unsigned long>();
-  }
-
-  if (j["Key"].is<const char*>() && j["Key"].as<const char*>() != NULL) {
-    std::string x(j["Key"].as<const char*>());
-    key.key = std::move(x);
-  }
-
-  if (j["Notes"].is<const char*>() && j["Notes"].as<const char*>() != NULL) {
-    std::string x(j["Notes"].as<const char*>());
-    key.notes = std::move(x);
-  }
-
-  if (j["GlobalId"].is<unsigned long>()) {
-    key.global_id = j["GlobalId"].as<unsigned long>();
-  }
-
-  if (j["Customer"].is<const JsonObject&>()) {
-    JsonObject const& customer = j["Customer"].as<const JsonObject&>();
-
-    bool valid =
-         customer["Id"].is<unsigned long>()
-      && customer["Name"].is<const char*>() && customer["Name"].as<const char*>() != NULL
-      && customer["Email"].is<const char*>() && customer["Email"].as<const char*>() != NULL
-      && customer["CompanyName"].is<const char*>() && customer["CompanyName"].as<const char*>() != NULL
-      && customer["Created"].is<unsigned long>();
-
-    if (valid) {
-      Customer x( customer["Id"].as<unsigned long>()
-                , customer["Name"].as<const char*>()
-                , customer["Email"].as<const char*>()
-                , customer["CompanyName"].as<const char*>()
-                , customer["Created"].as<unsigned long>()
-		);
-      key.customer = std::move(x);
-    }
-  }
-
-  if (j["ActivatedMachines"].is<const JsonArray&>()) {
-    bool valid = true;
-    std::vector<ActivationData> v;
-    JsonArray const& array = j["ActivatedMachines"].as<const JsonArray&>();
-    for (auto const& x : array) {
-      if (!x.is<const JsonObject&>()) {
-        valid = false;
-	break;
-      }
-
-      JsonObject const& machine = x.as<const JsonObject&>();
-
-      if (machine["Mid"].is<const char*>() && machine["Mid"].as<const char*>() != NULL &&
-          machine["IP"].is<const char*>() && machine["IP"].as<const char*>() != NULL &&
-          machine["Time"].is<unsigned long>()) {
-        //x.push_back(ActivationData(machine["Mid"], machine["IP"], machine["Time"]));
-        v.emplace_back(machine["Mid"], machine["IP"], machine["Time"]);
-      } else {
-        valid = false;
-        break;
-      }
-    }
-
-    if (valid) {
-      key.activated_machines = std::move(v);
-    }
-  }
-
-  if (j["MaxNoOfMachines"].is<unsigned long>()) {
-    key.maxnoofmachines = j["MaxNoOfMachines"].as<unsigned long>();
-  }
-
-  if (j["AllowedMachines"].is<const char*>() && j["AllowedMachines"].as<const char*>() != NULL) {
-    std::string x = j["AllowedMachines"].as<const char*>();
-    key.allowed_machines = std::move(x);
-  }
-
-  if (j["DataObjects"].is<const JsonArray&>()) {
-    bool valid = true;
-    std::vector<DataObject> v;
-    JsonArray const& array = j["DataObjects"].as<const JsonArray&>();
-    for (auto const& x : array) {
-      if (!x.is<const JsonObject&>()) {
-        valid = false;
-        break;
-      }
-
-      JsonObject const& dataobject = x.as<const JsonObject&>();
-
-      if (  dataobject["Id"].is<unsigned long>()
-         && dataobject["Name"].is<const char*>() && dataobject["Name"].as<const char*>() != NULL
-         && dataobject["StringValue"].is<const char*>() && dataobject["StringValue"].as<const char*>() != NULL
-         && dataobject["IntValue"].is<unsigned long>()
-         )
-      {
-        v.emplace_back( dataobject["Id"].as<unsigned long>()
-                      , dataobject["Name"].as<const char*>()
-                      , dataobject["StringValue"].as<const char*>()
-                      , dataobject["IntValue"].as<unsigned long>()
-                      );
-      } else {
-        valid = false;
-        break;
-      }
-    }
-
-    if (valid) {
-      key.data_objects = std::move(v);
-    }
-  }
-
-  return make_optional(key);
+  return response_parser.make_license_key_information_unsafe(e, license_key);
 }
+#endif
 
 /**
  * Return a LicenseKeyChecker working on this LicenseKeyInformation object
@@ -216,7 +123,7 @@ LicenseKeyInformation::check() const {
  */
 int LicenseKeyInformation::get_product_id() const
 {
-  return product_id;
+  return product_id_;
 }
 
 /**
@@ -225,7 +132,7 @@ int LicenseKeyInformation::get_product_id() const
 std::uint64_t
 LicenseKeyInformation::get_created() const
 {
-  return created;
+  return created_;
 }
 
 /**
@@ -234,7 +141,7 @@ LicenseKeyInformation::get_created() const
 std::uint64_t
 LicenseKeyInformation::get_expires() const
 {
-  return expires;
+  return expires_;
 }
 
 /**
@@ -243,7 +150,7 @@ LicenseKeyInformation::get_expires() const
 int
 LicenseKeyInformation::get_period() const
 {
-  return period;
+  return period_;
 }
 
 /**
@@ -252,7 +159,7 @@ LicenseKeyInformation::get_period() const
 bool
 LicenseKeyInformation::get_block() const
 {
-  return block;
+  return block_;
 }
 
 /**
@@ -261,7 +168,7 @@ LicenseKeyInformation::get_block() const
 bool
 LicenseKeyInformation::get_trial_activation() const
 {
-  return trial_activation;
+  return trial_activation_;
 }
 
 /**
@@ -270,7 +177,7 @@ LicenseKeyInformation::get_trial_activation() const
 std::uint64_t
 LicenseKeyInformation::get_sign_date() const
 {
-  return sign_date;
+  return sign_date_;
 }
 
 /**
@@ -279,7 +186,7 @@ LicenseKeyInformation::get_sign_date() const
 bool
 LicenseKeyInformation::get_f1() const
 {
-  return f1;
+  return f1_;
 }
 
 /**
@@ -288,7 +195,7 @@ LicenseKeyInformation::get_f1() const
 bool
 LicenseKeyInformation::get_f2() const
 {
-  return f2;
+  return f2_;
 }
 
 /**
@@ -297,7 +204,7 @@ LicenseKeyInformation::get_f2() const
 bool
 LicenseKeyInformation::get_f3() const
 {
-  return f3;
+  return f3_;
 }
 
 /**
@@ -306,7 +213,7 @@ LicenseKeyInformation::get_f3() const
 bool
 LicenseKeyInformation::get_f4() const
 {
-  return f4;
+  return f4_;
 }
 
 /**
@@ -315,7 +222,7 @@ LicenseKeyInformation::get_f4() const
 bool
 LicenseKeyInformation::get_f5() const
 {
-  return f5;
+  return f5_;
 }
 
 /**
@@ -324,7 +231,7 @@ LicenseKeyInformation::get_f5() const
 bool
 LicenseKeyInformation::get_f6() const
 {
-  return f6;
+  return f6_;
 }
 
 /**
@@ -333,7 +240,7 @@ LicenseKeyInformation::get_f6() const
 bool
 LicenseKeyInformation::get_f7() const
 {
-  return f7;
+  return f7_;
 }
 
 /**
@@ -342,7 +249,7 @@ LicenseKeyInformation::get_f7() const
 bool
 LicenseKeyInformation::get_f8() const
 {
-  return f8;
+  return f8_;
 }
 
 /**
@@ -351,7 +258,7 @@ LicenseKeyInformation::get_f8() const
 optional<int> const&
 LicenseKeyInformation::get_id() const
 {
-  return id;
+  return id_;
 }
 
 /**
@@ -360,7 +267,7 @@ LicenseKeyInformation::get_id() const
 optional<std::string> const&
 LicenseKeyInformation::get_key() const
 {
-  return key;
+  return key_;
 }
 
 /**
@@ -369,7 +276,7 @@ LicenseKeyInformation::get_key() const
 optional<std::string> const&
 LicenseKeyInformation::get_notes() const
 {
-  return notes;
+  return notes_;
 }
 
 /**
@@ -378,7 +285,7 @@ LicenseKeyInformation::get_notes() const
 optional<int> const&
 LicenseKeyInformation::get_global_id() const
 {
-  return global_id;
+  return global_id_;
 }
 
 /**
@@ -387,7 +294,7 @@ LicenseKeyInformation::get_global_id() const
 optional<Customer> const&
 LicenseKeyInformation::get_customer() const
 {
-  return customer;
+  return customer_;
 }
 
 /**
@@ -396,7 +303,7 @@ LicenseKeyInformation::get_customer() const
 optional<std::vector<ActivationData>> const&
 LicenseKeyInformation::get_activated_machines() const
 {
-  return activated_machines;
+  return activated_machines_;
 }
 
 /**
@@ -406,7 +313,7 @@ LicenseKeyInformation::get_activated_machines() const
 optional<int> const&
 LicenseKeyInformation::get_maxnoofmachines() const
 {
-  return maxnoofmachines;
+  return maxnoofmachines_;
 }
 
 /**
@@ -417,7 +324,7 @@ LicenseKeyInformation::get_maxnoofmachines() const
 optional<std::string> const&
 LicenseKeyInformation::get_allowed_machines() const
 {
-  return allowed_machines;
+  return allowed_machines_;
 }
 
 /**
@@ -426,7 +333,7 @@ LicenseKeyInformation::get_allowed_machines() const
 optional<std::vector<DataObject>> const&
 LicenseKeyInformation::get_data_objects() const
 {
-  return data_objects;
+  return data_objects_;
 }
 
 } // namespace v20190401

@@ -14,7 +14,6 @@ private:
   std::string string_value_;
   int int_value_;
 public:
-  // TOOD: Use ints with specific sizes...
   DataObject
     ( int id
     , std::string name
