@@ -22,9 +22,11 @@ public:
     auto const& expected_machine_code = env.get_machine_code();
     bool floating = env.get_floating();
 
-    bool valid = false;
     auto const& machines = license_key_information.get_activated_machines();
-    if (machines) {
+    auto const& maxnoofmachines = license_key_information.get_maxnoofmachines();
+    bool valid = (maxnoofmachines && *maxnoofmachines == 0)
+	      || !machines;
+    if (machines && !valid) {
       std::string full_expected_machine_code;
       if (floating) { full_expected_machine_code += "floating:"; }
       full_expected_machine_code += expected_machine_code;
