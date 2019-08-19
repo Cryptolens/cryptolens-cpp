@@ -27,6 +27,9 @@ namespace MachineCodeComputer_COM_Recompute {}
 class MachineCodeComputer_COM_Recompute
 {
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   MachineCodeComputer_COM_Recompute(basic_Error & e) {}
 
   std::string

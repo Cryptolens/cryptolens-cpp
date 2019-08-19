@@ -10,6 +10,9 @@ namespace v20190401 {
 template<typename Env, typename H, typename T = TautologyValidator_<Env>>
 class AndValidator_ {
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   AndValidator_(basic_Error & e) : head(e), tail(e) {}
 
   void

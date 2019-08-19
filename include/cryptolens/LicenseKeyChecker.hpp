@@ -13,6 +13,9 @@ class LicenseKeyChecker {
   LicenseKeyInformation const* key_;
 
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   LicenseKeyChecker(LicenseKeyInformation const* license_key);
 
   explicit operator bool() const;

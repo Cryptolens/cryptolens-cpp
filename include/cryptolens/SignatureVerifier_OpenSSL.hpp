@@ -25,6 +25,9 @@ namespace v20190401 {
 class SignatureVerifier_OpenSSL
 {
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   SignatureVerifier_OpenSSL(basic_Error & e);
 #ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
   SignatureVerifier_OpenSSL(SignatureVerifier_OpenSSL const&) = delete;

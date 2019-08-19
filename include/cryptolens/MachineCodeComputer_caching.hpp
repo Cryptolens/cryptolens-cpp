@@ -20,6 +20,9 @@ template<typename MachineCodeComputer>
 class MachineCodeComputer_caching
 {
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   MachineCodeComputer_caching(basic_Error & e)
   : machine_code_()
   {

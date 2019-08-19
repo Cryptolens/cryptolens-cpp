@@ -20,6 +20,9 @@ template<typename SignatureVerifier>
 class SignatureVerifier_v20190401_to_v20180502
 {
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   SignatureVerifier_v20190401_to_v20180502();
 
   void set_modulus_base64(::cryptolens_io::v20180502::basic_Error & e, std::string const& modulus_base64);

@@ -19,6 +19,9 @@ namespace MachineCodeComputer_static {}
 class MachineCodeComputer_static
 {
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   MachineCodeComputer_static(basic_Error & e) {}
 
   void

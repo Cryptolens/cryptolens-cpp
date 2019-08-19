@@ -61,6 +61,9 @@ private:
 class RequestHandler_WinHTTP
 {
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   RequestHandler_WinHTTP(basic_Error & e);
 #ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
   RequestHandler_WinHTTP(RequestHandler_WinHTTP const&) = delete;

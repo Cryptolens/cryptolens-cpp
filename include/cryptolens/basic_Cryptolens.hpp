@@ -164,6 +164,9 @@ template<typename Configuration>
 class basic_Cryptolens
 {
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   basic_Cryptolens(basic_Error & e)
   : response_parser(e), request_handler(e), signature_verifier(e), machine_code_computer(e)
   , activate_validator(e)

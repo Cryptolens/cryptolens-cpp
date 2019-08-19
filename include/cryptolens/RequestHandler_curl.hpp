@@ -58,6 +58,9 @@ private:
 class RequestHandler_curl
 {
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   RequestHandler_curl(basic_Error & e);
 #ifndef CRYPTOLENS_ENABLE_DANGEROUS_COPY_MOVE_CONSTRUCTOR
   RequestHandler_curl(RequestHandler_curl const&) = delete;

@@ -12,6 +12,9 @@ template<typename RequestHandler>
 class RequestHandler_v20190401_to_v20180502
 {
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   RequestHandler_v20190401_to_v20180502();
 
   template<typename Map>

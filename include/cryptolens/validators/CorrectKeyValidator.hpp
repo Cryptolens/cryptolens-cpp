@@ -10,6 +10,9 @@ namespace v20190401 {
 template<typename Env>
 class CorrectKeyValidator_ {
 public:
+#ifndef CRYPTOLENS_20190701_ALLOW_IMPLICIT_CONSTRUCTORS
+  explicit
+#endif
   CorrectKeyValidator_(basic_Error & e) {}
 
   void
