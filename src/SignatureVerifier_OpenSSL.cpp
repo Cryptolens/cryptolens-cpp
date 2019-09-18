@@ -41,7 +41,11 @@ verify(basic_Error & e, RSA * rsa, std::string const& message, std::string const
 
   if (rsa == NULL) { e.set(api, Subsystem::SignatureVerifier, RSA_NULL); return; }
 
-  EVP_MD_CTX * ctx = EVP_MD_CTX_create();
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+  ctx = EVP_MD_CTX_create();
+#else
+  ctx = EVP_MD_CTX_new();
+#endif
   if (ctx == NULL) { e.set(api, Subsystem::SignatureVerifier, CTX_CREATE_FAILED); return; }
 
   EVP_PKEY * pkey = EVP_PKEY_new();
@@ -65,7 +69,11 @@ verify(basic_Error & e, RSA * rsa, std::string const& message, std::string const
   EVP_PKEY_free(pkey);
 
   // Void return type
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
   EVP_MD_CTX_destroy(ctx);
+#else
+  EVP_MD_CTX_free(ctx);
+#endif
 }
 
 SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL(basic_Error & e)
