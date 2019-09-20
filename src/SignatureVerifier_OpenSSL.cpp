@@ -181,7 +181,7 @@ SignatureVerifier_OpenSSL::set_modulus_base64_(basic_Error & e, std::string cons
     // Requirements for RSA_set0_key() below is that the first time we call it, both n and e must
     // be set. So in case e has not been set we allocate a dummy BIGNUM here and use that.
     exp = BN_new();
-    if (exp == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_NEW_FAILED); return; }
+    if (exp == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_NEW_FAILED); BN_free(n); return; }
   } else {
     // If e is already set it is owned by this->rsa, and it is not a valid argument to RSA_set0_key()
     exp = NULL;
@@ -218,7 +218,7 @@ SignatureVerifier_OpenSSL::set_exponent_base64_(basic_Error & e, std::string con
     // Requirements for RSA_set0_key() below is that the first time we call it, both n and e must
     // be set. So in case n has not been set we allocate a dummy BIGNUM here and use that.
     n = BN_new();
-    if (n == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_NEW_FAILED); return; }
+    if (n == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_NEW_FAILED); BN_free(exp); return; }
   } else {
     // If n is already set it is owned by this->rsa, and it is not a valid argument to RSA_set0_key()
     n = NULL;
