@@ -38,33 +38,36 @@ verify(basic_Error & e, RSA * rsa, std::string const& message, std::string const
   if (e) { return; }
 
   int r;
+  EVP_MD_CTX * ctx = NULL;
+  EVP_PKEY * pkey = NULL;
 
-  if (rsa == NULL) { e.set(api, Subsystem::SignatureVerifier, RSA_NULL); return; }
+  if (rsa == NULL) { e.set(api, Subsystem::SignatureVerifier, RSA_NULL); goto end; }
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
   ctx = EVP_MD_CTX_create();
 #else
   ctx = EVP_MD_CTX_new();
 #endif
-  if (ctx == NULL) { e.set(api, Subsystem::SignatureVerifier, CTX_CREATE_FAILED); return; }
+  if (ctx == NULL) { e.set(api, Subsystem::SignatureVerifier, CTX_CREATE_FAILED); goto end; }
 
-  EVP_PKEY * pkey = EVP_PKEY_new();
-  if (pkey == NULL) { e.set(api, Subsystem::SignatureVerifier, PKEY_NEW_FAILED); return; }
+  pkey = EVP_PKEY_new();
+  if (pkey == NULL) { e.set(api, Subsystem::SignatureVerifier, PKEY_NEW_FAILED); goto end; }
 
   r = EVP_PKEY_set1_RSA(pkey, rsa);
-  if (r != 1) { e.set(api, Subsystem::SignatureVerifier, PKEY_SET1_RSA_FAILED); return; }
+  if (r != 1) { e.set(api, Subsystem::SignatureVerifier, PKEY_SET1_RSA_FAILED); goto end; }
 
 
 
   r = EVP_DigestVerifyInit(ctx, NULL, EVP_sha256(), NULL, pkey);
-  if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_INIT_FAILED); return; }
+  if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_INIT_FAILED); goto end; }
 
   r = EVP_DigestVerifyUpdate(ctx, (unsigned char*)message.c_str(), message.size());
-  if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_UPDATE_FAILED); return; }
+  if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_UPDATE_FAILED); goto end; }
 
   r = EVP_DigestVerifyFinal(ctx, (unsigned char*)sig.c_str(), sig.size());
-  if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_FINAL_FAILED); return; }
+  if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_FINAL_FAILED); goto end; }
 
+end:
   // Void return type
   EVP_PKEY_free(pkey);
 
