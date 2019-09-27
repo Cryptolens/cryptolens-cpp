@@ -40,23 +40,28 @@ verify(basic_Error & e, HCRYPTPROV hProv, HCRYPTKEY hPubKey, std::string const& 
   // CryptoAPI assumes things are LSB or whatever, other way around from other people.
   for (size_t i = 0, j = sig.size() - 1; i < j; ++i, --j) { std::swap(sig[i], sig[j]); }
 
-  HCRYPTHASH hHash;
+  HCRYPTHASH hHash = 0;  // Initialized following https://docs.microsoft.com/sv-se/windows/win32/seccrypto/example-c-program-signing-a-hash-and-verifying-the-hash-signature
   if (!CryptCreateHash(hProv, CALG_SHA_256, 0, 0, &hHash)) {
     DWORD code = GetLastError();
     e.set(api, Subsystem::SignatureVerifier, CRYPT_CREATE_HASH_FAILED, code);
-    return;
+    goto cleanup;
   }
 
   if (!CryptHashData(hHash, (const BYTE*)message.c_str(), (DWORD)message.size(), 0)) {
     DWORD code = GetLastError();
     e.set(api, Subsystem::SignatureVerifier, CRYPT_HASH_DATA_FAILED, code);
-    return;
+    goto cleanup;
   }
 
   if (!CryptVerifySignature(hHash, (const BYTE*)sig.c_str(), (DWORD)sig.size(), hPubKey, NULL, 0)) {
     DWORD code = GetLastError();
     e.set(api, Subsystem::SignatureVerifier, CRYPT_VERIFY_SIGNATURE_FAILED, code);
-    return;
+    goto cleanup;
+  }
+
+cleanup:
+  if (hHash) {
+    CryptDestroyHash(hHash);
   }
 }
 
@@ -64,6 +69,7 @@ SignatureVerifier_CryptoAPI::SignatureVerifier_CryptoAPI(basic_Error & e) : hPro
 
 void SignatureVerifier_CryptoAPI::init(basic_Error & e)
 {
+  // TODO: Move this to the constructor now that we pass in the error object
   if (!CryptAcquireContext(&this->hProv_, NULL, MS_ENH_RSA_AES_PROV, PROV_RSA_AES, CRYPT_VERIFYCONTEXT)) {
     DWORD code = GetLastError();
     e.set(api::main(), errors::Subsystem::SignatureVerifier, CRYPT_ACQUIRE_CONTEXT_FAILED, code);
