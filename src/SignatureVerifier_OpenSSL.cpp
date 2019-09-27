@@ -85,10 +85,10 @@ SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL(basic_Error & e)
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
   if (this->rsa != NULL) {
     this->rsa->n = BN_new();
-    if (this->rsa->n == NULL) { RSA_free(this->rsa); }
+    if (this->rsa->n == NULL) { RSA_free(this->rsa); return; }
 
     this->rsa->e = BN_new();
-    if (this->rsa->e == NULL) { RSA_free(this->rsa); }
+    if (this->rsa->e == NULL) { RSA_free(this->rsa); return; }
   }
 #else
   if (this->rsa != NULL) {
@@ -104,7 +104,7 @@ SignatureVerifier_OpenSSL::SignatureVerifier_OpenSSL(basic_Error & e)
       if (e != NULL) { BN_free(e); }
     } else {
       int result = RSA_set0_key(this->rsa, n, e, NULL);
-      if (result != 1) { RSA_free(this->rsa); }
+      if (result != 1) { BN_free(n); BN_free(e); RSA_free(this->rsa); this->rsa = NULL; }
     }
   }
 
@@ -191,7 +191,7 @@ SignatureVerifier_OpenSSL::set_modulus_base64_(basic_Error & e, std::string cons
   }
 
   int result = RSA_set0_key(this->rsa, n, exp, NULL);
-  if (result != 1) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_SET0_KEY_FAILED); return; }
+  if (result != 1) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_SET0_KEY_FAILED); BN_free(n); BN_free(exp); return; }
 #endif
 }
 
@@ -228,7 +228,7 @@ SignatureVerifier_OpenSSL::set_exponent_base64_(basic_Error & e, std::string con
   }
 
   int result = RSA_set0_key(this->rsa, n, exp, NULL);
-  if (result != 1) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_SET0_KEY_FAILED); return; }
+  if (result != 1) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_SET0_KEY_FAILED); BN_free(n); BN_free(exp); return; }
 #endif
 }
 
