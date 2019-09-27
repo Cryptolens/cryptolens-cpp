@@ -48,6 +48,7 @@ RequestHandler_WinHTTP_PostBuilder::add_argument(basic_Error & e, char const* ke
 
   using namespace errors::RequestHandler_WinHTTP;
 
+  // TODO: separator_ is initialized to ' ', move this to a constant?
   if (separator_ == ' ') { separator_ = '&'; }
   else                   { postfields_ += separator_; }
 
@@ -120,7 +121,7 @@ RequestHandler_WinHTTP_PostBuilder::make(basic_Error & e)
 
   result =  WinHttpSendRequest( hRequest
                                , L"Content-Type: application/x-www-form-urlencoded"
-                               , -1
+                               , -1L
                                , (LPVOID *)postfields_.c_str()
                                , (DWORD)postfields_.size()
                                , (DWORD)postfields_.size()
