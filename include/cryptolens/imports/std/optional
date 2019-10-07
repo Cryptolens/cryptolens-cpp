@@ -1,5 +1,25 @@
 #pragma once
 
+#if __cplusplus < 201703L
+
+#include "../../../../third_party/optional-lite/optional.hpp"
+
+namespace cryptolens_io {
+
+namespace v20190401 {
+
+template<typename T>
+using optional = ::nonstd::optional<T>;
+
+using ::nonstd::make_optional;
+using ::nonstd::nullopt;
+
+} // namespace v20190401
+
+} // namespace cryptolens_io
+
+#else
+
 #include <optional>
 
 namespace cryptolens_io {
@@ -15,6 +35,8 @@ using std::nullopt;
 } // namespace v20190401
 
 } // namespace cryptolens_io
+
+#endif
 
 namespace cryptolens_io {
 
