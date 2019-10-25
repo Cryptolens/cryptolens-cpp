@@ -28,7 +28,7 @@ be used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization of the copyright holder.
 
  */
-static bool Curl_isunreserved(unsigned char in)
+bool Curl_isunreserved(unsigned char in)
 {
   switch (in) {
     case '0': case '1': case '2': case '3': case '4':

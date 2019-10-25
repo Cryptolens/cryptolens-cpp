@@ -7,6 +7,7 @@
 #include <winhttp.h>
 
 #include "RequestHandler_WinHTTP.hpp"
+#include "../third_party/curl/isunreserved.hpp"
 
 namespace cryptolens_io {
 

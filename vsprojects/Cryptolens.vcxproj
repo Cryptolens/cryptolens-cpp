@@ -161,17 +161,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ActivateError.cpp" />
-    <ClCompile Include="..\src\basic_Cryptolens.cpp" />
     <ClCompile Include="..\src\basic_SKM.cpp" />
+    <ClCompile Include="..\src\cryptolens_internals.cpp" />
     <ClCompile Include="..\src\DataObject.cpp" />
     <ClCompile Include="..\src\LicenseKey.cpp" />
     <ClCompile Include="..\src\LicenseKeyChecker.cpp" />
     <ClCompile Include="..\src\LicenseKeyInformation.cpp" />
     <ClCompile Include="..\src\MachineCodeComputer_COM.cpp" />
     <ClCompile Include="..\src\MachineCodeComputer_static.cpp" />
+    <ClCompile Include="..\src\RawLicenseKey.cpp" />
     <ClCompile Include="..\src\RequestHandler_WinHTTP.cpp" />
+    <ClCompile Include="..\src\ResponseParser_ArduinoJson5.cpp" />
     <ClCompile Include="..\src\SignatureVerifier_CryptoAPI.cpp" />
     <ClCompile Include="..\third_party\base64_OpenBSD\base64.cpp" />
+    <ClCompile Include="..\third_party\curl\isunreserved.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cryptolens\ActivateError.hpp" />
@@ -194,6 +197,7 @@
     <ClInclude Include="..\include\cryptolens\RequestHandler_WinHTTP.hpp" />
     <ClInclude Include="..\include\cryptolens\base64.hpp" />
     <ClInclude Include="..\include\cryptolens\SignatureVerifier_CryptoAPI.hpp" />
+    <ClInclude Include="..\third_party\curl\isunreserved.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
