@@ -1,13 +1,13 @@
 ---
-title: Using the SKM Client API for C++ on Windows
+title: Using the Cryptolens C++ client on Windows
 author: Martin Svedin
-description: How to use SKM Client API for C++ on Windows with Visual Studio
+description: How to use Cryptolens C++ client on Windows with Visual Studio
 labelID: web_api
 ---
 
 # Windows support with Visual Studio
 
-It is fairly simple to get started with SKM Client API for C++ on Windows. 
+It is fairly simple to get started with Cryptolens client for C++ on Windows. 
 
 > Note: this version of the library is specifically built for Windows since it uses native Windows call.
 
@@ -24,26 +24,26 @@ Instructions for building the library and creating *CryptolensSKM.lib* using Vis
 
 ### Using in your own project
 
-For using the library in your own Visual Studio projects two things needs to be
-done. Firstly, Visual Studio needs to be told to use include files from the
-*SKM-Client-API-CPP\include* directory, and secondly, the linker in Visual Studio
+To use the library in your own Visual Studio projects two things need to be
+done. First, Visual Studio needs to be told to use include files from the
+*cryptolens-cpp\include* directory, and secondly, the linker in Visual Studio
 needs to be set up to link against CryptolensSKM.lib.
 
-An example project can be found in *SKM-Client-API-CPP\example\Visual Studio\Example1*.
-This project is set up to work with the *CryptolensSKM.sln* file, i.e. it looks for
-*CryptolensSKM.lib* in *SKM-Client-API-CPP\Output\\\<Platform\>\\\<Configuration\>*.
+Example projects can be found in *cryptolens-cpp\examples\Visual Studio\* folder.
+All of the projects are set up to work with the *CryptolensSKM.sln* file, i.e. it looks for
+*CryptolensSKM.lib* in *cryptolens-cpp\Output\\\<Platform\>\\\<Configuration\>*.
 
 ### Setting up include directories
 
   1. Right-click on the project in in Visual Studio and select Properties.
 
      ![Right-click on project](images/step1.png)
-  1. The path to *SKM-Client-API-CPP\include* needs to be added under *Configuration Properties ->
+  1. The path to *cryptolens-cpp\include* needs to be added under *Configuration Properties ->
      C\C++ -> General -> Additional Include Directories*.
 
-     Thus if the SKM-Client-API-CPP git repository was cloned at
+     Thus if the cryptolens-cpp git repository was cloned at
      ```
-     C:\Users\<user>\Documents\Visual Studio 2017\Projects\SKM-Client-API-CPP
+     C:\Users\<user>\Documents\Visual Studio 2017\Projects\cryptolens-cpp
      ```
      this path would be added under *Additional Include Directories*.
 
@@ -77,11 +77,11 @@ This project is set up to work with the *CryptolensSKM.sln* file, i.e. it looks 
 
      If we cloned the github repository at
      ```
-     C:\Users\<user>\Documents\Visual Studio 2017\Projects\SKM-Client-API-CPP
+     C:\Users\<user>\Documents\Visual Studio 2017\Projects\cryptolens-cpp
      ```
      and we built the library as described above, then we would add
      ```
-     C:\Users\<user>\Documents\Visual Studio 2017\Projects\SKM-Client-API-CPP\vsprojects\Output\$(Platform)\$(Configuration)\
+     C:\Users\<user>\Documents\Visual Studio 2017\Projects\cryptolens-cpp\vsprojects\Output\$(Platform)\$(Configuration)\
      ```
      to the *Additional Library Directories*, assuming your project uses the default
      Release/Debug configurations in Visual Studio.
