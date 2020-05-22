@@ -15,23 +15,23 @@ It is fairly simple to get started with Cryptolens client for C++ on Windows.
 
 ### Building the library yourself
 
-Instructions for building the library and creating *CryptolensSKM.lib* using Visual Studio:
+Instructions for building the library and creating *Cryptolens.lib* using Visual Studio:
 
-  1. Open the *CryptolensSKM.sln* solution file.
+  1. Open the *Cryptolens.sln* solution file.
   1. Select the desired platform and configuration in the Visual Studio GUI
   1. Build the solution (Build -> Solution).
-  1. *CryptolensSKM.lib* can now be found in the *Output\\\<Platform\>\\\<Configuration\>* directory.
+  1. *Cryptolens.lib* can now be found in the *Output\\\<Platform\>\\\<Configuration\>* directory.
 
 ### Using in your own project
 
 To use the library in your own Visual Studio projects two things need to be
 done. First, Visual Studio needs to be told to use include files from the
 *cryptolens-cpp\include* directory, and secondly, the linker in Visual Studio
-needs to be set up to link against CryptolensSKM.lib.
+needs to be set up to link against Cryptolens.lib.
 
 Example projects can be found in *cryptolens-cpp\examples\Visual Studio\* folder.
-All of the projects are set up to work with the *CryptolensSKM.sln* file, i.e. it looks for
-*CryptolensSKM.lib* in *cryptolens-cpp\Output\\\<Platform\>\\\<Configuration\>*.
+All of the projects are set up to work with the *Cryptolens.sln* file, i.e. it looks for
+*Cryptolens.lib* in *cryptolens-cpp\Output\\\<Platform\>\\\<Configuration\>*.
 
 ### Setting up include directories
 
@@ -56,7 +56,7 @@ All of the projects are set up to work with the *CryptolensSKM.sln* file, i.e. i
 
   1. Right-click on the project in Visual Studio and select Properties.
   1. Under *Configuration Properties -> Linker -> Input -> Additional Dependencies*
-     we need to add "winhttp.lib;CryptolensSKM.lib" to the existing list of
+     we need to add "winhttp.lib;Cryptolens.lib" to the existing list of
      dependencies.
 
      I.e. if this field already contains the value
@@ -65,7 +65,7 @@ All of the projects are set up to work with the *CryptolensSKM.sln* file, i.e. i
      ```
      the new value would be:
      ```
-     winhttp.lib;CryptolensSKM.lib;kernel32.lib;%(AdditionalDependencies)
+     winhttp.lib;Cryptolens.lib;kernel32.lib;%(AdditionalDependencies)
      ```
 
      The settings should thus look something like the following:
