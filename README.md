@@ -70,7 +70,7 @@ Now we can build the example project:
  * Set configuration and platform in the same way as when building the library
  * Build and run the project.
 
-Instructions for how to add the library to your own Visual Studio project can be found [here](https://help.cryptolens.io/web-api/cpp/windows).
+Instructions for how to add the library to your own Visual Studio project can be found [here](/tutorials/add-to-project-windows.md).
 
 ## Library overview
 
