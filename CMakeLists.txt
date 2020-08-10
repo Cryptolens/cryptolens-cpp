@@ -7,22 +7,24 @@ set (CRYPTOLENS_CURL_EMBED_CACERTS OFF CACHE BOOL "embed the ca certs in the lib
 set (SRC "src/ActivateError.cpp" "src/DataObject.cpp" "src/LicenseKey.cpp" "src/LicenseKeyChecker.cpp" "src/LicenseKeyInformation.cpp" "src/MachineCodeComputer_static.cpp" "src/RawLicenseKey.cpp" "src/ResponseParser_ArduinoJson5.cpp" "src/basic_SKM.cpp" "src/cryptolens_internals.cpp" "third_party/base64_OpenBSD/base64.cpp")
 set (LIBS "pthread" "dl")
 
-find_package(OpenSSL)
-if (${OpenSSL_FOUND})
+if(NOT WIN32)
+  find_package(OpenSSL)
+  if (${OpenSSL_FOUND})
   set (SRC  ${SRC} "src/SignatureVerifier_OpenSSL.cpp")
   set (LIBS ${LIBS} crypto)
-endif ()
-
-find_package(CURL)
-if (${CURL_FOUND})
-  set (SRC ${SRC} "src/RequestHandler_curl.cpp")
-  set (LIBS ${LIBS} curl ssl crypto)
-
-  if ((${CRYPTOLENS_CURL_EMBED_CACERTS}) OR (${SKM_CURL_EMBED_CACERTS}))
-    add_definitions (-DCRYPTOLENS_CURL_EMBED_CACERTS)
-    set (SRC ${SRC} "src/RequestHandler_curl_cacerts.cpp")
   endif ()
-endif ()
+
+  find_package(CURL)
+  if (${CURL_FOUND})
+    set (SRC ${SRC} "src/RequestHandler_curl.cpp")
+    set (LIBS ${LIBS} curl ssl crypto)
+
+    if ((${CRYPTOLENS_CURL_EMBED_CACERTS}) OR (${SKM_CURL_EMBED_CACERTS}))
+      add_definitions (-DCRYPTOLENS_CURL_EMBED_CACERTS)
+      set (SRC ${SRC} "src/RequestHandler_curl_cacerts.cpp")
+    endif ()
+  endif ()
+endif()
 
 add_library (cryptolens STATIC ${SRC})
 target_link_libraries (cryptolens ${LIBS})
