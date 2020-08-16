@@ -5,9 +5,10 @@ set (CRYPTOLENS_BUILD_TESTS OFF CACHE BOOL "build tests?")
 set (CRYPTOLENS_CURL_EMBED_CACERTS OFF CACHE BOOL "embed the ca certs in the library instead of using system default files?")
 
 set (SRC "src/ActivateError.cpp" "src/DataObject.cpp" "src/LicenseKey.cpp" "src/LicenseKeyChecker.cpp" "src/LicenseKeyInformation.cpp" "src/MachineCodeComputer_static.cpp" "src/RawLicenseKey.cpp" "src/ResponseParser_ArduinoJson5.cpp" "src/basic_SKM.cpp" "src/cryptolens_internals.cpp" "third_party/base64_OpenBSD/base64.cpp")
-set (LIBS "pthread" "dl")
 
 if(NOT WIN32)
+  set (LIBS "pthread" "dl")
+
   find_package(OpenSSL)
   if (${OpenSSL_FOUND})
   set (SRC  ${SRC} "src/SignatureVerifier_OpenSSL.cpp")
@@ -24,7 +25,20 @@ if(NOT WIN32)
       set (SRC ${SRC} "src/RequestHandler_curl_cacerts.cpp")
     endif ()
   endif ()
+else()
+    add_definitions (-DUNICODE -D_UNICODE)
+
+    # Windows specific source files
+    list (APPEND SRC "src/RequestHandler_WinHTTP.cpp" "src/SignatureVerifier_CryptoAPI.cpp")
+    list (APPEND LIBS "winhttp")
+
+    set (CRYPTOLENS_BUILD_MACHINE_CODE_COM OFF CACHE BOOL "build with MachineCodeComputer_COM?")
+    if (CRYPTOLENS_BUILD_MACHINE_CODE_COM)
+        list (APPEND SRC "src/MachineCodeComputer_COM.cpp" "third_party/curl/isunreserved.cpp")
+        list (APPEND LIBS "Iphlpapi")
+    endif()
 endif()
+
 
 add_library (cryptolens STATIC ${SRC})
 target_link_libraries (cryptolens ${LIBS})
