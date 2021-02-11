@@ -57,6 +57,9 @@ int constexpr BASIC_CRYPTOLENS_LAST_MESSAGE = BASIC_SKM_LAST_MESSAGE;
 int constexpr BASIC_SKM_CREATE_TRIAL_KEY = 9;
 int constexpr BASIC_CRYPTOLENS_CREATE_TRIAL_KEY = BASIC_SKM_CREATE_TRIAL_KEY;
 
+int constexpr BASIC_SKM_DEACTIVATE = 10;
+int constexpr BASIC_CRYPTOLENS_DEACTIVATE = BASIC_SKM_ACTIVATE;
+
 } // namespace Call
 
 // Errors for the Main subsystem

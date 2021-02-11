@@ -273,6 +273,30 @@ ResponseParser_ArduinoJson5::parse_create_trial_key_response(basic_Error & e, st
   return key ? key : "";
 }
 
+void
+ResponseParser_ArduinoJson5::parse_deactivate_response(basic_Error & e, std::string const& server_response) const
+{
+  using namespace errors;
+  api::main api;
+
+  using namespace ArduinoJson;
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject & j = jsonBuffer.parseObject(server_response);
+
+  if (!j.success()) { e.set(api, Subsystem::Json); return; }
+
+  if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
+    if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
+      e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
+      return;
+    }
+
+    int reason = internal::activate_parse_server_error_message(j["message"].as<char const*>());
+    e.set(api, Subsystem::Main, reason);
+    return;
+  }
+}
+
 std::string
 ResponseParser_ArduinoJson5::parse_last_message_response(basic_Error & e, std::string const& server_response) const
 {
