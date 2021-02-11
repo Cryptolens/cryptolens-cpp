@@ -216,6 +216,25 @@ public:
     , int product_id
     );
 
+  void
+  deactivate
+    ( basic_Error & e
+    , std::string token
+    , int product_id
+    , std::string key
+    , bool floating = false
+    );
+
+  void
+  deactivate
+    ( basic_Error & e
+    , std::string token
+    , int product_id
+    , std::string key
+    , std::string machine_code
+    , bool floating = false
+    );
+
   std::string
   last_message
     ( basic_Error & e
@@ -260,6 +279,16 @@ private:
     ( basic_Error & e
     , std::string token
     , int product_id
+    );
+
+  void
+  deactivate_
+    ( basic_Error & e
+    , std::string & token
+    , int product_id
+    , std::string & key
+    , std::string & machine_code
+    , bool floating
     );
 
   std::string
@@ -313,6 +342,43 @@ basic_Cryptolens<Configuration>::activate
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE); return nullopt; }
 
   return LicenseKey(std::move(*y), std::move(*x));
+}
+
+template<typename Configuration>
+void
+basic_Cryptolens<Configuration>::deactivate
+  ( basic_Error & e
+  , std::string token
+  , int product_id
+  , std::string key
+  , bool floating
+  )
+{
+  if (e) { return; }
+
+  std::string machine_code = machine_code_computer.get_machine_code(e);
+
+  deactivate_(e, token, product_id, key, machine_code, floating);
+
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_DEACTIVATE); return; }
+}
+
+template<typename Configuration>
+void
+basic_Cryptolens<Configuration>::deactivate
+  ( basic_Error & e
+  , std::string token
+  , int product_id
+  , std::string key
+  , std::string machine_code
+  , bool floating
+  )
+{
+  if (e) { return; }
+
+  deactivate_(e, token, product_id, key, machine_code, floating);
+
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_DEACTIVATE); return; }
 }
 
 /**
@@ -453,6 +519,36 @@ basic_Cryptolens<Configuration>::activate_
            .make(e);
 
   return handle_activate_raw(e, this->signature_verifier, response);
+}
+
+template<typename Configuration>
+void
+basic_Cryptolens<Configuration>::deactivate_
+  ( basic_Error & e
+  , std::string & token
+  , int product_id
+  , std::string & key
+  , std::string & machine_code
+  , bool floating
+  )
+{
+  if (e) { return; }
+
+  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/key/Deactivate");
+
+  std::ostringstream product_id_; product_id_ << product_id;
+  std::ostringstream floating_; floating_ << floating;
+
+  std::string response =
+    request.add_argument(e, "token"       , token.c_str())
+           .add_argument(e, "ProductId"   , product_id_.str().c_str())
+           .add_argument(e, "Key"         , key.c_str())
+           .add_argument(e, "MachineCode" , machine_code.c_str())
+           .add_argument(e, "Floating"    , floating_.str().c_str())
+           .add_argument(e, "v"           , "1")
+           .make(e);
+
+  response_parser.parse_deactivate_response(e, response);
 }
 
 template<typename Configuration>
