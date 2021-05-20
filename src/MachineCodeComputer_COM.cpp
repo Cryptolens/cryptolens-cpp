@@ -323,7 +323,7 @@ size_t SHA1(basic_Error & e, std::wstring const& data, std::string & append)
 	HCRYPTPROV hProv;
 	HCRYPTHASH hHash;
 
-	BYTE *pbHash;
+	BYTE *pbHash = NULL;
 	DWORD dwHashLen;
 	DWORD dwHashLenSize = sizeof(DWORD);
 	size_t data_len;
@@ -385,6 +385,7 @@ size_t SHA1(basic_Error & e, std::wstring const& data, std::string & append)
 cleanup:
 	CryptDestroyHash(hHash);
 	CryptReleaseContext(hProv, 0);
+	free(pbHash);
 
 	return result;
 }
