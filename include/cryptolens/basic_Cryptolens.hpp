@@ -13,7 +13,7 @@
 #include "LicenseKeyChecker.hpp"
 #include "LicenseKeyInformation.hpp"
 #include "RawLicenseKey.hpp"
-#include "ResponseParser_ArduinoJson5.hpp"
+#include "ResponseParser_ArduinoJson6.hpp"
 
 namespace cryptolens_io {
 
@@ -147,7 +147,7 @@ handle_activate_raw
 {
   if (e) { return nullopt; }
 
-  ResponseParser_ArduinoJson5 response_parser(e);
+  ResponseParser_ArduinoJson6 response_parser(e);
   if (e) { return nullopt; }
 
   auto x = internal::handle_activate(e, response_parser, signature_verifier, response);
@@ -182,7 +182,7 @@ handle_activate
 {
   if (e) { return nullopt; }
 
-  ResponseParser_ArduinoJson5 response_parser(e);
+  ResponseParser_ArduinoJson6 response_parser(e);
   if (e) { return nullopt; }
 
   optional<RawLicenseKey> x = internal::handle_activate(e, response_parser, signature_verifier, response);

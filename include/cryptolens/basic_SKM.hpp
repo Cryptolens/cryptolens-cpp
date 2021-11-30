@@ -7,7 +7,7 @@
 
 #include "imports/std/optional"
 
-#include "imports/ArduinoJson5/ArduinoJson.hpp"
+#include "imports/ArduinoJson6/ArduinoJson.hpp"
 
 #include "ActivateError.hpp"
 #include "basic_Error.hpp"
@@ -458,10 +458,9 @@ handle_activate
   api::main api;
 
   using namespace ArduinoJson;
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject & j = jsonBuffer.parseObject(response);
+  DynamicJsonDocument j(1024);
 
-  if (!j.success()) { e.set(api, Subsystem::Json); return nullopt; }
+  if (deserializeJson(j, response)) { e.set(api, Subsystem::Json, 2345, 9854); return nullopt; }
 
   if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
     if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
