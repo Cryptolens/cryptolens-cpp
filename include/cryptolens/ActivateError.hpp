@@ -12,14 +12,16 @@ private:
 
   int reason_;
 public:
-  static const int UNKNOWN_SERVER_REPLY      = 0;
-  static const int INVALID_ACCESS_TOKEN      = 1;
-  static const int ACCESS_DENIED             = 2;
-  static const int INCORRECT_INPUT_PARAMETER = 3;
-  static const int PRODUCT_NOT_FOUND         = 4;
-  static const int KEY_NOT_FOUND             = 5;
-  static const int KEY_BLOCKED               = 6;
-  static const int DEVICE_LIMIT_REACHED      = 7;
+  static const int UNKNOWN_SERVER_REPLY      = 1;
+  static const int INVALID_ACCESS_TOKEN      = 2;
+  static const int ACCESS_DENIED             = 3;
+  static const int INCORRECT_INPUT_PARAMETER = 4;
+  static const int PRODUCT_NOT_FOUND         = 5;
+  static const int KEY_NOT_FOUND             = 6;
+  static const int KEY_BLOCKED               = 7;
+  static const int DEVICE_LIMIT_REACHED      = 8;
+  static const int KEY_EXPIRED               = 9;
+  static const int MACHINE_CODE_NOT_ACTIVATED_OR_NO_KEY_ACTIVATION = 10;
 
   static ActivateError from_reason(int reason);
 
