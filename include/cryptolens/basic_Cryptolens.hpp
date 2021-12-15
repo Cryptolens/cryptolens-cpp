@@ -537,7 +537,7 @@ basic_Cryptolens<Configuration>::deactivate_
   auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/key/Deactivate");
 
   std::ostringstream product_id_; product_id_ << product_id;
-  std::ostringstream floating_; floating_ << floating;
+  std::ostringstream floating_; floating_ << (floating ? "true" : "false");
 
   std::string response =
     request.add_argument(e, "token"       , token.c_str())
