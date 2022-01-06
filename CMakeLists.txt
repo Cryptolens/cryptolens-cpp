@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 3.0.2)
 project (cryptolens)
 
 set (CRYPTOLENS_BUILD_TESTS OFF CACHE BOOL "build tests?")
+set (CRYPTOLENS_BUILD_SHARED OFF CACHE BOOL "build as dynamic libraries")
 set (CRYPTOLENS_CURL_EMBED_CACERTS OFF CACHE BOOL "embed the ca certs in the library instead of using system default files?")
 
 set (SRC "src/ActivateError.cpp" "src/DataObject.cpp" "src/LicenseKey.cpp" "src/LicenseKeyChecker.cpp" "src/LicenseKeyInformation.cpp" "src/MachineCodeComputer_static.cpp" "src/RawLicenseKey.cpp" "src/ResponseParser_ArduinoJson5.cpp" "src/basic_SKM.cpp" "src/cryptolens_internals.cpp" "third_party/base64_OpenBSD/base64.cpp")
@@ -40,7 +41,12 @@ else()
 endif()
 
 
-add_library (cryptolens STATIC ${SRC})
+if (${CRYPTOLENS_BUILD_SHARED})
+    add_library (cryptolens SHARED ${SRC})
+else()
+    add_library (cryptolens STATIC ${SRC})
+endif()
+
 target_link_libraries (cryptolens ${LIBS})
 target_include_directories (cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/include/cryptolens")
 target_include_directories (cryptolens PUBLIC "${cryptolens_SOURCE_DIR}/include")
@@ -50,3 +56,7 @@ set_property (TARGET cryptolens PROPERTY CXX_STANDARD_REQURED ON)
 if (${CRYPTOLENS_BUILD_TESTS})
   add_subdirectory (tests)
 endif ()
+
+install(DIRECTORY ${cryptolens_SOURCE_DIR}/include/ DESTINATION include)
+install(DIRECTORY ${cryptolens_SOURCE_DIR}/third_party/ DESTINATION third_party)
+install(TARGETS cryptolens DESTINATION lib)
