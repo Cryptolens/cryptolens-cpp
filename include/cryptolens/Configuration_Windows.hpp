@@ -27,6 +27,11 @@ struct Configuration_Windows {
 	  , AndValidator_<Env, OnValidMachineValidator_<Env>
 	  , NotExpiredValidator_kernel32_<Env>
 	  >>>;
+
+  template<typename Env>
+  using GetKeyValidator = AndValidator_<Env, CorrectKeyValidator_<Env>
+                        , AndValidator_<Env, CorrectProductValidator_<Env>
+                        >>;
 };
 
 template<typename MachineCodeComputer_>
@@ -41,6 +46,11 @@ struct Configuration_Windows_IgnoreExpires {
 	  , AndValidator_<Env, CorrectProductValidator_<Env>
 	  , OnValidMachineValidator_<Env>
 	  >>;
+
+  template<typename Env>
+  using GetKeyValidator = AndValidator_<Env, CorrectKeyValidator_<Env>
+                        , AndValidator_<Env, CorrectProductValidator_<Env>
+                        >>;
 };
 
 } // namespace v20190401
