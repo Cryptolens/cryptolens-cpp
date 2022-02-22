@@ -50,6 +50,10 @@ ActivateError::from_server_response(char const* server_response)
     reason = DEVICE_LIMIT_REACHED;
   }
 
+  if (0 == std::strcmp(server_response, "Either the machine code was never activated or key activation feature was never set up.")) {
+    reason = MACHINE_CODE_NOT_ACTIVATED_OR_NO_KEY_ACTIVATION;
+  }
+
   return ActivateError(reason);
 }
 
@@ -86,6 +90,9 @@ ActivateError::what() const noexcept
 
   case DEVICE_LIMIT_REACHED:
   return "Cannot activate the new device as the limit has been reached.";
+
+  case MACHINE_CODE_NOT_ACTIVATED_OR_NO_KEY_ACTIVATION:
+  return "Either the machine code was never activated or key activation feature was never set up.";
 
   default:
   return "Unknown error.";

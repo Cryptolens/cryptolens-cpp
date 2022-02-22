@@ -76,6 +76,7 @@ constexpr int KEY_NOT_FOUND             = 6;
 constexpr int KEY_BLOCKED               = 7;
 constexpr int DEVICE_LIMIT_REACHED      = 8;
 constexpr int KEY_EXPIRED               = 9;
+constexpr int MACHINE_CODE_NOT_ACTIVATED_OR_NO_KEY_ACTIVATION = 10;
 
 } // namespace Main
 

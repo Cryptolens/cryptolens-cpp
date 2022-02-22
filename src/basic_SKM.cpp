@@ -41,6 +41,10 @@ activate_parse_server_error_message(char const* server_response)
     return Main::DEVICE_LIMIT_REACHED;
   }
 
+  if (0 == std::strcmp(server_response, "Either the machine code was never activated or key activation feature was never set up.")) {
+    return Main::MACHINE_CODE_NOT_ACTIVATED_OR_NO_KEY_ACTIVATION;
+  }
+
   return Main::UNKNOWN_SERVER_REPLY;
 }
 

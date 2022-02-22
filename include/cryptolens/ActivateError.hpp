@@ -2,6 +2,8 @@
 
 #include <exception>
 
+#include "basic_Error.hpp"
+
 namespace cryptolens_io {
 
 namespace v20190401 {
@@ -12,14 +14,16 @@ private:
 
   int reason_;
 public:
-  static const int UNKNOWN_SERVER_REPLY      = 0;
-  static const int INVALID_ACCESS_TOKEN      = 1;
-  static const int ACCESS_DENIED             = 2;
-  static const int INCORRECT_INPUT_PARAMETER = 3;
-  static const int PRODUCT_NOT_FOUND         = 4;
-  static const int KEY_NOT_FOUND             = 5;
-  static const int KEY_BLOCKED               = 6;
-  static const int DEVICE_LIMIT_REACHED      = 7;
+  static const int UNKNOWN_SERVER_REPLY      = ::cryptolens_io::v20190401::errors::Main::UNKNOWN_SERVER_REPLY;
+  static const int INVALID_ACCESS_TOKEN      = ::cryptolens_io::v20190401::errors::Main::INVALID_ACCESS_TOKEN;
+  static const int ACCESS_DENIED             = ::cryptolens_io::v20190401::errors::Main::ACCESS_DENIED;
+  static const int INCORRECT_INPUT_PARAMETER = ::cryptolens_io::v20190401::errors::Main::INCORRECT_INPUT_PARAMETER;
+  static const int PRODUCT_NOT_FOUND         = ::cryptolens_io::v20190401::errors::Main::PRODUCT_NOT_FOUND;
+  static const int KEY_NOT_FOUND             = ::cryptolens_io::v20190401::errors::Main::KEY_NOT_FOUND;
+  static const int KEY_BLOCKED               = ::cryptolens_io::v20190401::errors::Main::KEY_BLOCKED;
+  static const int DEVICE_LIMIT_REACHED      = ::cryptolens_io::v20190401::errors::Main::DEVICE_LIMIT_REACHED;
+  static const int KEY_EXPIRED               = ::cryptolens_io::v20190401::errors::Main::KEY_EXPIRED;
+  static const int MACHINE_CODE_NOT_ACTIVATED_OR_NO_KEY_ACTIVATION = ::cryptolens_io::v20190401::errors::Main::MACHINE_CODE_NOT_ACTIVATED_OR_NO_KEY_ACTIVATION;
 
   static ActivateError from_reason(int reason);
 
