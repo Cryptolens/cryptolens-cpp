@@ -566,7 +566,7 @@ basic_Cryptolens<Configuration>::activate_
 {
   if (e) { return nullopt; }
 
-  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/key/Activate");
+  auto request = request_handler.post_request(e, "api.cryptolens.io", "/api/key/Activate");
 
   std::ostringstream product_id_; product_id_ << product_id;
   std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
@@ -598,7 +598,7 @@ basic_Cryptolens<Configuration>::deactivate_
 {
   if (e) { return; }
 
-  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/key/Deactivate");
+  auto request = request_handler.post_request(e, "api.cryptolens.io", "/api/key/Deactivate");
 
   std::ostringstream product_id_; product_id_ << product_id;
   std::ostringstream floating_; floating_ << (floating ? "true" : "false");
@@ -629,7 +629,7 @@ basic_Cryptolens<Configuration>::activate_floating_
 {
   if (e) { return nullopt; }
 
-  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/key/Activate");
+  auto request = request_handler.post_request(e, "api.cryptolens.io", "/api/key/Activate");
 
   std::ostringstream product_id_; product_id_ << product_id;
   std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
@@ -713,7 +713,7 @@ basic_Cryptolens<Configuration>::create_trial_key_
 
   std::string machine_code = machine_code_computer.get_machine_code(e);
 
-  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/Key/CreateTrialKey");
+  auto request = request_handler.post_request(e, "api.cryptolens.io", "/api/Key/CreateTrialKey");
 
   std::ostringstream product_id_; product_id_ << product_id;
 
@@ -759,7 +759,7 @@ basic_Cryptolens<Configuration>::get_key_
 {
   if (e) { return nullopt; }
 
-  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/key/GetKey");
+  auto request = request_handler.post_request(e, "api.cryptolens.io", "/api/key/GetKey");
 
   std::ostringstream product_id_; product_id_ << product_id;
   std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
@@ -797,7 +797,7 @@ basic_Cryptolens<Configuration>::last_message_
 {
   if (e) { return ""; }
 
-  auto request = request_handler.post_request(e, "app.cryptolens.io", "/api/message/GetMessages");
+  auto request = request_handler.post_request(e, "api.cryptolens.io", "/api/message/GetMessages");
 
   std::ostringstream stm; stm << since_unix_timestamp;
 

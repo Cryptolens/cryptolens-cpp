@@ -48,7 +48,7 @@ RequestHandler_v20190401_to_v20180502<RequestHandler>::make_request(::cryptolens
   std::string endpoint("/api/key/");
   endpoint += method;
 
-  auto request = inner_.post_request(e, "app.cryptolens.io", endpoint.c_str());
+  auto request = inner_.post_request(e, "api.cryptolens.io", endpoint.c_str());
 
   for (auto x : map) { request.add_argument(e, x.first.c_str(), x.second.c_str()); }
 
