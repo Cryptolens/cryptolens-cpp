@@ -102,7 +102,9 @@ library. We currently support the following `Configurations` and `MachineCodeCom
 
 | MachineCodeComputer             | Description                                     |
 | ------------------------------- | ----------------------------------------------- |
-| `MachineCodeComputer_static`    | Does not automatically compute a machine code, instead the machine code is set by calling a function |
+| `MachineCodeComputer_COM` | Works on Windows and computes a machine code using functionallity provided through COM. |
+| `MachineCodeComputer_static` | Does not automatically compute a machine code, instead the machine code is set by calling `set_machine_code()`. |
+| `MachineCodeComputer_SystemdDBusInodes_SHA256` | Works on Linux systems and computes a machine code based on information provided by Systemd, DBus and the filesystem. |
 
 The next step is to create and set up a handle class responsible for making requests
 to the Cryptolens Web API.
@@ -117,6 +119,7 @@ Cryptolens cryptolens_handle(e);
 cryptolens_handle.signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
 cryptolens_handle.signature_verifier.set_exponent_base64(e, "ABCD");
 
+// This line is only for MachineCodeComputer_static and sets the machine code to a static value
 cryptolens_handle.machine_code_computer.set_machine_code(e, "289jf2afs3");
 ```
 
