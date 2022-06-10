@@ -169,6 +169,7 @@
     <ClCompile Include="..\src\LicenseKeyInformation.cpp" />
     <ClCompile Include="..\src\MachineCodeComputer_COM.cpp" />
     <ClCompile Include="..\src\MachineCodeComputer_static.cpp" />
+    <ClCompile Include="..\src\MachineCodeComputer_Windows_UUID.cpp" />
     <ClCompile Include="..\src\RawLicenseKey.cpp" />
     <ClCompile Include="..\src\RequestHandler_WinHTTP.cpp" />
     <ClCompile Include="..\src\ResponseParser_ArduinoJson5.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="..\include\cryptolens\LicenseKeyChecker.hpp" />
     <ClInclude Include="..\include\cryptolens\LicenseKeyInformation.hpp" />
     <ClInclude Include="..\include\cryptolens\imports\std\optional" />
+    <ClInclude Include="..\include\cryptolens\MachineCodeComputer_Windows_UUID.hpp" />
     <ClInclude Include="..\include\cryptolens\RawLicenseKey.hpp" />
     <ClInclude Include="..\include\cryptolens\RequestHandler_curl.hpp" />
     <ClInclude Include="..\include\cryptolens\RequestHandler_WinHTTP.hpp" />

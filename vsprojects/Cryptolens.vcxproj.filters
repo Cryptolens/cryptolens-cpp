@@ -60,6 +60,9 @@
     <ClCompile Include="..\third_party\curl\isunreserved.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\MachineCodeComputer_Windows_UUID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cryptolens\ActivateError.hpp">
@@ -123,6 +126,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\third_party\curl\isunreserved.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cryptolens\MachineCodeComputer_Windows_UUID.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
