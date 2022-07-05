@@ -92,53 +92,82 @@ cleanup:
 
 std::string
 MachineCodeComputer_Windows_UUID_Recompute::get_machine_code(basic_Error & e) {
-	std::string hashed_machine_code;
+        std::string hashed_machine_code;
+        int s = INITIAL_BUFFER_SIZE;
+        int p = 0;
+        BOOL r = 0;
+        DWORD c = 0;
+        char* buffer = NULL;
+        char* b = NULL;
+        HANDLE pipe_read = INVALID_HANDLE_VALUE;
+        HANDLE pipe_write = INVALID_HANDLE_VALUE;
+        SECURITY_ATTRIBUTES sa;
+        PROCESS_INFORMATION pi;
+        STARTUPINFO si;
+        wchar_t command[] = L"cmd.exe /c powershell.exe -Command \"(Get-CimInstance -Class Win32_ComputerSystemProduct).UUID\"";
 
-	int s = INITIAL_BUFFER_SIZE;
-	int p = 0;
-	int r = 0;
-	char* buffer = NULL;
-	char* b = NULL;
-	FILE* pipe = NULL;
+        buffer = (char*)malloc(s * sizeof(char));
+        if (!buffer) { goto error; }
 
+        sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+        sa.bInheritHandle = true;
+        sa.lpSecurityDescriptor = NULL;
 
-	pipe = _popen("cmd.exe /c powershell.exe -Command \"(Get-CimInstance -Class Win32_ComputerSystemProduct).UUID\"", "rb");
-	if (pipe == NULL) {
-		goto error;
-	}
+        if (!CreatePipe(&pipe_read, &pipe_write, &sa, 0)) { goto error; }
+        if (!SetHandleInformation(pipe_read, HANDLE_FLAG_INHERIT, 0)) { goto error; }
 
-	buffer = (char*)malloc(s * sizeof(char));
-	if (!buffer) { goto error; }
+        ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
+
+        ZeroMemory(&si, sizeof(STARTUPINFO));
+        si.cb = sizeof(STARTUPINFO);
+        si.hStdOutput = pipe_write;
+        si.dwFlags |= STARTF_USESTDHANDLES;
+
+        r = CreateProcess(
+                NULL,
+                command,
+                NULL,
+                NULL,
+                true,
+                0,
+                NULL,
+                NULL,
+                &si,
+                &pi
+        );
+
+        CloseHandle(pipe_write);
+
+        if (!r) { goto error; }
 
 	for (;;) {
-		if (p + CHUNK_SIZE < s) {
-			s *= 2;
+            if (p + CHUNK_SIZE < s) {
+                s *= 2;
 
-			b = (char*)realloc(buffer, s * sizeof(char));
-			if (b == NULL) { goto error; }
+                b = (char*)realloc(buffer, s * sizeof(char));
+                if (b == NULL) { goto error; }
 
-			buffer = b;
-		}
+                buffer = b;
+            }
 
-		r = fread(buffer + p, sizeof(char), CHUNK_SIZE, pipe);
+            r = ReadFile(pipe_read, buffer + p, CHUNK_SIZE, &c, NULL);
 
-		p += r;
-		if (r < CHUNK_SIZE) { break; }
-	}
+            if (!r && c != 0) { goto error; }
 
-	r = ferror(pipe);
-	if (r) {
-		goto error;
-	}
+            p += c;
+            if (c == 0) { break; }
+        }
 
-	::cryptolens_io::v20190401::internal::SHA256(e, buffer, p, hashed_machine_code);
+        ::cryptolens_io::v20190401::internal::SHA256(e, buffer, p, hashed_machine_code);
 
+	goto exit;
 error:
+        e.set(api::main(), 6, 1);
 exit:
-	_pclose(pipe);
-	free(buffer);
+        CloseHandle(pipe_read);
+        free(buffer);
 
-	return hashed_machine_code;
+        return hashed_machine_code;
 }
 
 } // namespace v20190401
