@@ -320,8 +320,9 @@ HRESULT GetWindowsIdentity(basic_Error & e, std::wstring & append)
 
 size_t SHA1(basic_Error & e, std::wstring const& data, std::string & append)
 {
-	HCRYPTPROV hProv;
-	HCRYPTHASH hHash;
+	// Initialization from https://devblogs.microsoft.com/oldnewthing/20160127-00/?p=92934
+	HCRYPTPROV hProv = 0;
+	HCRYPTHASH hHash = 0;
 
 	BYTE *pbHash = NULL;
 	DWORD dwHashLen;
@@ -330,44 +331,38 @@ size_t SHA1(basic_Error & e, std::wstring const& data, std::string & append)
 
 	CHAR HEX[] = "0123456789ABCDEF";
 
-	size_t result;
+	size_t result = 1;
 
 	if (!CryptAcquireContext(&hProv, NULL, MS_ENH_RSA_AES_PROV, PROV_RSA_AES, CRYPT_VERIFYCONTEXT))
 	{
-		result = 1;
 		e.set(api, 6, 15, result); goto cleanup;
 	}
 
 	if (!CryptCreateHash(hProv, CALG_SHA1, 0, 0, &hHash))
 	{
-		result = 1;
 		e.set(api, 6, 16, result); goto cleanup;
 	}
 
 	data_len = sizeof(wchar_t) * data.size();
-	if (data_len > 0xFFFFFFFF) { result = 1; e.set(api, 6, 30, result); goto cleanup; }
+	if (data_len > 0xFFFFFFFF) {  e.set(api, 6, 30, result); goto cleanup; }
 
 	if (!CryptHashData(hHash, (const BYTE*)data.data(), (DWORD)data_len, 0))
 	{
-		result = 1;
 		e.set(api, 6, 17, result); goto cleanup;
 	}
 
 	if (!CryptGetHashParam(hHash, HP_HASHSIZE, (BYTE *)&dwHashLen, &dwHashLenSize, 0))
 	{
-		result = 1;
 		e.set(api, 6, 18, result); goto cleanup;
 	}
 
 	if (!(pbHash = (BYTE*)malloc(dwHashLen)))
 	{
-		result = 1;
 		e.set(api, 6, 19, result); goto cleanup;
 	}
 
 	if (!CryptGetHashParam(hHash, HP_HASHVAL, pbHash, &dwHashLen, 0))
 	{
-		result = 1;
 		e.set(api, 6, 20, result); goto cleanup;
 	}
 
@@ -383,8 +378,8 @@ size_t SHA1(basic_Error & e, std::wstring const& data, std::string & append)
 	result = 0;
 
 cleanup:
-	CryptDestroyHash(hHash);
-	CryptReleaseContext(hProv, 0);
+	if (hHash) { CryptDestroyHash(hHash); }
+	if (hProv) { CryptReleaseContext(hProv, 0); }
 	free(pbHash);
 
 	return result;
