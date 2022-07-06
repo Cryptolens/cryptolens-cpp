@@ -378,8 +378,8 @@ size_t SHA1(basic_Error & e, std::wstring const& data, std::string & append)
 	result = 0;
 
 cleanup:
-	if (hHash) { CryptDestroyHash(hHash); }
-	if (hProv) { CryptReleaseContext(hProv, 0); }
+	if (hHash) { CryptDestroyHash(hHash); }
+	if (hProv) { CryptReleaseContext(hProv, 0); }
 	free(pbHash);
 
 	return result;

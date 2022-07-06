@@ -76,8 +76,8 @@ size_t SHA256(basic_Error& e, char* data, size_t n, std::string& append)
 	result = 0;
 
 cleanup:
-	if (hHash) { CryptDestroyHash(hHash); }
-	if (hProv) { CryptReleaseContext(hProv, 0); }
+	if (hHash) { CryptDestroyHash(hHash); }
+	if (hProv) { CryptReleaseContext(hProv, 0); }
 	free(pbHash);
 
 	return result;
