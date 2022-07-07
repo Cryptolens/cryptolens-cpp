@@ -124,7 +124,7 @@ MachineCodeComputer_Windows_UUID_Recompute::get_machine_code(basic_Error & e) {
                 NULL,
                 NULL,
                 true,
-                0,
+                CREATE_NO_WINDOW,
                 NULL,
                 NULL,
                 &si,
