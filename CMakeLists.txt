@@ -47,7 +47,7 @@ target_link_libraries (cryptolens ${LIBS})
 target_include_directories (cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/include/cryptolens")
 target_include_directories (cryptolens PUBLIC "${cryptolens_SOURCE_DIR}/include")
 set_property (TARGET cryptolens PROPERTY CXX_STANDARD 17)
-set_property (TARGET cryptolens PROPERTY CXX_STANDARD_REQURED ON)
+set_property (TARGET cryptolens PROPERTY CXX_STANDARD_REQUIRED ON)
 
 if (${CRYPTOLENS_BUILD_TESTS})
   add_subdirectory (tests)
