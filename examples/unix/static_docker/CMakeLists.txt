@@ -24,4 +24,4 @@ target_include_directories (cryptolens PRIVATE "../../../include/cryptolens")
 target_include_directories (cryptolens PUBLIC "../../../include")
 
 set_property (TARGET cryptolens PROPERTY CXX_STANDARD 11)
-set_property (TARGET cryptolens PROPERTY CXX_STANDARD_REQURED ON)
+set_property (TARGET cryptolens PROPERTY CXX_STANDARD_REQUIRED ON)
