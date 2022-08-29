@@ -1,6 +1,14 @@
 #pragma once
 
+#ifdef CRYPTOLENS_SHORT_INCLUDE_PATHS
+
 #include <optional>
+
+#else
+
+#include <optional>
+
+#endif
 
 namespace cryptolens_io {
 

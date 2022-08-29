@@ -30,6 +30,12 @@ add_subdirectory ("../../.." "cryptolens-cpp")
 #    install(DIRECTORY ${cryptolens_SOURCE_DIR}/include/ DESTINATION include)
 #    install(DIRECTORY ${cryptolens_SOURCE_DIR}/third_party/ DESTINATION third_party)
 #    install(TARGETS cryptolens DESTINATION lib)
+#
+# Uncomment the following lines in order to shorten include paths
+#
+#    target_include_directories(cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/third_party/ArduinoJson5")
+#    target_include_directories(cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/third_party/optional-lite")
+#    target_compile_definitions(cryptolens PRIVATE CRYPTOLENS_SHORT_INCLUDE_PATHS)
 
 add_executable(example_activate ../example_activate.cpp)
 target_link_libraries(example_activate cryptolens)
