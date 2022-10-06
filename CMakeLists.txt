@@ -7,6 +7,8 @@ set(CRYPTOLENS_LIBRARY_TYPE "STATIC" CACHE STRING "Type of library to be created
 
 set (SRC "src/ActivateError.cpp" "src/DataObject.cpp" "src/LicenseKey.cpp" "src/LicenseKeyChecker.cpp" "src/LicenseKeyInformation.cpp" "src/MachineCodeComputer_static.cpp" "src/RawLicenseKey.cpp" "src/ResponseParser_ArduinoJson5.cpp" "src/basic_SKM.cpp" "src/cryptolens_internals.cpp" "third_party/base64_OpenBSD/base64.cpp")
 
+set (SRC ${SRC} "src/RequestHandler_static.cpp")
+
 if(NOT WIN32)
   set (LIBS "pthread" "dl")
 
