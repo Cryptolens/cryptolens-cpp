@@ -6,6 +6,8 @@
 
 #include "RequestHandler_curl.hpp"
 
+#include <iostream>
+
 namespace cryptolens_io {
 
 namespace v20190401 {
@@ -16,19 +18,26 @@ namespace v20190401 {
 
 RequestHandler_curl::RequestHandler_curl(basic_Error & e)
 {
+  std::cout << "RequestHandler_curl::RequestHandler_curl(): " << "ENTER" << std::endl;
   this->curl = curl_easy_init();
+  std::cout << "RequestHandler_curl::RequestHandler_curl(): " << "EXIT" << std::endl;
 }
 
 RequestHandler_curl::~RequestHandler_curl()
 {
+  std::cout << "RequestHandler_curl::~RequestHandler_curl(): " << "ENTER" << std::endl;
   if (this->curl) {
+    std::cout << "RequestHandler_curl::~RequestHandler_curl(): " << "cleaning up" << std::endl;
     curl_easy_cleanup(this->curl);
+    std::cout << "RequestHandler_curl::~RequestHandler_curl(): " << "cleanup done" << std::endl;
   }
+  std::cout << "RequestHandler_curl::~RequestHandler_curl(): " << "EXIT" << std::endl;
 }
 
 RequestHandler_curl::PostBuilder
 RequestHandler_curl::post_request(basic_Error & e, char const* host, char const* endpoint)
 {
+  std::cout << "RequestHandler_curl::~RequestHandler_curl(): " << "ENTER/EXIT: " << "host: " << host << " endpoint: " << endpoint << std::endl;
   return RequestHandler_curl_PostBuilder(curl, host, endpoint);
 }
 
@@ -39,13 +48,16 @@ RequestHandler_curl::post_request(basic_Error & e, char const* host, char const*
 RequestHandler_curl_PostBuilder::RequestHandler_curl_PostBuilder(CURL * curl, char const* host, char const* endpoint)
 : curl_(curl), separator_(' '), postfields_(), url_("https://")
 {
+  std::cout << "RequestHandler_curl_PostBuilder::RequestHandler_curl_PostBuilder(): " << "ENTER" << " host: " << host << " endpoint: " << endpoint << std::endl;
   url_ += host;
   if (url_.size() > 0 && url_.back() != '/' && endpoint != nullptr && *endpoint != '/') { url_ += '/'; }
   url_ += endpoint;
+  std::cout << "RequestHandler_curl_PostBuilder::RequestHandler_curl_PostBuilder(): " << "EXIT" << std::endl;
 }
 
 RequestHandler_curl_PostBuilder &
 RequestHandler_curl_PostBuilder::add_argument(basic_Error & e, char const* key, char const* value) {
+  std::cout << "RequestHandler_curl_PostBuilder::add_argument(): " << "ENTER" << " key: " << key << " value: " << value << std::endl;
   if (e) { return *this; }
 
   api::main api;
@@ -69,17 +81,20 @@ RequestHandler_curl_PostBuilder::add_argument(basic_Error & e, char const* key, 
   postfields_ += res;
   curl_free(res);
 
+  std::cout << "RequestHandler_curl_PostBuilder::add_argument(): " << "EXIT" << std::endl;
   return *this;
 }
 
 size_t
 handle_response(char * ptr, size_t size, size_t nmemb, void *userdata)
 {
+  std::cout << "handle_response(): " << "ENTER" << std::endl;
   std::string current{ptr, size*nmemb};
 
   std::string *response = (std::string *)userdata;
   *response += current;
 
+  std::cout << "handle_response(): " << "EXIT" << std::endl;
   return size*nmemb;
 }
 
@@ -187,6 +202,7 @@ sslctx_function_setup_cacerts(CURL *curl, void *sslctx, void *parm)
 std::string
 RequestHandler_curl_PostBuilder::make(basic_Error & e)
 {
+  std::cout << "RequestHandler_curl_PostBuilder::make(): " << "ENTER" << std::endl;
   if (e) { return ""; }
 
   using namespace errors;
@@ -214,6 +230,7 @@ RequestHandler_curl_PostBuilder::make(basic_Error & e)
 
   cc = curl_easy_perform(this->curl_);
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, PERFORM, cc); return ""; }
+  std::cout << "RequestHandler_curl_PostBuilder::make(): " << "EXIT" << std::endl;
 
   return response;
 }
