@@ -24,6 +24,7 @@ int constexpr SETOPT_VERIFYPEER = 6;
 int constexpr SETOPT_VERIFYHOST = 7;
 int constexpr PERFORM = 8;
 int constexpr SETOPT_POSTFIELDS = 9;
+int constexpr SETOPT_TIMEOUT_MS = 10;
 
 } // namespace RequestHandler_curl
 
@@ -31,7 +32,7 @@ int constexpr SETOPT_POSTFIELDS = 9;
 
 class RequestHandler_curl_PostBuilder {
 public:
-  RequestHandler_curl_PostBuilder(CURL * curl, char const* host, char const* endpoint);
+  RequestHandler_curl_PostBuilder(CURL * curl, char const* host, char const* endpoint, long timeout_ms = 0);
 
   RequestHandler_curl_PostBuilder &
   add_argument(basic_Error & e, char const* key, char const* value);
@@ -44,6 +45,7 @@ private:
   char separator_;
   std::string postfields_;
   std::string url_;
+  long timeout_ms_;
 };
 
 /**
@@ -74,8 +76,11 @@ public:
 
   PostBuilder
   post_request(basic_Error & e, char const* host, char const* endpoint);
+
+  void set_timeout(basic_Error & e, long timeout_ms);
 private:
   CURL *curl;
+  long timeout_ms_;
 };
 
 } // namespace v20190401
