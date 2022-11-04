@@ -17,6 +17,7 @@ namespace v20190401 {
 RequestHandler_curl::RequestHandler_curl(basic_Error & e)
 {
   this->curl = curl_easy_init();
+  this->timeout_ms_ = 0;
 }
 
 RequestHandler_curl::~RequestHandler_curl()
@@ -29,15 +30,15 @@ RequestHandler_curl::~RequestHandler_curl()
 RequestHandler_curl::PostBuilder
 RequestHandler_curl::post_request(basic_Error & e, char const* host, char const* endpoint)
 {
-  return RequestHandler_curl_PostBuilder(curl, host, endpoint);
+  return RequestHandler_curl_PostBuilder(curl, host, endpoint, this->timeout_ms_);
 }
 
 /*
  * RequestHandler_curl_PostBuilder
  */
 
-RequestHandler_curl_PostBuilder::RequestHandler_curl_PostBuilder(CURL * curl, char const* host, char const* endpoint)
-: curl_(curl), separator_(' '), postfields_(), url_("https://")
+RequestHandler_curl_PostBuilder::RequestHandler_curl_PostBuilder(CURL * curl, char const* host, char const* endpoint, long timeout_ms)
+: curl_(curl), separator_(' '), postfields_(), url_("https://"), timeout_ms_(timeout_ms)
 {
   url_ += host;
   if (url_.size() > 0 && url_.back() != '/' && endpoint != nullptr && *endpoint != '/') { url_ += '/'; }
@@ -206,6 +207,8 @@ RequestHandler_curl_PostBuilder::make(basic_Error & e)
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_WRITEDATA, cc); return ""; }
   cc = curl_easy_setopt(this->curl_, CURLOPT_POSTFIELDS, postfields_.c_str());
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_POSTFIELDS, cc); return ""; }
+  cc = curl_easy_setopt(this->curl_, CURLOPT_TIMEOUT_MS, this->timeout_ms_);
+  if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, SETOPT_TIMEOUT_MS, cc); return ""; }
 
 #ifdef CRYPTOLENS_CURL_EMBED_CACERTS
   curl_easy_setopt(this->curl_, CURLOPT_SSL_CTX_FUNCTION, *sslctx_function_setup_cacerts);
@@ -216,6 +219,12 @@ RequestHandler_curl_PostBuilder::make(basic_Error & e)
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, PERFORM, cc); return ""; }
 
   return response;
+}
+
+void
+RequestHandler_curl::set_timeout(basic_Error & e, long timeout_ms)
+{
+  this->timeout_ms_ = timeout_ms;
 }
 
 } // namespace v20190401

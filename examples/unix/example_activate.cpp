@@ -34,6 +34,8 @@ int main()
   // This line is only for MachineCodeComputer_static and sets the machine code to a static value
   cryptolens_handle.machine_code_computer.set_machine_code(e, "289jf2afs3");
 
+  cryptolens_handle.request_handler.set_timeout(e, 1);
+
   cryptolens::optional<cryptolens::LicenseKey> license_key =
     cryptolens_handle.activate
       ( // Object used for reporting if an error occured
