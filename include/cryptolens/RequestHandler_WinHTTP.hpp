@@ -27,6 +27,7 @@ int constexpr WINHTTP_READ_DATA_FAILED = 7;
 int constexpr WINHTTP_POSTFIELDS_TOO_LARGE = 8;
 int constexpr MULTIBYTETOWIDE_ENDPOINT = 9;
 int constexpr MULTIBYTETOWIDE_HOST = 10;
+int constexpr WINHTTP_SET_TIMEOUTS = 11;
 
 } // namespace RequestHandler_WinHTTP
 
@@ -34,7 +35,7 @@ int constexpr MULTIBYTETOWIDE_HOST = 10;
 
 class RequestHandler_WinHTTP_PostBuilder {
 public:
-  RequestHandler_WinHTTP_PostBuilder(char const* host, char const* endpoint);
+  RequestHandler_WinHTTP_PostBuilder(char const* host, char const* endpoint, int resolve_timeout_ms, int connect_timeout_ms, int send_timeout_ms, int receive_timeout_ms);
 
   RequestHandler_WinHTTP_PostBuilder &
   add_argument(basic_Error & e, char const* key, char const* value);
@@ -47,6 +48,11 @@ private:
   std::string postfields_;
   char const* host_;
   char const* endpoint_;
+
+  int resolve_timeout_ms_;
+  int connect_timeout_ms_;
+  int send_timeout_ms_;
+  int receive_timeout_ms_;
 };
 
 /**
@@ -77,6 +83,15 @@ public:
 
   PostBuilder
   post_request(basic_Error& e, char const* host, char const* endpoint);
+
+  void set_timeout(basic_Error & e, long timeout);
+  void set_timeout(basic_Error& e, int resolve_timeout_ms, int connect_timeout_ms, int send_timeout_ms, int receive_timeout_ms);
+
+private:
+  int resolve_timeout_ms_;
+  int connect_timeout_ms_;
+  int send_timeout_ms_;
+  int receive_timeout_ms_;
 };
 
 } // namespace v20190401
