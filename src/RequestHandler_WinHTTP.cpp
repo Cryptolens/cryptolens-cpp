@@ -24,22 +24,44 @@ percent_encode(std::string const& s);
  * RequestHandler_WinHTTP
  */
 
-RequestHandler_WinHTTP::RequestHandler_WinHTTP(basic_Error & e) {}
+RequestHandler_WinHTTP::RequestHandler_WinHTTP(basic_Error & e)
+: resolve_timeout_ms_(0), connect_timeout_ms_(60000),
+  send_timeout_ms_(30000), receive_timeout_ms_(30000)
+{}
 
 RequestHandler_WinHTTP::~RequestHandler_WinHTTP() {}
 
 RequestHandler_WinHTTP::PostBuilder
 RequestHandler_WinHTTP::post_request(basic_Error& e, char const* host, char const* endpoint)
 {
-  return RequestHandler_WinHTTP_PostBuilder(host, endpoint);
+  return RequestHandler_WinHTTP_PostBuilder(host, endpoint, resolve_timeout_ms_, connect_timeout_ms_, send_timeout_ms_, receive_timeout_ms_);
+}
+
+void
+RequestHandler_WinHTTP::set_timeout(basic_Error & e, long timeout)
+{
+  set_timeout(e, timeout, timeout, timeout, timeout);
+}
+
+void
+RequestHandler_WinHTTP::set_timeout(basic_Error & e, int resolve_timeout_ms, int connect_timeout_ms, int send_timeout_ms, int receive_timeout_ms)
+{
+  if (e) { return; }
+
+  resolve_timeout_ms_ = resolve_timeout_ms;
+  connect_timeout_ms_ = connect_timeout_ms;
+  send_timeout_ms_    = send_timeout_ms;
+  receive_timeout_ms_ = receive_timeout_ms;
 }
 
 /*
  * RequestHandler_WinHTTP_PostBuilder
  */
 
-RequestHandler_WinHTTP_PostBuilder::RequestHandler_WinHTTP_PostBuilder(char const* host, char const* endpoint)
-: separator_(' '), postfields_(), host_(host), endpoint_(endpoint)
+RequestHandler_WinHTTP_PostBuilder::RequestHandler_WinHTTP_PostBuilder(char const* host, char const* endpoint, int resolve_timeout_ms, int connect_timeout_ms, int send_timeout_ms, int receive_timeout_ms)
+: separator_(' '), postfields_(), host_(host), endpoint_(endpoint),
+  resolve_timeout_ms_(resolve_timeout_ms), connect_timeout_ms_(connect_timeout_ms),
+  send_timeout_ms_(send_timeout_ms), receive_timeout_ms_(receive_timeout_ms)
 {}
 
 RequestHandler_WinHTTP_PostBuilder &
@@ -107,6 +129,9 @@ RequestHandler_WinHTTP_PostBuilder::make(basic_Error & e)
                         , WINHTTP_NO_PROXY_BYPASS
                         , 0);
   if (!hSession) { e.set(api, Subsystem::RequestHandler, err::WINHTTP_OPEN_FAILED, GetLastError()); goto cleanup; }
+
+  result = WinHttpSetTimeouts(hSession, resolve_timeout_ms_, connect_timeout_ms_, send_timeout_ms_, receive_timeout_ms_);
+  if (!result) { e.set(api, Subsystem::RequestHandler, err::WINHTTP_SET_TIMEOUTS, GetLastError()); goto cleanup; }
 
   hConnect = WinHttpConnect(hSession, host_w, INTERNET_DEFAULT_HTTPS_PORT, 0);
   if (!hConnect) { e.set(api, Subsystem::RequestHandler, err::WINHTTP_CONNECT_FAILED, GetLastError()); goto cleanup; }
