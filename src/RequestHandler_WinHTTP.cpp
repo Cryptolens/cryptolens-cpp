@@ -87,10 +87,26 @@ RequestHandler_WinHTTP_PostBuilder::add_argument(basic_Error & e, char const* ke
   return *this;
 }
 
+
+void cryptolens_secure_failure_callback(
+  HINTERNET hInternet,
+  DWORD_PTR dwContext,
+  DWORD dwInternetStatus,
+  LPVOID lpvStatusInformation,
+  DWORD dwStatusInformationLength
+)
+{
+  DWORD* ssl_error = (DWORD*)dwContext;
+  *ssl_error = *((DWORD*)lpvStatusInformation);
+}
+
+
 std::string
 RequestHandler_WinHTTP_PostBuilder::make(basic_Error & e)
 {
   if (e) { return ""; }
+
+  char const* host = host_;
 
   using namespace errors;
   namespace err = errors::RequestHandler_WinHTTP;
@@ -104,6 +120,8 @@ RequestHandler_WinHTTP_PostBuilder::make(basic_Error & e)
             hRequest = NULL;
   BOOL result = FALSE;
   DWORD bytes;
+  DWORD ssl_error = 123;
+  DWORD_PTR loc_ssl_error = (DWORD_PTR)&ssl_error;
   std::string response;
   std::vector<char> resp_temp;
 
@@ -116,10 +134,10 @@ RequestHandler_WinHTTP_PostBuilder::make(basic_Error & e)
   res = MultiByteToWideChar(CP_UTF8, 0, endpoint_, -1, endpoint_w, size);
   if (res == 0) { e.set(api, Subsystem::RequestHandler, err::MULTIBYTETOWIDE_ENDPOINT, GetLastError()); goto cleanup; }
 
-  size = MultiByteToWideChar(CP_UTF8, 0, host_, -1, NULL, 0);
+  size = MultiByteToWideChar(CP_UTF8, 0, host, -1, NULL, 0);
   if (size == 0) { e.set(api, Subsystem::RequestHandler, err::MULTIBYTETOWIDE_HOST, GetLastError()); goto cleanup; }
   host_w = new wchar_t[size];
-  res = MultiByteToWideChar(CP_UTF8, 0, host_, -1, host_w, size);
+  res = MultiByteToWideChar(CP_UTF8, 0, host, -1, host_w, size);
   if (res == 0) { e.set(api, Subsystem::RequestHandler, err::MULTIBYTETOWIDE_HOST, GetLastError()); goto cleanup; }
 
 
@@ -129,6 +147,16 @@ RequestHandler_WinHTTP_PostBuilder::make(basic_Error & e)
                         , WINHTTP_NO_PROXY_BYPASS
                         , 0);
   if (!hSession) { e.set(api, Subsystem::RequestHandler, err::WINHTTP_OPEN_FAILED, GetLastError()); goto cleanup; }
+
+  if (!WinHttpSetOption(hSession, WINHTTP_OPTION_CONTEXT_VALUE, &loc_ssl_error, sizeof(&loc_ssl_error))) {
+    e.set(api, Subsystem::RequestHandler, 42420, GetLastError());
+    goto cleanup;
+  }
+
+  if (WinHttpSetStatusCallback(hSession, &cryptolens_secure_failure_callback, WINHTTP_CALLBACK_FLAG_SECURE_FAILURE, NULL) == WINHTTP_INVALID_STATUS_CALLBACK) {
+    e.set(api, Subsystem::RequestHandler, 42421, GetLastError());
+    goto cleanup;
+  }
 
   result = WinHttpSetTimeouts(hSession, resolve_timeout_ms_, connect_timeout_ms_, send_timeout_ms_, receive_timeout_ms_);
   if (!result) { e.set(api, Subsystem::RequestHandler, err::WINHTTP_SET_TIMEOUTS, GetLastError()); goto cleanup; }
@@ -173,6 +201,10 @@ cleanup:
   if(hRequest) { WinHttpCloseHandle(hRequest); }
   if(hConnect) { WinHttpCloseHandle(hConnect); }
   if(hSession) { WinHttpCloseHandle(hSession); }
+
+  if (ssl_error != 0) {
+    e.set(api, Subsystem::RequestHandler, 42422, ssl_error);
+  }
 
   delete [] endpoint_w;
   delete [] host_w;
