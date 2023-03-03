@@ -120,7 +120,7 @@ RequestHandler_WinHTTP_PostBuilder::make(basic_Error & e)
             hRequest = NULL;
   BOOL result = FALSE;
   DWORD bytes;
-  DWORD ssl_error = 123;
+  DWORD ssl_error = 0;
   DWORD_PTR loc_ssl_error = (DWORD_PTR)&ssl_error;
   std::string response;
   std::vector<char> resp_temp;
