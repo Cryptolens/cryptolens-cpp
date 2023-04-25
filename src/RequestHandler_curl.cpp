@@ -6,6 +6,8 @@
 
 #include "RequestHandler_curl.hpp"
 
+#include <iostream>
+
 namespace cryptolens_io {
 
 namespace v20190401 {
@@ -217,6 +219,8 @@ RequestHandler_curl_PostBuilder::make(basic_Error & e)
 
   cc = curl_easy_perform(this->curl_);
   if (cc != CURLE_OK) { e.set(api, Subsystem::RequestHandler, PERFORM, cc); return ""; }
+
+  std::cout << "CRYPTOLENS DEBUG: Response from server: " << response << std::endl;
 
   return response;
 }
