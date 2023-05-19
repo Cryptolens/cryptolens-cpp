@@ -26,6 +26,11 @@ if(NOT WIN32)
       set (SRC ${SRC} "src/RequestHandler_curl_cacerts.cpp")
     endif ()
   endif ()
+
+  set (CRYPTOLENS_BUILD_MACHINE_CODE_SYSTEMDDBUSINODES OFF CACHE BOOL "build with MachineCodeComputer_SystemdDBusInodes_SHA256?")
+  if (CRYPTOLENS_BUILD_MACHINE_CODE_SYSTEMDDBUSINODES)
+    list (APPEND SRC "src/MachineCodeComputer_SystemdDBusInodes_SHA256.cpp")
+  endif()
 else()
     add_definitions (-DUNICODE -D_UNICODE)
 
