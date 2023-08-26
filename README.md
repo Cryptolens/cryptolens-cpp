@@ -6,6 +6,8 @@ The example contains two parts, first a wrapper written in ordinary C++ availabl
 
 The second part of this example consists of a simple console application written in C++ CLI, which is available in the `examples/` directory. This application calls methods exposed from the wrapper.
 
+This example assumes that the Cryptolens C++ library has been cloned and compiled in a sibling directory to the directory where this example is located. I.e. if this example is located at `C:\Some\Path\cryptolens-cpp-cli` then the Cryptolens C++ library should be available at `C:\Some\Path\cryptolens-cpp`.
+
 When adding the wrapper to the example project we made the following changes to project properties:
 
 1. **Include files:** Under *Configuration Properties -> C\C++ -> General -> Additional Include Directories* we added the path to the directory `cryptolens-cpp-cli/include` from this repository.
