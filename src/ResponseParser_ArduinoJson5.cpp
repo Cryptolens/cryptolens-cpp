@@ -118,10 +118,19 @@ ResponseParser_ArduinoJson5::make_license_key_information_unsafe(basic_Error & e
 
       JsonObject const& machine = x.as<const JsonObject&>();
 
+      char const* friendly_name = NULL;
+      if (machine["FriendlyName"].is<const char*>() && machine["FriendlyName"].as<const char*>() != NULL) {
+        friendly_name = machine["FriendlyName"];
+      }
+
       if (machine["Mid"].is<const char*>() && machine["Mid"].as<const char*>() != NULL &&
           machine["IP"].is<const char*>() && machine["IP"].as<const char*>() != NULL &&
           machine["Time"].is<unsigned long>()) {
-        v.emplace_back(machine["Mid"], machine["IP"], machine["Time"]);
+        if (friendly_name == NULL) {
+          v.emplace_back(machine["Mid"], machine["IP"], machine["Time"]);
+        } else {
+          v.emplace_back(machine["Mid"], machine["IP"], machine["Time"], friendly_name);
+        }
       } else {
         valid = false;
         break;

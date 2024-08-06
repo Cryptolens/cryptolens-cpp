@@ -76,5 +76,26 @@ int main()
   if (license_key->check().has_feature(1)) { std::cout << "Welcome! Pro version enabled!" << std::endl; }
   else                                     { std::cout << "Welcome!" << std::endl; }
 
+  std::cout << std::endl;
+
+  cryptolens::optional<std::vector<cryptolens::ActivationData>> const& activated_machines = license_key->get_activated_machines();
+
+  std::cout << "Activated machines:" << std::endl;
+  if (!activated_machines) {
+    std::cout << "None." << std::endl;
+  } else {
+    bool first = true;
+    for (auto const& m : *activated_machines) {
+      if (!first) { std::cout << std::endl; }
+
+      cryptolens::optional<std::string> const& friendly_name = m.get_friendly_name();
+
+      std::cout << "\tMachine id: " << m.get_mid() << std::endl
+                << "\tFriendly name: " << (friendly_name ? friendly_name->c_str() : "None.") << std::endl;
+
+      first = false;
+    }
+  }
+
   curl_global_cleanup();
 }

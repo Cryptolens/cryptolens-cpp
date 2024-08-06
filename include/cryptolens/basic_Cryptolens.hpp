@@ -579,7 +579,7 @@ basic_Cryptolens<Configuration>::activate_
            .add_argument(e, "MachineCode"   , machine_code.c_str())
            .add_argument(e, "FieldsToReturn", fields_to_return_.str().c_str())
            .add_argument(e, "SignMethod"    , "1")
-           .add_argument(e, "v"             , "1")
+           .add_argument(e, "v"             , "3")
            .make(e);
 
   return handle_activate_raw(e, this->signature_verifier, response);
