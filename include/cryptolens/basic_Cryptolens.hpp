@@ -222,6 +222,7 @@ public:
     , int product_id
     , std::string key
     , int fields_to_return = 0
+    , char const* friendly_name = NULL
     );
 
   optional<RawLicenseKey>
@@ -241,6 +242,7 @@ public:
     , std::string key
     , long floating_time_interval
     , int fields_to_return = 0
+    , char const* friendly_name = NULL
     );
 
   RawLicenseKey
@@ -316,6 +318,7 @@ private:
     , std::string key
     , std::string machine_code
     , int fields_to_return = 0
+    , char const* friendly_name = NULL
     );
 
   optional<RawLicenseKey>
@@ -327,6 +330,7 @@ private:
     , std::string machine_code
     , long floating_time_interval
     , int fields_to_return = 0
+    , char const* friendly_name = NULL
     );
 
   std::string
@@ -384,6 +388,7 @@ basic_Cryptolens<Configuration>::activate
   , int product_id
   , std::string key
   , int fields_to_return
+  , char const* friendly_name
   )
 {
   if (e) { return nullopt; }
@@ -397,6 +402,7 @@ basic_Cryptolens<Configuration>::activate
       , key // NOTE: Copy is performed here
       , machine_code // NOTE: Copy is performed here
       , fields_to_return
+      , friendly_name
       );
   optional<LicenseKeyInformation> y = response_parser.make_license_key_information(e, x);
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE); return nullopt; }
@@ -513,6 +519,7 @@ basic_Cryptolens<Configuration>::activate_floating
   , std::string key
   , long floating_time_interval
   , int fields_to_return
+  , char const* friendly_name
   )
 {
   if (e) { return nullopt; }
@@ -527,6 +534,7 @@ basic_Cryptolens<Configuration>::activate_floating
       , machine_code // NOTE: Copy is performed here
       , floating_time_interval
       , fields_to_return
+      , friendly_name
       );
   optional<LicenseKeyInformation> y = response_parser.make_license_key_information(e, x);
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_ACTIVATE_FLOATING); return nullopt; }
@@ -562,6 +570,7 @@ basic_Cryptolens<Configuration>::activate_
   , std::string key
   , std::string machine_code
   , int fields_to_return
+  , char const* friendly_name
   )
 {
   if (e) { return nullopt; }
@@ -571,16 +580,21 @@ basic_Cryptolens<Configuration>::activate_
   std::ostringstream product_id_; product_id_ << product_id;
   std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
 
-  std::string response =
-    request.add_argument(e, "token"         , token.c_str())
-           .add_argument(e, "ProductId"     , product_id_.str().c_str())
-           .add_argument(e, "Key"           , key.c_str())
-           .add_argument(e, "Sign"          , "true")
-           .add_argument(e, "MachineCode"   , machine_code.c_str())
-           .add_argument(e, "FieldsToReturn", fields_to_return_.str().c_str())
-           .add_argument(e, "SignMethod"    , "1")
-           .add_argument(e, "v"             , "3")
-           .make(e);
+  request.add_argument(e, "token"         , token.c_str())
+         .add_argument(e, "ProductId"     , product_id_.str().c_str())
+         .add_argument(e, "Key"           , key.c_str())
+         .add_argument(e, "Sign"          , "true")
+         .add_argument(e, "MachineCode"   , machine_code.c_str())
+         .add_argument(e, "FieldsToReturn", fields_to_return_.str().c_str())
+         .add_argument(e, "SignMethod"    , "1")
+         .add_argument(e, "ModelVersion"  , "3")
+         .add_argument(e, "v"             , "1");
+
+  if (friendly_name != NULL) {
+    request.add_argument(e, "FriendlyName", friendly_name);
+  }
+
+  std::string response = request.make(e);
 
   return handle_activate_raw(e, this->signature_verifier, response);
 }
@@ -625,6 +639,7 @@ basic_Cryptolens<Configuration>::activate_floating_
   , std::string machine_code
   , long floating_time_interval
   , int fields_to_return
+  , char const* friendly_name
   )
 {
   if (e) { return nullopt; }
@@ -635,17 +650,22 @@ basic_Cryptolens<Configuration>::activate_floating_
   std::ostringstream fields_to_return_; fields_to_return_ << fields_to_return;
   std::ostringstream floating_time_interval_; floating_time_interval_ << floating_time_interval;
 
-  std::string response =
-    request.add_argument(e, "token"               , token.c_str())
-           .add_argument(e, "ProductId"           , product_id_.str().c_str())
-           .add_argument(e, "Key"                 , key.c_str())
-           .add_argument(e, "Sign"                , "true")
-           .add_argument(e, "MachineCode"         , machine_code.c_str())
-           .add_argument(e, "FieldsToReturn"      , fields_to_return_.str().c_str())
-           .add_argument(e, "SignMethod"          , "1")
-           .add_argument(e, "v"                   , "1")
-           .add_argument(e, "FloatingTimeInterval", floating_time_interval_.str().c_str())
-           .make(e);
+  request.add_argument(e, "token"               , token.c_str())
+         .add_argument(e, "ProductId"           , product_id_.str().c_str())
+         .add_argument(e, "Key"                 , key.c_str())
+         .add_argument(e, "Sign"                , "true")
+         .add_argument(e, "MachineCode"         , machine_code.c_str())
+         .add_argument(e, "FieldsToReturn"      , fields_to_return_.str().c_str())
+         .add_argument(e, "SignMethod"          , "1")
+         .add_argument(e, "ModelVersion"        , "3")
+         .add_argument(e, "v"                   , "1")
+         .add_argument(e, "FloatingTimeInterval", floating_time_interval_.str().c_str());
+
+  if (friendly_name != NULL) {
+    request.add_argument(e, "FriendlyName", friendly_name);
+  }
+
+  std::string response = request.make(e);
 
   return handle_activate_raw(e, this->signature_verifier, response);
 }
