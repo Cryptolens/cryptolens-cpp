@@ -11,4 +11,5 @@
 #include "LicenseKeyChecker.hpp"
 #include "LicenseKey.hpp"
 #include "LicenseKeyInformation.hpp"
+#include "Message.hpp"
 #include "RawLicenseKey.hpp"

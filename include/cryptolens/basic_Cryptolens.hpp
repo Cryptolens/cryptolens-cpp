@@ -289,6 +289,14 @@ public:
     , int fields_to_return = 0
     );
 
+  std::vector<Message>
+  get_messages
+    ( basic_Error & e
+    , std::string token
+    , std::string channel
+    , int since_unix_timestamp
+    );
+
   std::string
   last_message
     ( basic_Error & e
@@ -357,6 +365,14 @@ private:
     , int product_id
     , std::string key
     , int fields_to_return = 0
+    );
+
+  std::vector<Message>
+  get_messages_
+    ( basic_Error & e
+    , std::string token
+    , std::string channel
+    , int since_unix_timestamp
     );
 
   std::string
@@ -706,6 +722,22 @@ basic_Cryptolens<Configuration>::activate_raw_exn
 }
 
 template<typename Configuration>
+std::vector<Message>
+basic_Cryptolens<Configuration>::get_messages
+  ( basic_Error & e
+  , std::string token
+  , std::string channel
+  , int since_unix_timestamp
+  )
+{
+  if (e) { return std::vector<Message>(); }
+
+  std::vector<Message> messages = get_messages_(e, token, channel, since_unix_timestamp);
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_CRYPTOLENS_GET_MESSAGES); return std::vector<Message>(); }
+  return messages;
+}
+
+template<typename Configuration>
 std::string
 basic_Cryptolens<Configuration>::last_message
   ( basic_Error & e
@@ -804,6 +836,32 @@ basic_Cryptolens<Configuration>::get_key_
   if (e) { return nullopt; }
 
   return LicenseKey(std::move(*y), std::move(*raw_license_key));
+}
+
+template<typename Configuration>
+std::vector<Message>
+basic_Cryptolens<Configuration>::get_messages_
+  ( basic_Error & e
+  , std::string token
+  , std::string channel
+  , int since_unix_timestamp
+  )
+{
+  if (e) { return std::vector<Message>(); }
+
+  auto request = request_handler.post_request(e, "api.cryptolens.io", "/api/message/GetMessages");
+
+  std::ostringstream stm; stm << since_unix_timestamp;
+
+  std::string response =
+    request.add_argument(e, "token"  , token.c_str())
+           .add_argument(e, "Channel", channel.c_str())
+           .add_argument(e, "Time"   , stm.str().c_str())
+           .make(e);
+
+  if (e) { return std::vector<Message>(); }
+
+  return response_parser.parse_get_messages_response(e, response);
 }
 
 template<typename Configuration>

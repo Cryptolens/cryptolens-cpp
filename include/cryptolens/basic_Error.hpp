@@ -62,6 +62,8 @@ int constexpr BASIC_CRYPTOLENS_DEACTIVATE = BASIC_SKM_ACTIVATE;
 
 int constexpr BASIC_CRYPTOLENS_GET_KEY = 11;
 
+int constexpr BASIC_CRYPTOLENS_GET_MESSAGES = 12;
+
 } // namespace Call
 
 // Errors for the Main subsystem
