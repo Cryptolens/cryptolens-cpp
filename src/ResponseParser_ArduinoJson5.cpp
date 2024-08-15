@@ -3,6 +3,7 @@
 #include "api.hpp"
 #include "cryptolens_internals.hpp"
 #include "LicenseKeyInformation.hpp"
+#include "Message.hpp"
 #include "ResponseParser_ArduinoJson5.hpp"
 
 namespace cryptolens_io {
@@ -304,6 +305,49 @@ ResponseParser_ArduinoJson5::parse_deactivate_response(basic_Error & e, std::str
     e.set(api, Subsystem::Main, reason);
     return;
   }
+}
+
+std::vector<Message>
+ResponseParser_ArduinoJson5::parse_get_messages_response(basic_Error & e, std::string const& server_response) const
+{
+  if (e) { return std::vector<Message>(); }
+
+  using namespace ::cryptolens_io::latest::errors;
+  using namespace ::ArduinoJson;
+  api::main api;
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject & j = jsonBuffer.parseObject(server_response);
+
+  if (!j.success()) { e.set(api, Subsystem::Json); return std::vector<Message>(); }
+
+  if (!j["result"].is<int>() || j["result"].as<int>() != 0) {
+    if (!j["message"].is<const char*>() || j["message"].as<char const*>() == NULL) {
+      e.set(api, Subsystem::Main, Main::UNKNOWN_SERVER_REPLY);
+      return std::vector<Message>();
+    }
+
+    int reason = internal::activate_parse_server_error_message(j["message"].as<char const*>());
+    e.set(api, Subsystem::Main, reason);
+    return std::vector<Message>();
+  }
+
+  if (!j["messages"].is<const JsonArray&>()) { return std::vector<Message>(); }
+
+
+  JsonArray const& array = j["messages"].as<const JsonArray&>();
+  std::vector<Message> messages;
+  for (size_t i = 0; i < array.size(); ++i) {
+    if (!array.is<const JsonObject&>(i)) { continue; }
+
+    JsonObject const& msg = array.get<const JsonObject&>(i);
+    if (msg["created"].is<int>() &&
+        msg["content"].is<const char*>() && msg["content"].as<const char*>() != NULL)
+    {
+      messages.emplace_back(msg["content"], msg["created"]);
+    }
+  }
+
+  return messages;
 }
 
 std::string

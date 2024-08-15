@@ -2,10 +2,13 @@
 
 #include "imports/std/optional"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "basic_Error.hpp"
 #include "LicenseKeyInformation.hpp"
+#include "Message.hpp"
 #include "RawLicenseKey.hpp"
 
 namespace cryptolens_io {
@@ -30,6 +33,8 @@ public:
   optional<std::pair<std::string, std::string>> parse_activate_response(basic_Error & e, std::string const& server_response) const;
   void parse_deactivate_response(basic_Error & e, std::string const& server_response) const;
   std::string parse_create_trial_key_response(basic_Error & e, std::string const& server_response) const;
+
+  std::vector<Message> parse_get_messages_response(basic_Error & e, std::string const& server_response) const;
   std::string parse_last_message_response(basic_Error & e, std::string const& server_response) const;
 };
 
