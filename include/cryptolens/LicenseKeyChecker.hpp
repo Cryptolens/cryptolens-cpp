@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "LicenseKeyInformation.hpp"
 
 namespace cryptolens_io {

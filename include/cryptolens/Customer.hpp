@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace cryptolens_io {
 
 namespace v20190401 {
