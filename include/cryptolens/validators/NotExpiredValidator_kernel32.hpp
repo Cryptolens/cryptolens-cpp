@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "../imports/windows/Windows.h"
 
 #include "../api.hpp"

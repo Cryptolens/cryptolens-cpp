@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ctime>
+#include <cstdint>
 
 #include "../api.hpp"
 #include "../basic_Error.hpp"
