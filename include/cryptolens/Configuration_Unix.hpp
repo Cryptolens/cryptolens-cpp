@@ -2,7 +2,7 @@
 
 #include "ResponseParser_ArduinoJson5.hpp"
 #include "RequestHandler_curl.hpp"
-#include "SignatureVerifier_OpenSSL.hpp"
+#include "SignatureVerifier_OpenSSL3.hpp"
 
 #include "validators/AndValidator.hpp"
 #include "validators/CorrectKeyValidator.hpp"
@@ -18,7 +18,7 @@ template<typename MachineCodeComputer_>
 struct Configuration_Unix {
   using ResponseParser = ResponseParser_ArduinoJson5;
   using RequestHandler = RequestHandler_curl;
-  using SignatureVerifier = SignatureVerifier_OpenSSL;
+  using SignatureVerifier = SignatureVerifier_OpenSSL3;
   using MachineCodeComputer = MachineCodeComputer_;
 
   template<typename Env>
@@ -38,7 +38,7 @@ template<typename MachineCodeComputer_>
 struct Configuration_Unix_IgnoreExpires {
   using ResponseParser = ResponseParser_ArduinoJson5;
   using RequestHandler = RequestHandler_curl;
-  using SignatureVerifier = SignatureVerifier_OpenSSL;
+  using SignatureVerifier = SignatureVerifier_OpenSSL3;
   using MachineCodeComputer = MachineCodeComputer_;
 
   template<typename Env>

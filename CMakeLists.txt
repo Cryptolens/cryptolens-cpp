@@ -12,7 +12,7 @@ if(NOT WIN32)
 
   find_package(OpenSSL)
   if (${OpenSSL_FOUND})
-  set (SRC  ${SRC} "src/SignatureVerifier_OpenSSL.cpp")
+  set (SRC  ${SRC} "src/SignatureVerifier_OpenSSL3.cpp")
   set (LIBS ${LIBS} crypto)
   endif ()
 
