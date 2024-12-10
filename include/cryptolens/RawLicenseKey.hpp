@@ -54,7 +54,7 @@ public:
   {
     if (e) { return nullopt; }
 
-    optional<std::string> decoded = ::cryptolens_io::v20190401::internal::b64_decode(base64_license);
+    optional<std::vector<unsigned char>> decoded = ::cryptolens_io::v20190401::internal::b64_decode(base64_license);
 
     if (!decoded) {
       e.set(api::main(), errors::Subsystem::Base64);
@@ -62,11 +62,13 @@ public:
     }
 
     if (verifier.verify_message(e, *decoded, signature)) {
+      std::string decoded_string(decoded->begin(), decoded->end());
+
       return make_optional(
         RawLicenseKey
           ( std::move(base64_license)
           , std::move(signature)
-          , std::move(*decoded)
+          , std::move(decoded_string)
           )
         );
     } else {
