@@ -53,12 +53,18 @@ struct Configuration_Unix_IgnoreExpires {
                         >>;
 };
 
+template<typename MachineCodeComputer_>
+using Configuration_Unix_CheckExpires = ::cryptolens_io::v20190401::Configuration_Unix<MachineCodeComputer_>;
+
 } // namespace v20190401
 
 namespace latest {
 
 template<typename MachineCodeComputer_>
 using Configuration_Unix = ::cryptolens_io::v20190401::Configuration_Unix<MachineCodeComputer_>;
+
+template<typename MachineCodeComputer_>
+using Configuration_Unix_CheckExpires = ::cryptolens_io::v20190401::Configuration_Unix_CheckExpires<MachineCodeComputer_>;
 
 template<typename MachineCodeComputer_>
 using Configuration_Unix_IgnoreExpires = ::cryptolens_io::v20190401::Configuration_Unix_IgnoreExpires<MachineCodeComputer_>;

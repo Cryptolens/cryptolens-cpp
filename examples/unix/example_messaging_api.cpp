@@ -9,16 +9,14 @@
 
 namespace cryptolens = ::cryptolens_io::v20190401;
 
-// Set up an alias for the handler class used to interact with the library. We use Configuration_Unix_IgnoreExpires which does not checks the expiry date
-// on the license automatically against the system time. We also provide Configuration_Unix_CheckExpires which automatically performs such a check.
+// Set up an alias for the handler class used to interact with the library.
 //
-// For this example we use MachineCodeComputer_static where the machine code is set using set_machine_code(). Other
-// ways of computing the machine code are available, see README.md.
+// When using the messaging api we do not need a machine code, and thus just use MachineCodeComputer_static without setting a machine code
 using Cryptolens = cryptolens::basic_Cryptolens<cryptolens::Configuration_Unix_IgnoreExpires<cryptolens::MachineCodeComputer_static>>;
 
 /*
  * This example uses the basic_Cryptolens class to make a request to the WebAPI
- * and then checks some properties of the license keys.
+ * and gets a message of the day from the messaging api
  */
 int main()
 {
@@ -31,19 +29,15 @@ int main()
   // These values are different for different accounts and can be found under "Security Settings" on cryptolens.io.
   cryptolens_handle.signature_verifier.set_public_key_base64(e, "khbyu3/vAEBHi339fTuo2nUaQgSTBj0jvpt5xnLTTF35FLkGI+5Z3wiKfnvQiCLf+5s4r8JB/Uic/i6/iNjPMILlFeE0N6XZ+2pkgwRkfMOcx6eoewypTPUoPpzuAINJxJRpHym3V6ZJZ1UfYvzRcQBD/lBeAYrvhpCwukQMkGushKsOS6U+d+2C9ZNeP+U+uwuv/xu8YBCBAgGb8YdNojcGzM4SbCtwvJ0fuOfmCWZvUoiumfE4x7rAhp1pa9OEbUe0a5HL+1v7+JLBgkNZ7Z2biiHaM6za7GjHCXU8rojatEQER+MpgDuQV3ZPx8RKRdiJgPnz9ApBHFYDHLDzDw==", "AQAB");
 
-  // This line is only for MachineCodeComputer_static and sets the machine code to a static value
-  cryptolens_handle.machine_code_computer.set_machine_code(e, "5bccbfb6567abdcf998b7c74190183ac315720a4fd4da56bac4f31be571bbb30");
-
-  cryptolens::optional<cryptolens::LicenseKey> license_key =
-    cryptolens_handle.activate(
-      e, // Object used for reporting if an error occured
-      "WyI0NjUiLCJBWTBGTlQwZm9WV0FyVnZzMEV1Mm9LOHJmRDZ1SjF0Vk52WTU0VzB2Il0=", // Cryptolens Access Token
-      3646, // Product id
-      "MPDWY-PQAOW-FKSCH-SGAAU" // License Key
-    );
+  std::string message = cryptolens_handle.last_message(
+    e,
+    "WyIxNzk0IiwiUkhSTWl3ekVBYTRlNjZFQUtVRUNObzBNWDAvZnRmQ2tKUGVkQWZJcSJd",
+    "stable",
+    1234
+  );
 
   if (e) {
-    // Error occured trying to activate the license key
+    // Error occured when connecting to the messaging api
     using namespace cryptolens::errors;
 
     if (e.get_subsystem() == Subsystem::Main) {
@@ -58,15 +52,7 @@ int main()
     return 1;
   }
 
-  // Use LicenseKeyChecker to check properties of the license key
-  if (license_key->check().has_expired(1234567)) {
-    // Above, the value 1234567 represents the current time as a unix timestamp in seconds
-    std::cout << "Your subscription has expired." << std::endl;
-    return 1;
-  }
-
-  if (license_key->check().has_feature(1)) { std::cout << "Welcome! Pro version enabled!" << std::endl; }
-  else                                     { std::cout << "Welcome!" << std::endl; }
+  std::cout << "Message of the day: " << message << std::endl;
 
   curl_global_cleanup();
 }

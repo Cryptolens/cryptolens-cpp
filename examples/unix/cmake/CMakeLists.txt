@@ -61,6 +61,12 @@ set_property(TARGET example_floating PROPERTY CXX_STANDARD 11)
 set_property(TARGET example_floating PROPERTY CXX_STANDARD_REQUIRED ON)
 install(TARGETS example_floating DESTINATION bin)
 
+add_executable(example_messaging_api ../example_messaging_api.cpp)
+target_link_libraries(example_messaging_api cryptolens)
+set_property(TARGET example_messaging_api  PROPERTY CXX_STANDARD 11)
+set_property(TARGET example_messaging_api  PROPERTY CXX_STANDARD_REQUIRED ON)
+install(TARGETS example_messaging_api  DESTINATION bin)
+
 add_executable(example_offline ../example_offline.cpp)
 target_link_libraries(example_offline cryptolens)
 set_property(TARGET example_offline PROPERTY CXX_STANDARD 11)

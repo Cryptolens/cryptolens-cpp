@@ -95,10 +95,10 @@ library. We currently support the following `Configurations` and `MachineCodeCom
 
 | Configuration                         | Description                                           |
 | -----------------------------------   | ----------------------------------------------------- |
-| `Configuration_Unix`                 | Good default configuration for Unix-like based systems. Uses ArduinoJson 5, libcurl and OpenSSL. Checks if the license key has expired against the users system time. |
-| `Configuration_Unix_IgnoreExpires`   | Same as `Configuration_Unix`, but does not check if the license key has expired against the users system time. |
-| `Configuration_Windows`               | Good default configuration for Windows based systems. Uses ArduinoJson 5, WinHTTP and CryptoAPI. Checks if the license key has expired against the users system time. |
-| `Configuration_Windows_IgnoreExpires` | Same as `Configuration_Windows`, but does not check if the license key has expired against the users system time. |
+| `Configuration_Unix_IgnoreExpires`    | Good default configuration for Unix-like based systems. Uses ArduinoJson 5, libcurl and OpenSSL. Does not check if the license key has expired against the system time. |
+| `Configuration_Unix_CheckExpires`     | Same as `Configuration_Unix`, but does additionally check if the license key has expired against the system time. |
+| `Configuration_Windows_IgnoreExpires`  | Good default configuration for Windows based systems. Uses ArduinoJson 5, WinHTTP and CryptoAPI. Does not check if the license key has expired against the system time. |
+| `Configuration_Windows_CheckExpires` | Same as `Configuration_Windows`, but does additionally check if the license key has expired against the system time. |
 
 | MachineCodeComputer             | Description                                     |
 | ------------------------------- | ----------------------------------------------- |
@@ -138,16 +138,12 @@ Now that the handle class has been set up, we can attempt to activate a license 
 
 ```cpp
 cryptolens::optional<cryptolens::LicenseKey> license_key =
-  cryptolens_handle.activate
-    ( // Object used for reporting if an error occured
-      e
-    , // Cryptolens Access Token
-      "WyI0NjUiLCJBWTBGTlQwZm9WV0FyVnZzMEV1Mm9LOHJmRDZ1SjF0Vk52WTU0VzB2Il0="
-    , // Product id
-      3646
-    , // License Key
-      "MPDWY-PQAOW-FKSCH-SGAAU"
-    );
+  cryptolens_handle.activate(
+    e, // Object used for reporting if an error occured
+    "WyI0NjUiLCJBWTBGTlQwZm9WV0FyVnZzMEV1Mm9LOHJmRDZ1SjF0Vk52WTU0VzB2Il0=", // Cryptolens Access Token
+    3646, // Product id
+    "MPDWY-PQAOW-FKSCH-SGAAU", // License Key
+  );
 
 if (e) {
   // An error occured. Handle it.
@@ -174,9 +170,8 @@ will be empty, and dereferencing it will result in undefined behaviour.
 If no error occurs we can inspect the `LicenseKey` object for information as follows
 
 ```cpp
-std::cout << "License key for product with id: " << license_key->get_product_id() << std::endl;
-
 if (license_key->check()->has_expired(1234567)) {
+  // Above, the value 1234567 represents the current time as a unix timestamp in seconds
   std::cout << "Your subscription has expired." << std::endl;
   return 1;
 }
@@ -206,6 +201,21 @@ If an error occurs during the call to `f1()`, `f2()` will not be performed. This
 several function calls after each other without having to check for errors after
 every single call.
 
+The `cryptolens::Error` contains three different values:
+ * The subsystem where the error occured, such as an error from the Web API, or a failure
+   with the HTTP request, parsing the response or similar. The value can be accessed using the
+   `get_subsystem()` method.
+ * A value providing more detail about the reason for the error. In the case of an error from
+   the Web API it provides a value representing which error occured. In most other cases it
+   provides a value representing where in the code the error occured. This value can be accessed
+   using the `get_reason()` method.
+ * A value providing extra information about the error, often this is used to pass along an error
+   code from a third-party library that has been called an returned an error. An example of this
+   would be when the Cryptolens C++ Client library uses another library such as Curl och WinHTTP
+   to make a HTTP request, but Curl or WinHTTP returns an error. This value can be accessed using
+   the `get_extra()` method.
+
+// Maybe add a list of subsystems etc?
 
 ## Offline activation
 
@@ -222,19 +232,13 @@ Cryptolens cryptolens_handle(e);
 cryptolens_handle.signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
 cryptolens_handle.signature_verifier.set_exponent_base64(e, "ABCD");
 
-cryptolens_handle.machine_code_computer.set_machine_code(e, "289jf2afs3");
-
 cryptolens::optional<cryptolens::LicenseKey> license_key =
-  cryptolens_handle.activate
-    ( // Object used for reporting if an error occured
-      e
-    , // Cryptolens Access Token
-      "WyI0NjUiLCJBWTBGTlQwZm9WV0FyVnZzMEV1Mm9LOHJmRDZ1SjF0Vk52WTU0VzB2Il0="
-    , // Product id
-      3646
-    , // License Key
-      "MPDWY-PQAOW-FKSCH-SGAAU"
-    );
+  cryptolens_handle.activate(
+    e, // Object used for reporting if an error occured
+    "WyI0NjUiLCJBWTBGTlQwZm9WV0FyVnZzMEV1Mm9LOHJmRDZ1SjF0Vk52WTU0VzB2Il0=", // Cryptolens Access Token
+    3646, // Product id
+    "MPDWY-PQAOW-FKSCH-SGAAU", // License Key
+  );
 if (e) { handle_error(e); return 1; }
 
 std::string s = license_key->to_string();
@@ -249,8 +253,6 @@ Cryptolens cryptolens_handle(e);
 
 cryptolens_handle.signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
 cryptolens_handle.signature_verifier.set_exponent_base64(e, "ABCD");
-
-cryptolens_handle.machine_code_computer.set_machine_code(e, "289jf2afs3");
 
 cryptolens::optional<cryptolens::LicenseKey> license_key =
   cryptolens_handle.make_license_key(e, s);
@@ -275,8 +277,6 @@ Cryptolens cryptolens_handle(e);
 
 cryptolens_handle.signature_verifier.set_modulus_base64(e, "ABCDEFGHI1234");
 cryptolens_handle.signature_verifier.set_exponent_base64(e, "ABCD");
-
-cryptolens_handle.machine_code_computer.set_machine_code(e, "289jf2afs3");
 
 cryptolens::optional<cryptolens::LicenseKey> license_key =
   cryptolens_handle.make_license_key(e, web_api_response);
