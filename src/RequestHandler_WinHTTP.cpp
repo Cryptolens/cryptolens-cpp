@@ -124,7 +124,7 @@ RequestHandler_WinHTTP_PostBuilder::make(basic_Error & e)
 
 
   hSession = WinHttpOpen( L"Cryptolens WinHTTP"
-                        , WINHTTP_ACCESS_TYPE_DEFAULT_PROXY
+                        , WINHTTP_ACCESS_TYPE_DEFAULT_PROXY // TODO: Fix this value, right?
                         , WINHTTP_NO_PROXY_NAME
                         , WINHTTP_NO_PROXY_BYPASS
                         , 0);
