@@ -41,6 +41,7 @@ public:
   void set_exponent_base64(basic_Error & e, std::string const& exponent_base64);
 
   bool verify_message(basic_Error & e, std::string const& message, std::string const& signature_base64) const;
+  bool verify_message(basic_Error & e, std::vector<unsigned char> const& message, std::string const& signature_base64) const;
 
 private:
   RSA * rsa;
