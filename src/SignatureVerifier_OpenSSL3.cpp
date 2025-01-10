@@ -147,6 +147,49 @@ SignatureVerifier_OpenSSL3::~SignatureVerifier_OpenSSL3()
  * and in this case the string "AbC=" should be passed to this method.
  */
 void
+SignatureVerifier_OpenSSL3::set_public_key_base64(basic_Error & e, std::string const& key)
+{
+  if (e) { return; }
+
+  auto m_s = key.find("<Modulus>");
+  auto m_e = key.find("</Modulus>");
+
+  auto e_s = key.find("<Exponent>");
+  auto e_e = key.find("</Exponent>");
+
+  if (m_s == std::string::npos || m_e == std::string::npos || m_e < m_s + 9 ||
+      e_s == std::string::npos || e_e == std::string::npos || e_e < e_s + 10)
+  {
+    e.set(api::main(), errors::Subsystem::Base64, __LINE__);
+  } else {
+    auto m_start  = m_s + 9;
+    auto m_length = m_e - m_s - 9;
+
+    auto e_start  = e_s + 10;
+    auto e_length = e_e - e_s - 10;
+
+    std::string modulus_base64  = key.substr(m_start, m_length);
+    std::string exponent_base64 = key.substr(e_start, e_length);
+
+    this->set_public_key_base64_(e, modulus_base64, exponent_base64);
+  }
+
+  if (e) { e.set_call(api::main(), errors::Call::SIGNATURE_VERIFIER_SET_MODULUS_BASE64); }
+}
+
+/**
+ * Sets the modulus of the public key used by the cryptolens.io Web API for signing
+ * the responses.
+ *
+ * This value is unique for each account and can be found on cryptolens.io at the
+ * "Account Settings" found in the personal menu ("Hello, <account name>!" in the upper
+ * right corner). The public key is listed in XML format as something similar to
+ *
+ *     <RSAKeyValue><Modulus>AbC=</Modulus><Exponent>deFG</Exponent></RSAKeyValue>
+ *
+ * and in this case the string "AbC=" should be passed to this method.
+ */
+void
 SignatureVerifier_OpenSSL3::set_public_key_base64(basic_Error & e, std::string const& modulus_base64, std::string const& exponent_base64)
 {
   if (e) { return; }
