@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ResponseParser_ArduinoJson5.hpp"
+#include "ResponseParser_ArduinoJson7.hpp"
 #include "RequestHandler_curl.hpp"
 #include "SignatureVerifier_OpenSSL3.hpp"
 
@@ -16,7 +16,7 @@ namespace v20190401 {
 
 template<typename MachineCodeComputer_>
 struct Configuration_Unix {
-  using ResponseParser = ResponseParser_ArduinoJson5;
+  using ResponseParser = ResponseParser_ArduinoJson7;
   using RequestHandler = RequestHandler_curl;
   using SignatureVerifier = SignatureVerifier_OpenSSL3;
   using MachineCodeComputer = MachineCodeComputer_;
@@ -36,7 +36,7 @@ struct Configuration_Unix {
 
 template<typename MachineCodeComputer_>
 struct Configuration_Unix_IgnoreExpires {
-  using ResponseParser = ResponseParser_ArduinoJson5;
+  using ResponseParser = ResponseParser_ArduinoJson7;
   using RequestHandler = RequestHandler_curl;
   using SignatureVerifier = SignatureVerifier_OpenSSL3;
   using MachineCodeComputer = MachineCodeComputer_;

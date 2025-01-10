@@ -7,7 +7,7 @@
 
 #include "imports/std/optional"
 
-#include "imports/ArduinoJson5/ArduinoJson.hpp"
+#include "../../third_party/ArduinoJson5/ArduinoJson.hpp"
 
 #include "ActivateError.hpp"
 #include "basic_Error.hpp"
