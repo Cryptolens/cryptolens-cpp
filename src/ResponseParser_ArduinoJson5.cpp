@@ -5,6 +5,8 @@
 #include "LicenseKeyInformation.hpp"
 #include "ResponseParser_ArduinoJson5.hpp"
 
+#include <algorithm>
+
 namespace cryptolens_io {
 
 namespace v20190401 {
@@ -340,6 +342,69 @@ ResponseParser_ArduinoJson5::parse_last_message_response(basic_Error & e, std::s
   if (i_max >= 0) { JsonObject const& msg = array.get<const JsonObject&>(i_max); return msg["content"]; }
 
   return "";
+}
+
+bool
+ResponseParser_ArduinoJson5::has_template_feature(basic_Error & err, std::string const& features_json, std::string const& feature) const
+{
+  if (err) { return false; }
+
+  using namespace ::cryptolens_io::latest::errors;
+  using namespace ::ArduinoJson;
+  api::main api;
+  DynamicJsonBuffer jsonBuffer;
+  JsonArray & j_ = jsonBuffer.parseArray(features_json);
+
+  if (!j_.success()) { err.set(api, Subsystem::Json); return false; }
+
+  JsonArray * j = &j_;
+
+  auto p = feature.cbegin();
+  auto e = feature.cend();
+  while (p != e && j != nullptr) {
+    auto q = std::find(p, e, '.');
+
+    bool found = false;
+    for (auto elem : *j) {
+      JsonArray * jj = nullptr;
+      char const* cc = nullptr;
+      if (elem.is<char const*>()) {
+        cc = elem.as<char const*>();
+      } else if (elem.is<JsonArray &>()) {
+        JsonArray & a = elem.as<JsonArray &>();
+
+        if (a.is<char const*>(0) && a.is<JsonArray &>(1)) {
+          cc = a.get<char const*>(0);
+          jj = &a.get<JsonArray &>(1);;
+        }
+      }
+
+      if (cc == nullptr) { continue; }
+
+      auto pp = p;
+      while (pp != q && *cc != '\0') {
+        if (*pp != *cc) {
+          break;
+        }
+
+        ++pp;
+        ++cc;
+      }
+
+      if (pp == q && *cc == '\0') {
+        if (pp != e) { ++pp; }
+
+        found = true;
+        p = pp;
+        j = jj;
+        break;
+      }
+    }
+
+    if (!found) { break; }
+  }
+
+  return p == e;
 }
 
 } // namespace v20190401

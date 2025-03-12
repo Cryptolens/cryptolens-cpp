@@ -77,7 +77,30 @@ public:
   optional<int>                         const& get_maxnoofmachines() const;
   optional<std::string>                 const& get_allowed_machines() const;
   optional<std::vector<DataObject>>     const& get_data_objects() const;
+
+  template<typename CryptolensHandle>
+  bool
+  has_template_feature(basic_Error & e, CryptolensHandle & cryptolens_handle, std::string const& feature);
 };
+
+template<typename CryptolensHandle>
+bool
+LicenseKey::has_template_feature(basic_Error & e, CryptolensHandle & cryptolens_handle, std::string const& feature)
+{
+  if (e) { return false; }
+
+  optional<std::vector<DataObject>> const& data_objects = this->get_data_objects();
+
+  if (!data_objects) { return false; }
+
+  for (auto const& data_object : *data_objects) {
+    if (data_object.get_name() == "cryptolens_features") {
+      return cryptolens_handle.response_parser.has_template_feature(e, data_object.get_string_value(), feature);
+    }
+  }
+
+  return false;
+}
 
 } // namespace v20190401
 
