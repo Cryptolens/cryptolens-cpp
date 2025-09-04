@@ -53,12 +53,18 @@ struct Configuration_Windows_IgnoreExpires {
                         >>;
 };
 
+template<typename MachineCodeComputer_>
+using Configuration_Windows_CheckExpires = ::cryptolens_io::v20190401::Configuration_Windows<MachineCodeComputer_>;
+
 } // namespace v20190401
 
 namespace latest {
 
 template<typename MachineCodeComputer_>
 using Configuration_Windows = ::cryptolens_io::v20190401::Configuration_Windows<MachineCodeComputer_>;
+
+template<typename MachineCodeComputer_>
+using Configuration_Windows_CheckExpires = ::cryptolens_io::v20190401::Configuration_Windows_CheckExpires<MachineCodeComputer_>;
 
 template<typename MachineCodeComputer_>
 using Configuration_Windows_IgnoreExpires = ::cryptolens_io::v20190401::Configuration_Windows_IgnoreExpires<MachineCodeComputer_>;
