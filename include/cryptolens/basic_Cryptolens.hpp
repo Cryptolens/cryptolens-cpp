@@ -14,7 +14,10 @@
 #include "LicenseKeyInformation.hpp"
 #include "Message.hpp"
 #include "RawLicenseKey.hpp"
+
+#ifdef CRYPTOLENS_INCLUDE_METHODS_WITHOUT_RESPONSE_PARSER
 #include "ResponseParser_ArduinoJson7.hpp"
+#endif
 
 namespace cryptolens_io {
 
@@ -137,7 +140,25 @@ private:
 };
 
 } // namespace internal
+  //
 
+template<typename ResponseParser, typename SignatureVerifier>
+optional<RawLicenseKey>
+handle_activate_raw
+  ( basic_Error & e
+  , ResponseParser const& response_parser
+  , SignatureVerifier const& signature_verifier
+  , std::string const& response
+  )
+{
+  if (e) { return nullopt; }
+
+  auto x = internal::handle_activate(e, response_parser, signature_verifier, response);
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_HANDLE_ACTIVATE_RAW); }
+  return x;
+}
+
+#ifdef CRYPTOLENS_INCLUDE_METHODS_WITHOUT_RESPONSE_PARSER
 template<typename SignatureVerifier>
 optional<RawLicenseKey>
 handle_activate_raw
@@ -149,11 +170,8 @@ handle_activate_raw
   if (e) { return nullopt; }
 
   ResponseParser_ArduinoJson7 response_parser(e);
-  if (e) { return nullopt; }
-
-  auto x = internal::handle_activate(e, response_parser, signature_verifier, response);
-  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_HANDLE_ACTIVATE_RAW); }
-  return x;
+  // TODO If constructor fails call might not be set
+  return handle_activate_raw(e, response_parser, signature_verifier, response);
 }
 
 template<typename SignatureVerifier>
@@ -172,7 +190,27 @@ handle_activate_raw_exn
 
   throw ActivateError::from_server_response(NULL);
 }
+#endif
 
+template<typename ResponseParser, typename SignatureVerifier>
+optional<LicenseKey>
+handle_activate
+  ( basic_Error & e
+  , ResponseParser const& response_parser
+  , SignatureVerifier const& signature_verifier
+  , std::string const& response
+  )
+{
+  if (e) { return nullopt; }
+
+  optional<RawLicenseKey> x = internal::handle_activate(e, response_parser, signature_verifier, response);
+  optional<LicenseKeyInformation> y = response_parser.make_license_key_information(e, x);
+  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_HANDLE_ACTIVATE); }
+
+  return LicenseKey(std::move(*y), std::move(*x));
+}
+
+#ifdef CRYPTOLENS_INCLUDE_METHODS_WITHOUT_RESPONSE_PARSER
 template<typename SignatureVerifier>
 optional<LicenseKey>
 handle_activate
@@ -184,14 +222,10 @@ handle_activate
   if (e) { return nullopt; }
 
   ResponseParser_ArduinoJson7 response_parser(e);
-  if (e) { return nullopt; }
-
-  optional<RawLicenseKey> x = internal::handle_activate(e, response_parser, signature_verifier, response);
-  optional<LicenseKeyInformation> y = response_parser.make_license_key_information(e, x);
-  if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_HANDLE_ACTIVATE); }
-
-  return LicenseKey(std::move(*y), std::move(*x));
+  // TODO If constructor fails call might not be set
+  return handle_activate(e, response_parser, signature_verifier, response);
 }
+#endif
 
 /**
  * This class makes it possible to interact with the Cryptolens Web API. Among the
@@ -613,7 +647,7 @@ basic_Cryptolens<Configuration>::activate_
 
   std::string response = request.make(e);
 
-  return handle_activate_raw(e, this->signature_verifier, response);
+  return handle_activate_raw(e, this->response_parser, this->signature_verifier, response);
 }
 
 template<typename Configuration>
@@ -684,7 +718,7 @@ basic_Cryptolens<Configuration>::activate_floating_
 
   std::string response = request.make(e);
 
-  return handle_activate_raw(e, this->signature_verifier, response);
+  return handle_activate_raw(e, this->response_parser, this->signature_verifier, response);
 }
 
 /**
@@ -827,7 +861,7 @@ basic_Cryptolens<Configuration>::get_key_
            .add_argument(e, "v"             , "1")
            .make(e);
 
-  optional<RawLicenseKey> raw_license_key = handle_activate_raw(e, this->signature_verifier, response);
+  optional<RawLicenseKey> raw_license_key = handle_activate_raw(e, this->response_parser, this->signature_verifier, response);
   optional<LicenseKeyInformation> y = response_parser.make_license_key_information(e, raw_license_key);
   if (e) { return nullopt; }
 

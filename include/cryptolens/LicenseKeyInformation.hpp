@@ -91,7 +91,7 @@ public:
     optional<std::vector<DataObject>>     data_objects
   );
 
-#if 1
+#ifdef CRYPTOLENS_INCLUDE_METHODS_WITHOUT_RESPONSE_PARSER
   static optional<LicenseKeyInformation> make(basic_Error & e, RawLicenseKey const& raw_license_key);
   static optional<LicenseKeyInformation> make(basic_Error & e, optional<RawLicenseKey> const& raw_license_key);
   static optional<LicenseKeyInformation> make_unsafe(basic_Error & e, std::string const& license_key);
