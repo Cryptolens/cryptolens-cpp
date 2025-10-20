@@ -85,7 +85,7 @@ SignatureVerifier_BearSSL::set_modulus_base64_(basic_Error & e, std::string cons
 {
   if (e) { return; }
 
-  optional<std::string> modulus = ::cryptolens_io::v20190401::internal::b64_decode(modulus_base64);
+  optional<std::vector<unsigned char>> modulus = ::cryptolens_io::v20190401::internal::b64_decode(modulus_base64);
   if (!modulus) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
   if (pk_.n) { delete [] pk_.n; pk_.n = NULL; }
@@ -99,7 +99,7 @@ SignatureVerifier_BearSSL::set_modulus_base64_(basic_Error & e, std::string cons
     return;
   }
 
-  memcpy(pk_.n, modulus->c_str(), len);
+  memcpy(pk_.n, modulus->data(), len);
   pk_.nlen = len;
 }
 
@@ -108,7 +108,7 @@ SignatureVerifier_BearSSL::set_exponent_base64_(basic_Error & e, std::string con
 {
   if (e) { return; }
 
-  optional<std::string> exponent = ::cryptolens_io::v20190401::internal::b64_decode(exponent_base64);
+  optional<std::vector<unsigned char>> exponent = ::cryptolens_io::v20190401::internal::b64_decode(exponent_base64);
   if (!exponent) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
   if (pk_.e) { delete [] pk_.e; pk_.e = NULL; }
@@ -122,7 +122,7 @@ SignatureVerifier_BearSSL::set_exponent_base64_(basic_Error & e, std::string con
     return;
   }
 
-  memcpy(pk_.e, exponent->c_str(), len);
+  memcpy(pk_.e, exponent->data(), len);
   pk_.elen = len;
 }
 
@@ -132,7 +132,7 @@ SignatureVerifier_BearSSL::set_exponent_base64_(basic_Error & e, std::string con
 bool
 SignatureVerifier_BearSSL::verify_message
   ( basic_Error & e
-  , std::string const& message
+  , std::vector<unsigned char> const& message
   , std::string const& signature_base64
   )
 const
@@ -144,14 +144,14 @@ const
 
   if (pk_.n == NULL || pk_.e == NULL) { e.set(api::main(), 7827, 0, 0); return false; }
 
-  optional<std::string> sig = ::cryptolens_io::v20190401::internal::b64_decode(signature_base64);
+  optional<std::vector<unsigned char>> sig = ::cryptolens_io::v20190401::internal::b64_decode(signature_base64);
   if (!sig) { e.set(api::main(), errors::Subsystem::Base64); return false; }
 
   br_sha256_init(&hash_context);
-  br_sha256_update(&hash_context, message.c_str(), message.size());
+  br_sha256_update(&hash_context, message.data(), message.size());
   br_sha256_out(&hash_context, hash_out);
 
-  int r = br_rsa_i62_pkcs1_vrfy((unsigned char *)sig->c_str(), sig->size(), BR_HASH_OID_SHA256, br_sha256_SIZE, &pk_, hash_out);
+  int r = br_rsa_i62_pkcs1_vrfy(sig->data(), sig->size(), BR_HASH_OID_SHA256, br_sha256_SIZE, &pk_, hash_out);
   if (!r) {
     api::main api;
     e.set(api, 1234, 2345);

@@ -40,7 +40,8 @@ public:
 
   void set_modulus_base64(basic_Error & e, std::string const& modulus_base64);
   void set_exponent_base64(basic_Error & e, std::string const& exponent_base64) {}
-  bool verify_message(basic_Error & e, std::string const& message, std::string const& signature_base64) const;
+
+  bool verify_message(basic_Error & e, std::vector<unsigned char> const& message, std::string const& signature_base64) const;
 private:
   HCRYPTPROV hProv_;
   HCRYPTKEY hPubKey_;
