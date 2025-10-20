@@ -1,11 +1,15 @@
 cmake_minimum_required (VERSION 3.0.2)
 project (cryptolens_examples)
 
-# Before we add the directory with the cryptolens library we can set
-# options for the library.
+# Some options for configuring the cryptolens library should be set
+# before we call add_subdirectory with the folder containing the
+# cryptolens library.
 
-# Uncommenting the following line would cause the cryptolens library to be
-# built as a shared library. Defaults to a static library.
+# Static or shared library
+#
+# By default the cryptolens library is built as a static library. The
+# variable CRYPTOLENS_LIBRARY_TYPE can be set to instead build the
+# library as a shared library.
 #
 #    set(CRYPTOLENS_LIBRARY_TYPE "SHARED" CACHE INTERNAL "" FORCE)
 
@@ -24,6 +28,28 @@ project (cryptolens_examples)
 
 add_subdirectory ("../../.." "cryptolens-cpp")
 
+# After adding the directory we have access to a target called cryptolens
+# which represents the cryptolens library.
+#
+# We can not set additional properties on this target if needed
+#
+# As an example, if we want to build using C++11 we could set this as follows:
+#
+#    set_target_properties(cryptolens PROPERTIES
+#      CXX_STANDARD 11
+#      CXX_STANDARD_REQUIRED ON
+#    )
+#
+# By default we use relative include paths for the library which can cause
+# issues for some compilers. We have an option to use shorter include paths
+# but then additional directories needs to be added to the include paths
+#
+# Uncomment the following lines in order to shorten include paths:
+#
+#    target_include_directories(cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/third_party/ArduinoJson5")
+#    target_include_directories(cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/third_party/optional-lite")
+#    target_compile_definitions(cryptolens PRIVATE CRYPTOLENS_SHORT_INCLUDE_PATHS)
+
 # Additionally we can set install locations for files related to the cryptolens
 # library as follows:
 #
@@ -31,44 +57,39 @@ add_subdirectory ("../../.." "cryptolens-cpp")
 #    install(DIRECTORY ${cryptolens_SOURCE_DIR}/third_party/ DESTINATION third_party)
 #    install(TARGETS cryptolens DESTINATION lib)
 #
-# Uncomment the following lines in order to shorten include paths
-#
-#    target_include_directories(cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/third_party/ArduinoJson5")
-#    target_include_directories(cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/third_party/optional-lite")
-#    target_compile_definitions(cryptolens PRIVATE CRYPTOLENS_SHORT_INCLUDE_PATHS)
 
 add_executable(example_activate ../example_activate.cpp)
 target_link_libraries(example_activate cryptolens)
-set_property(TARGET example_activate PROPERTY CXX_STANDARD 17)
-set_property(TARGET example_activate PROPERTY CXX_STANDARD_REQUIRED ON)
 install(TARGETS example_activate DESTINATION bin)
+#set_property(TARGET example_activate PROPERTY CXX_STANDARD 11)
+#set_property(TARGET example_activate PROPERTY CXX_STANDARD_REQUIRED ON)
 
 add_executable(example_create_trial_key ../example_create_trial_key.cpp)
 target_link_libraries(example_create_trial_key cryptolens)
-set_property(TARGET example_create_trial_key PROPERTY CXX_STANDARD 17)
-set_property(TARGET example_create_trial_key PROPERTY CXX_STANDARD_REQUIRED ON)
 install(TARGETS example_create_trial_key DESTINATION bin)
+#set_property(TARGET example_create_trial_key PROPERTY CXX_STANDARD 11)
+#set_property(TARGET example_create_trial_key PROPERTY CXX_STANDARD_REQUIRED ON)
 
 add_executable(example_external ../example_external.cpp)
 target_link_libraries(example_external cryptolens)
-set_property(TARGET example_external PROPERTY CXX_STANDARD 17)
-set_property(TARGET example_external PROPERTY CXX_STANDARD_REQUIRED ON)
 install(TARGETS example_external DESTINATION bin)
+#set_property(TARGET example_external PROPERTY CXX_STANDARD 11)
+#set_property(TARGET example_external PROPERTY CXX_STANDARD_REQUIRED ON)
 
 add_executable(example_floating ../example_floating.cpp)
 target_link_libraries(example_floating cryptolens)
-set_property(TARGET example_floating PROPERTY CXX_STANDARD 17)
-set_property(TARGET example_floating PROPERTY CXX_STANDARD_REQUIRED ON)
 install(TARGETS example_floating DESTINATION bin)
+#set_property(TARGET example_floating PROPERTY CXX_STANDARD 11)
+#set_property(TARGET example_floating PROPERTY CXX_STANDARD_REQUIRED ON)
 
 add_executable(example_messaging_api ../example_messaging_api.cpp)
 target_link_libraries(example_messaging_api cryptolens)
-set_property(TARGET example_messaging_api  PROPERTY CXX_STANDARD 11)
-set_property(TARGET example_messaging_api  PROPERTY CXX_STANDARD_REQUIRED ON)
 install(TARGETS example_messaging_api  DESTINATION bin)
+#set_property(TARGET example_messaging_api  PROPERTY CXX_STANDARD 11)
+#set_property(TARGET example_messaging_api  PROPERTY CXX_STANDARD_REQUIRED ON)
 
 add_executable(example_offline ../example_offline.cpp)
 target_link_libraries(example_offline cryptolens)
-set_property(TARGET example_offline PROPERTY CXX_STANDARD 17)
-set_property(TARGET example_offline PROPERTY CXX_STANDARD_REQUIRED ON)
 install(TARGETS example_offline DESTINATION bin)
+#set_property(TARGET example_offline PROPERTY CXX_STANDARD 11)
+#set_property(TARGET example_offline PROPERTY CXX_STANDARD_REQUIRED ON)
