@@ -36,6 +36,8 @@ public:
 
   std::vector<Message> parse_get_messages_response(basic_Error & e, std::string const& server_response) const;
   std::string parse_last_message_response(basic_Error & e, std::string const& server_response) const;
+
+  bool has_template_feature(basic_Error & e, std::string const& features_json, std::string const& feature) const;
 };
 
 } // namespace latest

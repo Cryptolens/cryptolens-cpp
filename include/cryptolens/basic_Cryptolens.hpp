@@ -343,6 +343,13 @@ public:
   optional<LicenseKey>
   make_license_key(basic_Error & e, std::string const& s);
 
+  bool
+  license_key_has_template_feature
+    ( basic_Error & e
+    , LicenseKey const& license_key
+    , std::string const& feature
+    );
+
   typename Configuration::ResponseParser response_parser;
   typename Configuration::RequestHandler request_handler;
   typename Configuration::SignatureVerifier signature_verifier;
@@ -610,6 +617,29 @@ basic_Cryptolens<Configuration>::create_trial_key
   std::string key = create_trial_key_(e, token, product_id);
   if (e) { e.set_call(api::main(), errors::Call::BASIC_SKM_CREATE_TRIAL_KEY); return ""; }
   return key;
+}
+
+template<typename Configuration>
+bool
+basic_Cryptolens<Configuration>::license_key_has_template_feature
+  ( basic_Error & e
+  , LicenseKey const& license_key
+  , std::string const& feature
+  )
+{
+  if (e) { return false; }
+
+  optional<std::vector<DataObject>> const& data_objects = license_key.get_data_objects();
+
+  if (!data_objects) { return false; }
+
+  for (DataObject const& data_object : *data_objects) {
+    if (data_object.get_name() == "cryptolens_features") {
+      return this->response_parser.has_template_feature(e, data_object.get_string_value(), feature);
+    }
+  }
+
+  return false;
 }
 
 template<typename Configuration>
