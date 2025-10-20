@@ -6,6 +6,6 @@
 
 #else
 
-#include "../../../../third_party/ArduinoJson5/ArduinoJson.hpp"
+#include "../../../../third_party/ArduinoJson7/ArduinoJson.hpp"
 
 #endif
