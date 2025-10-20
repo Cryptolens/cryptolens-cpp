@@ -39,6 +39,7 @@ public:
 
   void set_modulus_base64(basic_Error & e, std::string const& modulus_base64);
   void set_exponent_base64(basic_Error & e, std::string const& exponent_base64);
+  void set_public_key_base64(basic_Error & e, std::string const& modulus_base64, std::string const& exponent_base64);
 
   bool verify_message(basic_Error & e, std::vector<unsigned char> const& message, std::string const& signature_base64) const;
 

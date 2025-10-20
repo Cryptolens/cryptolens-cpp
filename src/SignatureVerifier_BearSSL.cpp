@@ -6,6 +6,7 @@
 #include "api.hpp"
 #include "base64.hpp"
 #include "SignatureVerifier_BearSSL.hpp"
+#include "SignatureVerifier_shared.hpp"
 
 namespace {
 
@@ -124,6 +125,46 @@ SignatureVerifier_BearSSL::set_exponent_base64_(basic_Error & e, std::string con
 
   memcpy(pk_.e, exponent->data(), len);
   pk_.elen = len;
+}
+
+/*
+ * TODO Add documentation and fix set_call() at the end
+ */
+void
+SignatureVerifier_BearSSL::set_public_key_base64
+  ( basic_Error & e
+  , std::string const& modulus_base64
+  , std::string const& exponent_base64
+  )
+{
+  if (e) { return; }
+
+  this->set_modulus_base64(e, modulus_base64);
+  this->set_exponent_base64(e, exponent_base64);
+
+  if (e) { e.set_call(api::main(), errors::Call::SIGNATURE_VERIFIER_SET_EXPONENT_BASE64); } // TODO Update call
+}
+
+/**
+ * Sets the modulus of the public key used by the cryptolens.io Web API for signing
+ * the responses.
+ *
+ * This value is unique for each account and can be found on cryptolens.io at the
+ * "Account Settings" found in the personal menu ("Hello, <account name>!" in the upper
+ * right corner). The public key is listed in XML format as something similar to
+ *
+ *     <RSAKeyValue><Modulus>AbC=</Modulus><Exponent>deFG</Exponent></RSAKeyValue>
+ *
+ * and the full string can be supplied as the argument to this method.
+ */
+void
+SignatureVerifier_BearSSL::set_public_key_xml(basic_Error & e, std::string const& key_xml)
+{
+  if (e) { return; }
+
+  ::cryptolens_io::v20190401::internal::set_public_key_xml(e, *this, key_xml);
+
+  if (e) { e.set_call(api::main(), errors::Call::SIGNATURE_VERIFIER_SET_MODULUS_BASE64); } // TODO Update call
 }
 
 /**

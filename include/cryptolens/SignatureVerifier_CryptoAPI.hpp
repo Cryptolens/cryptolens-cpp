@@ -38,6 +38,8 @@ public:
 #endif
   ~SignatureVerifier_CryptoAPI();
 
+  void set_public_key_base64(basic_Error & e, std::string const& modulus_base64, std::string const& exponent_base64);
+
   void set_modulus_base64(basic_Error & e, std::string const& modulus_base64);
   void set_exponent_base64(basic_Error & e, std::string const& exponent_base64) {}
 
