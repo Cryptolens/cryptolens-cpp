@@ -55,7 +55,7 @@ endif()
 add_library (cryptolens ${CRYPTOLENS_LIBRARY_TYPE} ${SRC})
 target_link_libraries (cryptolens ${LIBS})
 target_include_directories (cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/include/cryptolens")
-target_include_directories (cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/third_party/ArduinoJson7/src")
+target_include_directories (cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/third_party/ArduinoJson7")
 target_include_directories (cryptolens PUBLIC "${cryptolens_SOURCE_DIR}/include")
 
 if (${CRYPTOLENS_BUILD_TESTS})
