@@ -36,9 +36,6 @@
     <ClCompile Include="..\src\RequestHandler_WinHTTP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ResponseParser_ArduinoJson5.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\SignatureVerifier_CryptoAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -58,6 +55,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\third_party\curl\isunreserved.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ResponseParser_ArduinoJson7.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

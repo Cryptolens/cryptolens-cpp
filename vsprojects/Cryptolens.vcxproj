@@ -99,7 +99,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\include\cryptolens</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\cryptolens;..\third_party\ArduinoJson7</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -114,7 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\include\cryptolens</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\cryptolens;..\third_party\ArduinoJson7</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -131,7 +131,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\include\cryptolens</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\cryptolens;..\third_party\ArduinoJson7</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,7 +150,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\include\cryptolens</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\cryptolens;..\third_party\ArduinoJson7</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,7 +171,7 @@
     <ClCompile Include="..\src\MachineCodeComputer_static.cpp" />
     <ClCompile Include="..\src\RawLicenseKey.cpp" />
     <ClCompile Include="..\src\RequestHandler_WinHTTP.cpp" />
-    <ClCompile Include="..\src\ResponseParser_ArduinoJson5.cpp" />
+    <ClCompile Include="..\src\ResponseParser_ArduinoJson7.cpp" />
     <ClCompile Include="..\src\SignatureVerifier_CryptoAPI.cpp" />
     <ClCompile Include="..\third_party\base64_OpenBSD\base64.cpp" />
     <ClCompile Include="..\third_party\curl\isunreserved.cpp" />

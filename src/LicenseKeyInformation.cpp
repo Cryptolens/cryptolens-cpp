@@ -1,7 +1,7 @@
 #include "api.hpp"
 #include "basic_Cryptolens.hpp"
 #include "LicenseKeyInformation.hpp"
-#include "ResponseParser_ArduinoJson5.hpp"
+#include "ResponseParser_ArduinoJson7.hpp"
 
 namespace cryptolens_io {
 
@@ -104,7 +104,7 @@ LicenseKeyInformation::make_unsafe(basic_Error & e, std::string const& license_k
 {
   if (e) { return nullopt; }
 
-  ResponseParser_ArduinoJson5 response_parser(e);
+  ResponseParser_ArduinoJson7 response_parser(e);
 
   return response_parser.make_license_key_information_unsafe(e, license_key);
 }
