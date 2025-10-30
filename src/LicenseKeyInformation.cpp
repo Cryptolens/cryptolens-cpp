@@ -65,7 +65,7 @@ LicenseKeyInformation::LicenseKeyInformation(
   , data_objects_(std::move(data_objects))
   { };
 
-#if 1
+#ifdef CRYPTOLENS_INCLUDE_METHODS_WITHOUT_RESPONSE_PARSER
 /**
  * Attempt to construct a LicenseKeyInformation from a RawLicenseKey
  */
