@@ -1,5 +1,7 @@
 #include "imports/ArduinoJson7/ArduinoJson.hpp"
 
+#include <algorithm>
+
 #include "api.hpp"
 #include "cryptolens_internals.hpp"
 #include "LicenseKeyInformation.hpp"
@@ -349,6 +351,73 @@ ResponseParser_ArduinoJson7::parse_last_message_response(basic_Error & e, std::s
   if (found) { JsonObject msg = array[i_max].as<JsonObject>(); return msg["content"].as<char const*>(); }
 
   return "";
+}
+
+bool
+ResponseParser_ArduinoJson7::has_template_feature(basic_Error & err, std::string const& features_json, std::string const& feature) const
+{
+  if (err) { return false; }
+
+  using namespace ::cryptolens_io::latest::errors;
+  using namespace ::ArduinoJson;
+  api::main api;
+
+  JsonDocument doc;
+  DeserializationError json_error = deserializeJson(doc, features_json);
+  if (json_error) { err.set(api, Subsystem::Json); return false; }
+
+  if (!doc.is<JsonArray>()) { err.set(api, Subsystem::Json); return false; }
+
+  JsonArray j = doc.as<JsonArray>();
+
+  using string_const_iterator = std::string::const_iterator;
+
+  string_const_iterator p = feature.cbegin();
+  string_const_iterator const e = feature.cend();
+  while (p != e && !j.isNull()) {
+    string_const_iterator q = std::find(p, e, '.');
+
+    bool found = false;
+    for (JsonVariant const elem : j) {
+      char const* cc = nullptr;
+      JsonArray jj;
+      if (elem.is<char const*>()) {
+        cc = elem.as<char const*>();
+      } else if (elem.is<JsonArray>()) {
+        JsonArray a = elem.as<JsonArray>();
+
+        if (a.size() >= 2 && a[0].is<char const*>() && a[1].is<JsonArray>()) {
+          cc = a[0].as<char const*>();
+          jj = a[1].as<JsonArray>();;
+        }
+      }
+
+      if (cc == nullptr) { continue; }
+
+      string_const_iterator pp = p;
+      while (pp != q && *cc != '\0') {
+        if (*pp != *cc) {
+          break;
+        }
+
+        ++pp;
+        ++cc;
+      }
+
+      if (pp == q && *cc == '\0') {
+        if (pp != e) { ++pp; }
+
+        found = true;
+        p = pp;
+        j = jj;
+        break;
+      }
+    }
+
+    if (!found) { break; }
+  }
+
+  return p == e;
 }
 
 } // namespace v20190401
