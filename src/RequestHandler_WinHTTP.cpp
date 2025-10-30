@@ -5,6 +5,7 @@
 
 #include <Windows.h>
 #include <winhttp.h>
+#include <Versionhelpers.h>
 
 #include "RequestHandler_WinHTTP.hpp"
 #include "../third_party/curl/isunreserved.hpp"
@@ -124,7 +125,9 @@ RequestHandler_WinHTTP_PostBuilder::make(basic_Error & e)
 
 
   hSession = WinHttpOpen( L"Cryptolens WinHTTP"
-                        , WINHTTP_ACCESS_TYPE_DEFAULT_PROXY
+                        , IsWindows8Point1OrGreater()
+                            ? WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY
+                            : WINHTTP_ACCESS_TYPE_DEFAULT_PROXY
                         , WINHTTP_NO_PROXY_NAME
                         , WINHTTP_NO_PROXY_BYPASS
                         , 0);
