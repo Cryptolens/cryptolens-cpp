@@ -10,6 +10,7 @@
 #include "api.hpp"
 #include "base64.hpp"
 #include "SignatureVerifier_OpenSSL3.hpp"
+#include "SignatureVerifier_shared.hpp"
 
 namespace {
 
@@ -148,34 +149,13 @@ SignatureVerifier_OpenSSL3::~SignatureVerifier_OpenSSL3()
  * and the full string can be supplied as the argument to this method.
  */
 void
-SignatureVerifier_OpenSSL3::set_public_key_base64(basic_Error & e, std::string const& key)
+SignatureVerifier_OpenSSL3::set_public_key_xml(basic_Error & e, std::string const& key_xml)
 {
   if (e) { return; }
 
-  auto m_s = key.find("<Modulus>");
-  auto m_e = key.find("</Modulus>");
+  ::cryptolens_io::v20190401::internal::set_public_key_xml(e, *this, key_xml);
 
-  auto e_s = key.find("<Exponent>");
-  auto e_e = key.find("</Exponent>");
-
-  if (m_s == std::string::npos || m_e == std::string::npos || m_e < m_s + 9 ||
-      e_s == std::string::npos || e_e == std::string::npos || e_e < e_s + 10)
-  {
-    e.set(api::main(), errors::Subsystem::Base64, __LINE__);
-  } else {
-    auto m_start  = m_s + 9;
-    auto m_length = m_e - m_s - 9;
-
-    auto e_start  = e_s + 10;
-    auto e_length = e_e - e_s - 10;
-
-    std::string modulus_base64  = key.substr(m_start, m_length);
-    std::string exponent_base64 = key.substr(e_start, e_length);
-
-    this->set_public_key_base64_(e, modulus_base64, exponent_base64);
-  }
-
-  if (e) { e.set_call(api::main(), errors::Call::SIGNATURE_VERIFIER_SET_MODULUS_BASE64); }
+  if (e) { e.set_call(api::main(), errors::Call::SIGNATURE_VERIFIER_SET_MODULUS_BASE64); } // Update call
 }
 
 /**
@@ -248,7 +228,7 @@ SignatureVerifier_OpenSSL3::set_modulus_base64(basic_Error & e, std::string cons
 void
 SignatureVerifier_OpenSSL3::set_exponent_base64(basic_Error & e, std::string const& exponent_base64)
 {
-  // Exponent is set by set_modulus_base64()
+  // Exponent is always AQAB in our API and we set it in set_modulus_base64()
 }
 
 /**

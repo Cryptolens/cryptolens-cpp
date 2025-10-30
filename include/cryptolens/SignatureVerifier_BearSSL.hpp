@@ -33,6 +33,9 @@ public:
   void operator=(SignatureVerifier_BearSSL &&) = delete;
   ~SignatureVerifier_BearSSL();
 
+  void set_public_key_xml(basic_Error & e, std::string const& key_xml);
+  void set_public_key_base64(basic_Error & e, std::string const& modulus_base64, std::string const& exponent_base64);
+
   void set_modulus_base64(basic_Error & e, std::string const& modulus_base64);
   void set_exponent_base64(basic_Error & e, std::string const& exponent_base64);
 
