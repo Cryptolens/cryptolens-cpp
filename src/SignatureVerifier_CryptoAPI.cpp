@@ -27,7 +27,7 @@ namespace cryptolens_io {
 namespace v20190401 {
 
 void
-verify(basic_Error & e, HCRYPTPROV hProv, HCRYPTKEY hPubKey, std::string const& message, std::string sig)
+verify(basic_Error & e, HCRYPTPROV hProv, HCRYPTKEY hPubKey, std::vector<unsigned char> const& message, std::vector<unsigned char> & sig)
 {
   using namespace errors;
   api::main api;
@@ -47,13 +47,13 @@ verify(basic_Error & e, HCRYPTPROV hProv, HCRYPTKEY hPubKey, std::string const& 
     goto cleanup;
   }
 
-  if (!CryptHashData(hHash, (const BYTE*)message.c_str(), (DWORD)message.size(), 0)) {
+  if (!CryptHashData(hHash, (const BYTE*)message.data(), (DWORD)message.size(), 0)) {
     DWORD code = GetLastError();
     e.set(api, Subsystem::SignatureVerifier, CRYPT_HASH_DATA_FAILED, code);
     goto cleanup;
   }
 
-  if (!CryptVerifySignature(hHash, (const BYTE*)sig.c_str(), (DWORD)sig.size(), hPubKey, NULL, 0)) {
+  if (!CryptVerifySignature(hHash, (const BYTE*)sig.data(), (DWORD)sig.size(), hPubKey, NULL, 0)) {
     DWORD code = GetLastError();
     e.set(api, Subsystem::SignatureVerifier, CRYPT_VERIFY_SIGNATURE_FAILED, code);
     goto cleanup;
@@ -123,7 +123,7 @@ SignatureVerifier_CryptoAPI::set_modulus_base64_(basic_Error & e, std::string co
     if (e) { return; }
   }
 
-  optional<std::string> modulus = internal::b64_decode(modulus_base64);
+  optional<std::vector<unsigned char>> modulus = internal::b64_decode(modulus_base64);
   if (!modulus) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
   const size_t blobLen = sizeof(BLOBHEADER) + sizeof(RSAPUBKEY) + modulus->size();
@@ -147,7 +147,7 @@ SignatureVerifier_CryptoAPI::set_modulus_base64_(basic_Error & e, std::string co
   rsapubkey->pubexp = 65537;
 
   memcpy( pbKeyBlob.get() + sizeof(BLOBHEADER) + sizeof(RSAPUBKEY)
-        , (const char *)modulus->c_str()
+        , (const char *)modulus->data()
         , modulus->size()
         );
 
@@ -164,7 +164,7 @@ SignatureVerifier_CryptoAPI::set_modulus_base64_(basic_Error & e, std::string co
 bool
 SignatureVerifier_CryptoAPI::verify_message
   (basic_Error & e
-  , std::string const& message
+  , std::vector<unsigned char> const& message
   , std::string const& signature_base64
   )
   const
@@ -172,7 +172,7 @@ SignatureVerifier_CryptoAPI::verify_message
   if (e) { return false; }
   if (!hProv_ || !hPubKey_) { e.set(api::main(), errors::Subsystem::SignatureVerifier, SIGNATURE_VERIFIER_UNINITIALIZED); return false; }
 
-  optional<std::string> sig = internal::b64_decode(signature_base64);
+  optional<std::vector<unsigned char>> sig = internal::b64_decode(signature_base64);
   if (!sig) { e.set(api::main(), errors::Subsystem::Base64); return false; }
 
   verify(e, hProv_, hPubKey_, message, *sig);

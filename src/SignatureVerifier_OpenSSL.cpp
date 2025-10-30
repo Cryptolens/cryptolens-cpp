@@ -30,7 +30,7 @@ namespace cryptolens_io {
 namespace v20190401 {
 
 void
-verify(basic_Error & e, RSA * rsa, std::string const& message, std::string const& sig)
+verify(basic_Error & e, RSA * rsa, std::vector<unsigned char> const& message, std::vector<unsigned char> const& sig)
 {
   using namespace errors;
   api::main api;
@@ -61,10 +61,10 @@ verify(basic_Error & e, RSA * rsa, std::string const& message, std::string const
   r = EVP_DigestVerifyInit(ctx, NULL, EVP_sha256(), NULL, pkey);
   if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_INIT_FAILED); goto end; }
 
-  r = EVP_DigestVerifyUpdate(ctx, (unsigned char*)message.c_str(), message.size());
+  r = EVP_DigestVerifyUpdate(ctx, (unsigned char*)message.data(), message.size());
   if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_UPDATE_FAILED); goto end; }
 
-  r = EVP_DigestVerifyFinal(ctx, (unsigned char*)sig.c_str(), sig.size());
+  r = EVP_DigestVerifyFinal(ctx, (unsigned char*)sig.data(), sig.size());
   if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_FINAL_FAILED); goto end; }
 
 end:
@@ -164,11 +164,11 @@ SignatureVerifier_OpenSSL::set_modulus_base64_(basic_Error & e, std::string cons
   if (e) { return; }
   if (this->rsa == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_NULL); return; }
 
-  optional<std::string> modulus = ::cryptolens_io::v20190401::internal::b64_decode(modulus_base64);
+  optional<std::vector<unsigned char>> modulus = ::cryptolens_io::v20190401::internal::b64_decode(modulus_base64);
   if (!modulus) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
-  BIGNUM * n = BN_bin2bn((unsigned char*)modulus->c_str(),  modulus->size(),  this->rsa->n);
+  BIGNUM * n = BN_bin2bn((unsigned char*)modulus->data(),  modulus->size(),  this->rsa->n);
   if (n == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_BIN2BN_FAILED); return; }
 #else
   BIGNUM const* exp_current;
@@ -176,7 +176,7 @@ SignatureVerifier_OpenSSL::set_modulus_base64_(basic_Error & e, std::string cons
   // void return type
   RSA_get0_key(this->rsa, NULL, &exp_current, NULL);
 
-  BIGNUM * n = BN_bin2bn((unsigned char*)modulus->c_str(),  modulus->size(), NULL);
+  BIGNUM * n = BN_bin2bn((unsigned char*)modulus->data(),  modulus->size(), NULL);
   if (n == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_BIN2BN_FAILED); return; }
 
   BIGNUM * exp;
@@ -201,11 +201,11 @@ SignatureVerifier_OpenSSL::set_exponent_base64_(basic_Error & e, std::string con
   if (e) { return; }
   if (this->rsa == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_NULL); return; }
 
-  optional<std::string> exponent = ::cryptolens_io::v20190401::internal::b64_decode(exponent_base64);
+  optional<std::vector<unsigned char>> exponent = ::cryptolens_io::v20190401::internal::b64_decode(exponent_base64);
   if (!exponent) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
-  BIGNUM * exp = BN_bin2bn((unsigned char*)exponent->c_str(), exponent->size(), this->rsa->e);
+  BIGNUM * exp = BN_bin2bn(exponent->data(), exponent->size(), this->rsa->e);
   if (exp == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_BIN2BN_FAILED); return; }
 #else
   BIGNUM const* n_current;
@@ -213,7 +213,7 @@ SignatureVerifier_OpenSSL::set_exponent_base64_(basic_Error & e, std::string con
   // void return type
   RSA_get0_key(this->rsa, &n_current, NULL, NULL);
 
-  BIGNUM * exp = BN_bin2bn((unsigned char*)exponent->c_str(),  exponent->size(), NULL);
+  BIGNUM * exp = BN_bin2bn((unsigned char*)exponent->data(),  exponent->size(), NULL);
   if (exp == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, BN_NEW_FAILED); return; }
 
   BIGNUM * n;
@@ -238,7 +238,7 @@ SignatureVerifier_OpenSSL::set_exponent_base64_(basic_Error & e, std::string con
 bool
 SignatureVerifier_OpenSSL::verify_message
   ( basic_Error & e
-  , std::string const& message
+  , std::vector<unsigned char> const& message
   , std::string const& signature_base64
   )
 const
@@ -246,7 +246,7 @@ const
   if (e) { return false; }
   if (this->rsa == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_NULL); return false; }
 
-  optional<std::string> sig = ::cryptolens_io::v20190401::internal::b64_decode(signature_base64);
+  optional<std::vector<unsigned char>> sig = ::cryptolens_io::v20190401::internal::b64_decode(signature_base64);
   if (!sig) { e.set(api::main(), errors::Subsystem::Base64); return false; }
 
   verify(e, this->rsa, message, *sig);

@@ -116,7 +116,9 @@ const
     return false;
   }
 
-  return verifier_.verify_message(e, message, signature_base64);
+  std::vector<unsigned char> message_vec(message.cbegin(), message.cend());
+
+  return verifier_.verify_message(e, message_vec, signature_base64);
 }
 
 } // namespace internal

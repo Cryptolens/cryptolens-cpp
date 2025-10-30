@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 
 #include "imports/std/optional"
 
@@ -32,7 +33,7 @@ namespace v20190401 {
 namespace {
 
 void
-verify(basic_Error & e, EVP_PKEY * pkey, std::string const& message, std::string const& sig)
+verify(basic_Error & e, EVP_PKEY * pkey, std::vector<unsigned char> const& message, std::vector<unsigned char> const& sig)
 {
   using namespace errors;
   api::main api;
@@ -50,10 +51,10 @@ verify(basic_Error & e, EVP_PKEY * pkey, std::string const& message, std::string
   r = EVP_DigestVerifyInit(ctx, NULL, EVP_sha256(), NULL, pkey);
   if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_INIT_FAILED); goto end; }
 
-  r = EVP_DigestVerifyUpdate(ctx, (unsigned char*)message.c_str(), message.size());
+  r = EVP_DigestVerifyUpdate(ctx, message.data(), message.size());
   if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_UPDATE_FAILED); goto end; }
 
-  r = EVP_DigestVerifyFinal(ctx, (unsigned char*)sig.c_str(), sig.size());
+  r = EVP_DigestVerifyFinal(ctx, sig.data(), sig.size());
   if (r != 1) { e.set(api, Subsystem::SignatureVerifier, DIGEST_VERIFY_FINAL_FAILED); goto end; }
 
 end:
@@ -62,7 +63,7 @@ end:
 }
 
 EVP_PKEY *
-create_pkey(basic_Error & e, std::string & modulus, std::string & exponent)
+create_pkey(basic_Error & e, std::vector<unsigned char> const& modulus, std::vector<unsigned char> const& exponent)
 {
   int r;
   BIGNUM * n = NULL;
@@ -72,8 +73,8 @@ create_pkey(basic_Error & e, std::string & modulus, std::string & exponent)
   EVP_PKEY_CTX * ctx = NULL;
   EVP_PKEY * pkey = NULL;
 
-  n = BN_bin2bn((unsigned char*)modulus.c_str(),  modulus.size(), NULL);
-  exp = BN_bin2bn((unsigned char*)exponent.c_str(), exponent.size(), NULL);
+  n = BN_bin2bn(modulus.data(),  modulus.size(), NULL);
+  exp = BN_bin2bn(exponent.data(), exponent.size(), NULL);
 
   if (n == NULL || exp == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, __LINE__); goto error; }
 
@@ -202,8 +203,8 @@ SignatureVerifier_OpenSSL3::set_public_key_base64_(basic_Error & e, std::string 
 {
   if (e) { return; }
 
-  optional<std::string> modulus  = ::cryptolens_io::v20190401::internal::b64_decode(modulus_base64);
-  optional<std::string> exponent = ::cryptolens_io::v20190401::internal::b64_decode(exponent_base64);
+  optional<std::vector<unsigned char>> modulus  = ::cryptolens_io::v20190401::internal::b64_decode(modulus_base64);
+  optional<std::vector<unsigned char>> exponent = ::cryptolens_io::v20190401::internal::b64_decode(exponent_base64);
   if (!modulus || !exponent) { e.set(api::main(), errors::Subsystem::Base64); return; }
 
   EVP_PKEY * pkey = create_pkey(e, *modulus, *exponent);
@@ -245,7 +246,7 @@ SignatureVerifier_OpenSSL3::set_modulus_base64(basic_Error & e, std::string cons
  * and in this case the string "deFG" should be passed to this method.
  */
 void
-SignatureVerifier_OpenSSL::set_exponent_base64(basic_Error & e, std::string const& exponent_base64)
+SignatureVerifier_OpenSSL3::set_exponent_base64(basic_Error & e, std::string const& exponent_base64)
 {
   // Exponent is set by set_modulus_base64()
 }
@@ -256,7 +257,7 @@ SignatureVerifier_OpenSSL::set_exponent_base64(basic_Error & e, std::string cons
 bool
 SignatureVerifier_OpenSSL3::verify_message
   ( basic_Error & e
-  , std::string const& message
+  , std::vector<unsigned char> const& message
   , std::string const& signature_base64
   )
 const
@@ -264,7 +265,7 @@ const
   if (e) { return false; }
   if (this->pkey_ == NULL) { e.set(api::main(), errors::Subsystem::SignatureVerifier, RSA_NULL); return false; }
 
-  optional<std::string> sig = ::cryptolens_io::v20190401::internal::b64_decode(signature_base64);
+  optional<std::vector<unsigned char>> sig = ::cryptolens_io::v20190401::internal::b64_decode(signature_base64);
   if (!sig) { e.set(api::main(), errors::Subsystem::Base64); return false; }
 
   verify(e, this->pkey_, message, *sig);

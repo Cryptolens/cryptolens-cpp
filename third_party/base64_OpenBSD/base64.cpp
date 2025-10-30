@@ -57,6 +57,7 @@
 
 #include <cctype>
 #include <cstring>
+#include <vector>
 
 #include "base64.hpp"
 
@@ -324,7 +325,7 @@ b64_pton(char const *src, unsigned char *target, size_t targsize)
 	return (tarindex);
 }
 
-optional<std::string>
+optional<std::vector<unsigned char>>
 b64_decode(std::string const& b64)
 {
   int len = b64_pton(b64.c_str(), NULL, 0);
@@ -332,10 +333,10 @@ b64_decode(std::string const& b64)
     return nullopt;
   }
 
-  std::string s(len, '\0');
-  b64_pton(b64.c_str(), (unsigned char*)s.c_str(), len);
+  std::vector<unsigned char> v(len, '\0');
+  b64_pton(b64.c_str(), v.data(), len);
 
-  return make_optional(std::move(s));
+  return make_optional(std::move(v));
 }
 
 } // namespace internal
