@@ -12,7 +12,12 @@ if(NOT WIN32)
 
   find_package(OpenSSL)
   if (${OpenSSL_FOUND})
-  set (SRC  ${SRC} "src/SignatureVerifier_OpenSSL.cpp")
+    if (${OPENSSL_VERSION} VERSION_LESS "3.0.0")
+      set (SRC  ${SRC} "src/SignatureVerifier_OpenSSL.cpp")
+    else ()
+      set (SRC  ${SRC} "src/SignatureVerifier_OpenSSL3.cpp")
+    endif ()
+
   set (LIBS ${LIBS} crypto)
   endif ()
 
