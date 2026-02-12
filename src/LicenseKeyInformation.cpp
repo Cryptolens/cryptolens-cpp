@@ -172,7 +172,8 @@ LicenseKeyInformation::get_trial_activation() const
 }
 
 /**
- * Returns the date the license key was created by the Web API
+ * This field represents the time when the license key was signed by the server.
+ * You can use this field in offline environments to ensure that clients need to connect to the internet on a regular basis e.g. once a month.
  */
 std::uint64_t
 LicenseKeyInformation::get_sign_date() const

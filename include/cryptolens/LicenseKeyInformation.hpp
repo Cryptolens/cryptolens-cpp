@@ -42,6 +42,10 @@ private:
   int           period_;
   bool          block_;
   bool          trial_activation_;
+  /**
+   * This field represents the time when the license key was signed by the server.
+   * You can use this field in offline environments to ensure that clients need to connect to the internet on a regular basis e.g. once a month.
+   */
   std::uint64_t sign_date_;
   bool          f1_;
   bool          f2_;
@@ -105,6 +109,10 @@ public:
   int           get_period() const;
   bool          get_block() const;
   bool          get_trial_activation() const;
+  /**
+   * This field represents the time when the license key was signed by the server.
+   * You can use this field in offline environments to ensure that clients need to connect to the internet on a regular basis e.g. once a month.
+   */
   std::uint64_t get_sign_date() const;
   bool          get_f1() const;
   bool          get_f2() const;
