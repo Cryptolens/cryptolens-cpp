@@ -56,8 +56,61 @@ add_library (cryptolens ${CRYPTOLENS_LIBRARY_TYPE} ${SRC})
 target_link_libraries (cryptolens ${LIBS})
 target_include_directories (cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/include/cryptolens")
 target_include_directories (cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/third_party/ArduinoJson7")
-target_include_directories (cryptolens PUBLIC "${cryptolens_SOURCE_DIR}/include")
+target_include_directories (cryptolens PUBLIC
+    $<BUILD_INTERFACE:${cryptolens_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
 if (${CRYPTOLENS_BUILD_TESTS})
   add_subdirectory (tests)
 endif ()
+
+# Installation
+include(GNUInstallDirs)
+
+install(TARGETS cryptolens
+    EXPORT cryptolensTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(DIRECTORY ${cryptolens_SOURCE_DIR}/include/cryptolens
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(EXPORT cryptolensTargets
+    FILE cryptolensTargets.cmake
+    NAMESPACE cryptolens::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cryptolens
+)
+
+# Generate and install package config files
+include(CMakePackageConfigHelpers)
+
+# Create a basic config file
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cryptolensConfig.cmake.in
+"@PACKAGE_INIT@
+
+include(\"\${CMAKE_CURRENT_LIST_DIR}/cryptolensTargets.cmake\")
+
+check_required_components(cryptolens)
+")
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/cryptolensConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/cryptolensConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cryptolens
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/cryptolensConfigVersion.cmake
+    VERSION 1.3.0
+    COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cryptolensConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/cryptolensConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cryptolens
+)
