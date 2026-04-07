@@ -409,17 +409,30 @@ basic_SKM<RequestHandler, SignatureVerifier>::make_license_key(basic_Error & e, 
     ::cryptolens_io::v20180502::internal::handle_activate(e, this->signature_verifier, s);
 
   if (e) {
+    if (e.get_subsystem(api::main()) != errors::Subsystem::Json) {
+      e.set_call(api::main(), errors::Call::BASIC_SKM_MAKE_LICENSE_KEY);
+      return nullopt;
+    }
+
     e.reset(api::main());
 
     size_t k = s.find('-');
-    if (k == std::string::npos) { e.set(api::main(), errors::Subsystem::Main, errors::Main::UNKNOWN_SERVER_REPLY); return nullopt; }
+    if (k == std::string::npos) {
+      e.set(api::main(), errors::Subsystem::Main, errors::Main::UNKNOWN_SERVER_REPLY);
+      e.set_call(api::main(), errors::Call::BASIC_SKM_MAKE_LICENSE_KEY);
+      return nullopt;
+    }
 
     std::string version = s.substr(0, k);
     std::string rem = s.substr(k+1, std::string::npos);
     // NOTE: s.substr(s.size(), _) returns empty string, thus the previous line does never throw
 
     k = rem.find('-');
-    if (k == std::string::npos) { e.set(api::main(), errors::Subsystem::Main, errors::Main::UNKNOWN_SERVER_REPLY); return nullopt; }
+    if (k == std::string::npos) {
+      e.set(api::main(), errors::Subsystem::Main, errors::Main::UNKNOWN_SERVER_REPLY);
+      e.set_call(api::main(), errors::Call::BASIC_SKM_MAKE_LICENSE_KEY);
+      return nullopt;
+    }
 
     std::string license = rem.substr(0, k);
     std::string signature = rem.substr(k+1, std::string::npos); // k+1 is fine, see comment above
