@@ -59,5 +59,6 @@ target_include_directories (cryptolens PRIVATE "${cryptolens_SOURCE_DIR}/third_p
 target_include_directories (cryptolens PUBLIC "${cryptolens_SOURCE_DIR}/include")
 
 if (${CRYPTOLENS_BUILD_TESTS})
-  add_subdirectory (tests)
+  enable_testing ()
+  add_subdirectory (cmake/tests)
 endif ()

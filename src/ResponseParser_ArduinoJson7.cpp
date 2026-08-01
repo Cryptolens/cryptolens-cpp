@@ -46,7 +46,7 @@ ResponseParser_ArduinoJson7::make_license_key_information_unsafe(basic_Error & e
       !( j["ProductId"].is<unsigned long>()
       && j["Created"].is<unsigned long>()
       && j["Expires"].is<unsigned long>()
-      && j["Period"].is<unsigned long>()
+      && j["Period"].is<int>()
       && j["Block"].is<bool>()
       && j["TrialActivation"].is<bool>()
       && j["SignDate"].is<unsigned long>()
@@ -54,7 +54,7 @@ ResponseParser_ArduinoJson7::make_license_key_information_unsafe(basic_Error & e
       && j["F2"].is<bool>()
       && j["F3"].is<bool>()
       && j["F4"].is<bool>()
-      && j["F7"].is<bool>()
+      && j["F5"].is<bool>()
       && j["F6"].is<bool>()
       && j["F7"].is<bool>()
       && j["F8"].is<bool>()
@@ -161,13 +161,13 @@ ResponseParser_ArduinoJson7::make_license_key_information_unsafe(basic_Error & e
       if (  dataobject["Id"].is<unsigned long>()
          && dataobject["Name"].is<const char*>() && dataobject["Name"].as<const char*>() != NULL
          && dataobject["StringValue"].is<const char*>() && dataobject["StringValue"].as<const char*>() != NULL
-         && dataobject["IntValue"].is<unsigned long>()
+         && dataobject["IntValue"].is<int>()
          )
       {
         v.emplace_back( dataobject["Id"].as<unsigned long>()
                       , dataobject["Name"].as<const char*>()
                       , dataobject["StringValue"].as<const char*>()
-                      , dataobject["IntValue"].as<unsigned long>()
+                      , dataobject["IntValue"].as<int>()
                       );
       } else {
         valid = false;
@@ -185,7 +185,7 @@ ResponseParser_ArduinoJson7::make_license_key_information_unsafe(basic_Error & e
     j["ProductId"].as<unsigned long>(),
     j["Created"].as<unsigned long>(),
     j["Expires"].as<unsigned long>(),
-    j["Period"].as<unsigned long>(),
+    j["Period"].as<int>(),
     j["Block"].as<bool>(),
     j["TrialActivation"].as<bool>(),
     j["SignDate"].as<unsigned long>(),
